@@ -45,5 +45,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSUserNotificationUsageDescription</key>
+	<string>We need to send you notifications for daily reminders and updates about your nutrition goals.</string>
 </dict>
 </plist>
