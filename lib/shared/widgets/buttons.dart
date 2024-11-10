@@ -7,6 +7,7 @@ class PrimaryButton extends StatelessWidget {
   final VoidCallback onPressed;
   final bool loading;
   final bool enabled;
+  final Widget? leading;
 
   const PrimaryButton({
     super.key,
@@ -14,6 +15,7 @@ class PrimaryButton extends StatelessWidget {
     required this.onPressed,
     this.loading = false,
     this.enabled = true,
+    this.leading,
   });
 
   @override

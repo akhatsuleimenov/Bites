@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:nutrition_ai/core/constants/app_typography.dart';
+import 'package:nutrition_ai/core/services/auth_service.dart';
 import 'package:nutrition_ai/shared/widgets/buttons.dart';
 
 class OnboardingCompleteScreen extends StatelessWidget {
@@ -10,8 +12,22 @@ class OnboardingCompleteScreen extends StatelessWidget {
     required this.userData,
   });
 
+  Future<void> _saveUserData(String userId) async {
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(userId).set({
+        'onboardingCompleted': true,
+        ...userData, // Spread the user data to save it
+      });
+    } catch (e) {
+      // Handle error (e.g., show a snackbar or log the error)
+      print('Error saving user data: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final userId = AuthService().currentUser!.uid;
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -47,7 +63,16 @@ class OnboardingCompleteScreen extends StatelessWidget {
               const SizedBox(height: 48),
               PrimaryButton(
                 text: 'Let\'s Begin!',
-                onPressed: () {},
+                onPressed: () async {
+                  await _saveUserData(
+                      userId); // Save user data before navigating
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/dashboard',
+                    (route) => false,
+                    arguments: userData,
+                  );
+                },
               ),
             ],
           ),

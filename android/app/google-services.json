@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "434708174044",
+    "project_id": "nutritionai-5d5d6",
+    "storage_bucket": "nutritionai-5d5d6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:434708174044:android:6ef1aa85161ccaa277d019",
+        "android_client_info": {
+          "package_name": "com.example.nutrition_ai"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "434708174044-3ijqvn9tugra2scgaub9p39c5cqhn38s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzGWqug1kKA19XsggBL-BO6_TSb-Z9tb0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "434708174044-3ijqvn9tugra2scgaub9p39c5cqhn38s.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "434708174044-6ac0s29th4pqpnt4689u4gs3dusa4tvs.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.nutritionAi"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

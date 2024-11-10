@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nutrition_ai/features/onboarding/screens/screens.dart';
+import 'package:nutrition_ai/features/dashboard/screens/dashboard_screen.dart';
+import 'package:nutrition_ai/features/food_logging/screens/food_logging_screen.dart';
+import 'package:nutrition_ai/features/food_logging/screens/food_logging_results_screen.dart';
 
 class AppRoutes {
   static const String initial = '/';
@@ -13,6 +16,9 @@ class AppRoutes {
   static const String onboardingDesiredWeight = '/onboarding/desired-weight';
   static const String onboardingNotifications = '/onboarding/notifications';
   static const String onboardingComplete = '/onboarding/complete';
+  static const String dashboard = '/dashboard';
+  static const String foodLogging = '/food-logging';
+  static const String foodLoggingResults = '/food-logging/results';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     // Helper function to create routes with userData
@@ -36,6 +42,12 @@ class AppRoutes {
       onboardingNotifications: (args) =>
           NotificationPermissionScreen(userData: args),
       onboardingComplete: (args) => OnboardingCompleteScreen(userData: args),
+      dashboard: (args) => DashboardScreen(userData: args),
+      foodLogging: (_) => const FoodLoggingScreen(),
+      foodLoggingResults: (args) => FoodLoggingResultsScreen(
+            imagePath: args['imagePath'] as String,
+            analysisResults: args['analysisResults'] as Map<String, dynamic>,
+          ),
     };
 
     // Look up and return the route

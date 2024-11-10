@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nutrition_ai/core/auth/auth_wrapper.dart';
 import 'package:nutrition_ai/app/routes.dart';
 import 'package:nutrition_ai/core/themes/app_theme.dart';
 
@@ -10,8 +11,7 @@ class NutritionAIApp extends StatelessWidget {
     return MaterialApp(
       title: 'Nutrition AI',
       theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      initialRoute: AppRoutes.initial,
+      home: const AuthWrapper(),
       onGenerateRoute: AppRoutes.onGenerateRoute,
     );
   }
