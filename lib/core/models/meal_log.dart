@@ -7,32 +7,38 @@ class MealLog {
   final String mealType;
   final String imagePath;
   final double totalCalories;
+  final double totalProtein;
+  final double totalCarbs;
+  final double totalFat;
   final String analysisId;
   final List<FoodItem> items;
 
-  MealLog({
+  const MealLog({
     this.id,
     required this.userId,
     required this.dateTime,
     required this.mealType,
     required this.imagePath,
     required this.totalCalories,
+    required this.totalProtein,
+    required this.totalCarbs,
+    required this.totalFat,
     required this.analysisId,
     required this.items,
   });
 
-  Map<String, dynamic> toFirestore() {
-    print("toFirestore");
-    return {
-      'userId': userId,
-      'dateTime': Timestamp.fromDate(dateTime),
-      'mealType': mealType,
-      'imagePath': imagePath,
-      'totalCalories': totalCalories,
-      'analysisId': analysisId,
-      'items': items.map((item) => item.toFirestore()).toList(),
-    };
-  }
+  Map<String, dynamic> toFirestore() => {
+        'userId': userId,
+        'dateTime': Timestamp.fromDate(dateTime),
+        'mealType': mealType,
+        'imagePath': imagePath,
+        'totalCalories': totalCalories,
+        'totalProtein': totalProtein,
+        'totalCarbs': totalCarbs,
+        'totalFat': totalFat,
+        'analysisId': analysisId,
+        'items': items.map((item) => item.toFirestore()).toList(),
+      };
 
   factory MealLog.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
@@ -45,7 +51,10 @@ class MealLog {
       dateTime: (data['dateTime'] as Timestamp).toDate(),
       mealType: data['mealType'],
       imagePath: data['imagePath'],
-      totalCalories: data['totalCalories'],
+      totalCalories: (data['totalCalories'] as num).toDouble(),
+      totalProtein: (data['totalProtein'] as num).toDouble(),
+      totalCarbs: (data['totalCarbs'] as num).toDouble(),
+      totalFat: (data['totalFat'] as num).toDouble(),
       analysisId: data['analysisId'],
       items: (data['items'] as List)
           .map((item) => FoodItem.fromMap(item))
@@ -58,14 +67,14 @@ class FoodItem {
   final String name;
   final double quantity;
   final String grade;
-  final Map<String, double> nutrition;
+  final Map<String, double> totalNutrition;
   final List<Ingredient> ingredients;
 
   FoodItem({
     required this.name,
     required this.quantity,
     required this.grade,
-    required this.nutrition,
+    required this.totalNutrition,
     required this.ingredients,
   });
 
@@ -74,7 +83,7 @@ class FoodItem {
       'name': name,
       'quantity': quantity,
       'grade': grade,
-      'nutrition': nutrition,
+      'totalNutrition': totalNutrition,
       'ingredients': ingredients.map((i) => i.toFirestore()).toList(),
     };
   }
@@ -84,7 +93,7 @@ class FoodItem {
       name: map['name'],
       quantity: map['quantity'],
       grade: map['grade'],
-      nutrition: Map<String, double>.from(map['nutrition']),
+      totalNutrition: Map<String, double>.from(map['totalNutrition']),
       ingredients: (map['ingredients'] as List)
           .map((i) => Ingredient.fromMap(i))
           .toList(),
@@ -96,13 +105,13 @@ class Ingredient {
   final String name;
   final double quantity;
   final String grade;
-  final Map<String, double> nutrition;
+  final Map<String, double> totalNutrition;
 
   Ingredient({
     required this.name,
     required this.quantity,
     required this.grade,
-    required this.nutrition,
+    required this.totalNutrition,
   });
 
   Map<String, dynamic> toFirestore() {
@@ -110,7 +119,7 @@ class Ingredient {
       'name': name,
       'quantity': quantity,
       'grade': grade,
-      'nutrition': nutrition,
+      'totalNutrition': totalNutrition,
     };
   }
 
@@ -119,7 +128,7 @@ class Ingredient {
       name: map['name'],
       quantity: map['quantity'],
       grade: map['grade'],
-      nutrition: Map<String, double>.from(map['nutrition']),
+      totalNutrition: Map<String, double>.from(map['totalNutrition']),
     );
   }
 }

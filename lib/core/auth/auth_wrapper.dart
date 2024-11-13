@@ -14,8 +14,6 @@ class AuthWrapper extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: AuthService().authStateChanges,
       builder: (context, snapshot) {
-        // Show loading indicator while checking auth state
-        print('AuthWrapper: ${snapshot.connectionState}');
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(
@@ -23,19 +21,14 @@ class AuthWrapper extends StatelessWidget {
             ),
           );
         }
-        print('AuthWrapper: ${snapshot.hasData}');
 
-        // If not authenticated, show login screen
         if (!snapshot.hasData) {
           return const LoginScreen();
         }
-        print('AuthWrapper: ${snapshot.data!.uid}');
 
-        // If authenticated, check if user has completed onboarding
         return FutureBuilder<bool>(
           future: _checkOnboardingStatus(snapshot.data!.uid),
           builder: (context, onboardingSnapshot) {
-            print('AuthWrapper: ${onboardingSnapshot.connectionState}');
             if (onboardingSnapshot.connectionState == ConnectionState.waiting) {
               return const Scaffold(
                 body: Center(
@@ -43,18 +36,14 @@ class AuthWrapper extends StatelessWidget {
                 ),
               );
             }
-            print('AuthWrapper: ${onboardingSnapshot.data}');
-            // Show onboarding if not completed
+
             if (!onboardingSnapshot.data!) {
               return const WelcomeScreen();
             }
-            print('AuthWrapper: onboarding completed');
-            // Show dashboard if everything is set up
+
             return FutureBuilder<Map<String, dynamic>>(
               future: _getUserData(snapshot.data!.uid),
               builder: (context, userDataSnapshot) {
-                print(
-                    'AuthWrapper: userDataSnapshot: ${userDataSnapshot.connectionState}');
                 if (userDataSnapshot.connectionState ==
                     ConnectionState.waiting) {
                   return const Scaffold(
@@ -63,11 +52,7 @@ class AuthWrapper extends StatelessWidget {
                     ),
                   );
                 }
-                print(
-                    'AuthWrapper: userDataSnapshot: ${userDataSnapshot.data}');
-                return DashboardScreen(
-                  userData: userDataSnapshot.data ?? {},
-                );
+                return DashboardScreen();
               },
             );
           },

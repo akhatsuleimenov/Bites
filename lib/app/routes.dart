@@ -42,7 +42,7 @@ class AppRoutes {
       onboardingNotifications: (args) =>
           NotificationPermissionScreen(userData: args),
       onboardingComplete: (args) => OnboardingCompleteScreen(userData: args),
-      dashboard: (args) => DashboardScreen(userData: args),
+      dashboard: (_) => const DashboardScreen(),
       foodLogging: (_) => const FoodLoggingScreen(),
       foodLoggingResults: (args) => FoodLoggingResultsScreen(
             imagePath: args['imagePath'] as String,

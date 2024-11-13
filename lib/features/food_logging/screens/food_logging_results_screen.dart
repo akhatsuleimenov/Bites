@@ -100,70 +100,107 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
 
   Future<void> _saveMealLog() async {
     try {
-      print("GOT HERE 2");
       final items = widget.analysisResults['items'] as List;
-      print("items: $items");
-      // Convert items to List<FoodItem>
+
+      // Combine selected date and time
+      final DateTime combinedDateTime = DateTime(
+        _selectedDate.year,
+        _selectedDate.month,
+        _selectedDate.day,
+        _selectedTime.hour,
+        _selectedTime.minute,
+      );
+
+      double totalCalories = 0;
+      double totalProtein = 0;
+      double totalCarbs = 0;
+      double totalFat = 0;
+
       final foodItems = items.map((item) {
         final food = item['food'][0];
         final foodInfo = food['food_info'];
-        print("food: $food");
-        final ingredients = (food['ingredients'] as List).map((ingredient) {
-          print(1);
+        final quantity = foodInfo['quantity'] as double;
+
+        // Calculate total nutrition for this item
+        final itemCalories =
+            (foodInfo['nutrition']['calories_100g'] as double) * quantity / 100;
+        final itemProtein =
+            (foodInfo['nutrition']['proteins_100g'] as double) * quantity / 100;
+        final itemCarbs =
+            (foodInfo['nutrition']['carbs_100g'] as double) * quantity / 100;
+        final itemFat =
+            (foodInfo['nutrition']['fat_100g'] as double) * quantity / 100;
+
+        // Add to meal totals
+        totalCalories += itemCalories;
+        totalProtein += itemProtein;
+        totalCarbs += itemCarbs;
+        totalFat += itemFat;
+
+        // Handle ingredients
+        final ingredients =
+            (food['ingredients'] as List? ?? []).map((ingredient) {
           final ingredientInfo = ingredient['food_info'];
-          print(2);
+          final ingQuantity = ingredient['quantity'] as double;
+
+          final ingCalories =
+              (ingredientInfo['nutrition']['calories_100g'] as double) *
+                  ingQuantity /
+                  100;
+          final ingProtein =
+              (ingredientInfo['nutrition']['proteins_100g'] as double) *
+                  ingQuantity /
+                  100;
+          final ingCarbs =
+              (ingredientInfo['nutrition']['carbs_100g'] as double) *
+                  ingQuantity /
+                  100;
+          final ingFat = (ingredientInfo['nutrition']['fat_100g'] as double) *
+              ingQuantity /
+              100;
+
           return Ingredient(
             name: ingredientInfo['display_name'],
-            quantity: ingredient['quantity'],
+            quantity: ingQuantity,
             grade: ingredientInfo['fv_grade'],
-            nutrition: {
-              'calories_100g': ingredientInfo['nutrition']['calories_100g'],
-              'proteins_100g': ingredientInfo['nutrition']['proteins_100g'],
-              'carbs_100g': ingredientInfo['nutrition']['carbs_100g'],
-              'fat_100g': ingredientInfo['nutrition']['fat_100g'],
+            totalNutrition: {
+              'calories': ingCalories,
+              'protein': ingProtein,
+              'carbs': ingCarbs,
+              'fat': ingFat,
             },
           );
         }).toList();
-        print("ingredients: $ingredients");
+
         return FoodItem(
           name: foodInfo['display_name'],
-          quantity: foodInfo['quantity'],
+          quantity: quantity,
           grade: foodInfo['fv_grade'],
-          nutrition: {
-            'calories_100g': foodInfo['nutrition']['calories_100g'],
-            'proteins_100g': foodInfo['nutrition']['proteins_100g'],
-            'carbs_100g': foodInfo['nutrition']['carbs_100g'],
-            'fat_100g': foodInfo['nutrition']['fat_100g'],
+          totalNutrition: {
+            'calories': itemCalories,
+            'protein': itemProtein,
+            'carbs': itemCarbs,
+            'fat': itemFat,
           },
           ingredients: ingredients,
         );
-      }).toList(); // Ensure this is a List<FoodItem>
-      print("foodItems: $foodItems");
-      final totalCalories = foodItems.fold<double>(
-        0,
-        (sum, item) =>
-            sum + (item.nutrition['calories_100g']! * item.quantity / 100),
-      );
+      }).toList();
 
-      print("totalCalories: $totalCalories");
-      print("Before firebaseService");
-      final firebaseService = FirebaseService();
-      print("After firebaseService");
       final userId = FirebaseAuth.instance.currentUser!.uid;
-      print("GOT HERE");
       final mealLog = MealLog(
         userId: userId,
-        dateTime: _selectedDate.add(
-            Duration(hours: _selectedTime.hour, minutes: _selectedTime.minute)),
+        dateTime: combinedDateTime,
         mealType: _selectedMealType,
-        items: foodItems, // Pass the converted List<FoodItem>
+        items: foodItems,
         imagePath: widget.imagePath,
         totalCalories: totalCalories,
+        totalProtein: totalProtein,
+        totalCarbs: totalCarbs,
+        totalFat: totalFat,
         analysisId: widget.analysisResults['analysis_id'],
       );
-      print(3);
-      await firebaseService.saveMealLog(mealLog, userId);
-      print(4);
+
+      await FirebaseService().saveMealLog(mealLog, userId);
 
       if (!mounted) return;
 
@@ -171,9 +208,10 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
         const SnackBar(content: Text('Meal saved successfully')),
       );
 
-      Navigator.pop(context);
-      Navigator.pop(context);
+      // Pop twice to return to dashboard
+      Navigator.popUntil(context, (route) => route.isFirst);
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to save meal: $e')),
       );
@@ -385,11 +423,9 @@ class _FoodItemCard extends StatelessWidget {
                     ),
                   ),
                   children: ingredients.map((ingredient) {
-                    // print("ingredient: $ingredient");
                     final ingredientInfo = ingredient['food_info'];
                     final quantity = ingredient['quantity'] as double;
                     final ingredientNutrition = ingredientInfo['nutrition'];
-                    // print("ingredientNutrition: $ingredientNutrition");
                     return Padding(
                       padding: const EdgeInsets.only(
                         left: 16,

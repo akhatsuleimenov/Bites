@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:nutrition_ai/app/routes.dart';
 import 'package:nutrition_ai/core/auth/auth_wrapper.dart';
 import 'package:nutrition_ai/core/themes/app_theme.dart';
+import 'package:nutrition_ai/features/dashboard/controllers/dashboard_controller.dart';
 import 'firebase_options.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,17 +21,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'NutritionAI',
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      initialRoute: '/',
-      onGenerateRoute: (settings) {
-        if (settings.name == '/') {
-          return MaterialPageRoute(builder: (_) => const AuthWrapper());
-        }
-        return AppRoutes.onGenerateRoute(settings);
-      },
+    return ChangeNotifierProvider(
+      create: (_) => DashboardController(),
+      child: MaterialApp(
+        title: 'NutritionAI',
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        initialRoute: '/',
+        onGenerateRoute: (settings) {
+          if (settings.name == '/') {
+            return MaterialPageRoute(builder: (_) => const AuthWrapper());
+          }
+          return AppRoutes.onGenerateRoute(settings);
+        },
+      ),
     );
   }
 }
