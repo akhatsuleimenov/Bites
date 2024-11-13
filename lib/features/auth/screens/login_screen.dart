@@ -26,7 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to sign in: ${e.toString()}'),
+          content: Text('Failed to sign in. Try again later.'),
           backgroundColor: Colors.red,
         ),
       );

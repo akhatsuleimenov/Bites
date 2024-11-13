@@ -70,7 +70,6 @@ class OnboardingCompleteScreen extends StatelessWidget {
                     context,
                     '/dashboard',
                     (route) => false,
-                    arguments: userData,
                   );
                 },
               ),

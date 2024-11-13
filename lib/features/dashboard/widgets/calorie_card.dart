@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nutrition_ai/core/constants/app_typography.dart';
 import 'package:nutrition_ai/core/models/food_entry.dart';
-import 'package:nutrition_ai/features/dashboard/widgets/food_entry_details.dart';
 
 class CalorieCard extends StatelessWidget {
   final int remainingCalories;
@@ -16,6 +16,10 @@ class CalorieCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('remainingCalories: $remainingCalories');
+    print('goal: $goal');
+    print('remainingCalories / goal: ${remainingCalories / goal}');
+    print('1 - (remainingCalories / goal): ${1 - (remainingCalories / goal)}');
     return Card(
       margin: EdgeInsets.all(16),
       child: Padding(
@@ -28,15 +32,13 @@ class CalorieCard extends StatelessWidget {
               children: [
                 Text(
                   'Calories Left',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: Colors.grey[600],
                   ),
                 ),
                 Text(
                   '$remainingCalories',
-                  style: TextStyle(
-                    fontSize: 24,
+                  style: AppTypography.headlineSmall.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -76,6 +78,39 @@ class CalorieCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class MacroDetail extends StatelessWidget {
+  final String label;
+  final int value;
+  final String unit;
+
+  const MacroDetail({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.unit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          label,
+          style: AppTypography.bodyMedium.copyWith(
+            color: Colors.grey[600],
+          ),
+        ),
+        Text(
+          '$value$unit',
+          style: AppTypography.bodyLarge.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 }

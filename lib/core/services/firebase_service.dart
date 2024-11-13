@@ -99,4 +99,18 @@ class FirebaseService {
       );
     }
   }
+
+  // Get User Data
+  Future<Map<String, dynamic>> getUserData(String userId) async {
+    final userDoc = await _firestore.collection('users').doc(userId).get();
+    return userDoc.data() ?? {};
+  }
+
+  // Update User Data
+  Future<void> updateUserData(
+    String userId,
+    Map<String, dynamic> updates,
+  ) async {
+    await _firestore.collection('users').doc(userId).update(updates);
+  }
 }

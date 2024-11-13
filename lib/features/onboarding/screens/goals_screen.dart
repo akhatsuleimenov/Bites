@@ -33,25 +33,18 @@ class _GoalsScreenState extends State<GoalsScreen> {
       'calorieAdjustment': 0,
     },
     {
+      'id': 'lean_bulk',
+      'title': 'Lean Bulk',
+      'subtitle': 'I want to gain muscle mass without gaining fat',
+      'icon': Icons.fitness_center,
+      'calorieAdjustment': 300, // Moderate surplus for muscle gain
+    },
+    {
       'id': 'gain_weight',
       'title': 'Gain Weight',
       'subtitle': 'I want to increase my body weight',
       'icon': Icons.trending_up,
       'calorieAdjustment': 500, // 500 calorie surplus
-    },
-    {
-      'id': 'build_muscle',
-      'title': 'Build Muscle',
-      'subtitle': 'I want to gain muscle mass',
-      'icon': Icons.fitness_center,
-      'calorieAdjustment': 300, // Moderate surplus for muscle gain
-    },
-    {
-      'id': 'improve_health',
-      'title': 'Improve Health',
-      'subtitle': 'I want to focus on better nutrition',
-      'icon': Icons.favorite,
-      'calorieAdjustment': 0,
     },
   ];
 
@@ -145,10 +138,10 @@ class _GoalsScreenState extends State<GoalsScreen> {
 
   double _calculateBMR(Map<String, dynamic> userData) {
     // Mifflin-St Jeor Equation
-    final double weight = userData['weight'] as double;
-    final double height = userData['height'] as double;
-    final int age = userData['age'] as int;
-    final String gender = userData['gender'] as String;
+    final int weight = userData['weight'];
+    final int height = userData['height'];
+    final int age = userData['age'];
+    final String gender = userData['gender'];
 
     double bmr = (10 * weight) + (6.25 * height) - (5 * age);
     if (gender == 'male') {

@@ -47,5 +47,21 @@
 	<true/>
 	<key>NSUserNotificationUsageDescription</key>
 	<string>We need to send you notifications for daily reminders and updates about your nutrition goals.</string>
+	<key>GIDClientID</key>
+	<string>434708174044-6ac0s29th4pqpnt4689u4gs3dusa4tvs.apps.googleusercontent.com</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.434708174044-6ac0s29th4pqpnt4689u4gs3dusa4tvs</string>
+			</array>
+		</dict>
+	</array>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 </dict>
 </plist>

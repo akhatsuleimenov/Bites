@@ -1,68 +1,119 @@
 import 'package:flutter/material.dart';
+import 'package:nutrition_ai/core/navigation/app_scaffold.dart';
 import 'package:nutrition_ai/features/onboarding/screens/screens.dart';
-import 'package:nutrition_ai/features/dashboard/screens/dashboard_screen.dart';
 import 'package:nutrition_ai/features/food_logging/screens/food_logging_screen.dart';
 import 'package:nutrition_ai/features/food_logging/screens/food_logging_results_screen.dart';
 
 class AppRoutes {
-  static const String initial = '/';
-  static const String welcome = '/welcome';
-  static const String onboardingGender = '/onboarding/gender';
-  static const String onboardingHeight = '/onboarding/height';
-  static const String onboardingBirth = '/onboarding/birth';
-  static const String onboardingWorkouts = '/onboarding/workouts';
-  static const String onboardingExperience = '/onboarding/experience';
-  static const String onboardingGoals = '/onboarding/goals';
-  static const String onboardingDesiredWeight = '/onboarding/desired-weight';
-  static const String onboardingNotifications = '/onboarding/notifications';
-  static const String onboardingComplete = '/onboarding/complete';
-  static const String dashboard = '/dashboard';
-  static const String foodLogging = '/food-logging';
-  static const String foodLoggingResults = '/food-logging/results';
-
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
-    // Helper function to create routes with userData
-    MaterialPageRoute<dynamic> buildRoute(
-        Widget Function(Map<String, dynamic>) builder) {
-      final args = settings.arguments as Map<String, dynamic>? ?? {};
-      return MaterialPageRoute(builder: (_) => builder(args));
-    }
+    final args = settings.arguments as Map<String, dynamic>?;
+    print("ARGS SETTINGS: ${args}");
 
-    // Route mapping
-    final routes = {
-      initial: (_) => const WelcomeScreen(),
-      welcome: (_) => const WelcomeScreen(),
-      onboardingGender: (_) => const GenderSelectionScreen(),
-      onboardingHeight: (args) => HeightWeightScreen(userData: args),
-      onboardingBirth: (args) => BirthDateScreen(userData: args),
-      onboardingWorkouts: (args) => WorkoutFrequencyScreen(userData: args),
-      onboardingExperience: (args) => PreviousExperienceScreen(userData: args),
-      onboardingGoals: (args) => GoalsScreen(userData: args),
-      onboardingDesiredWeight: (args) => DesiredWeightScreen(userData: args),
-      onboardingNotifications: (args) =>
-          NotificationPermissionScreen(userData: args),
-      onboardingComplete: (args) => OnboardingCompleteScreen(userData: args),
-      dashboard: (_) => const DashboardScreen(),
-      foodLogging: (_) => const FoodLoggingScreen(),
-      foodLoggingResults: (args) => FoodLoggingResultsScreen(
+    switch (settings.name) {
+      case '/':
+        print('WelcomeScreen!!!');
+        return MaterialPageRoute(
+          builder: (_) => const WelcomeScreen(),
+        );
+
+      case '/dashboard':
+        print('DashboardScreen');
+        return MaterialPageRoute(
+          builder: (_) => const AppScaffold(initialIndex: 0),
+          settings: settings,
+        );
+
+      case '/analytics':
+        print('AnalyticsScreen');
+        return MaterialPageRoute(
+          builder: (_) => const AppScaffold(initialIndex: 1),
+          settings: settings,
+        );
+
+      case '/profile':
+        print('ProfileScreen');
+        return MaterialPageRoute(
+          builder: (_) => const AppScaffold(initialIndex: 2),
+          settings: settings,
+        );
+
+      case '/food-logging':
+        print('FoodLoggingScreen');
+        return MaterialPageRoute(
+          builder: (_) => const FoodLoggingScreen(),
+          fullscreenDialog: true,
+        );
+
+      case '/food-logging/results':
+        if (args == null ||
+            !args.containsKey('imagePath') ||
+            !args.containsKey('analysisResults')) {
+          throw ArgumentError(
+              'Missing required arguments for FoodLoggingResultsScreen');
+        }
+        return MaterialPageRoute(
+          builder: (_) => FoodLoggingResultsScreen(
             imagePath: args['imagePath'] as String,
             analysisResults: args['analysisResults'] as Map<String, dynamic>,
           ),
-    };
+        );
 
-    // Look up and return the route
-    final routeBuilder = routes[settings.name];
-    if (routeBuilder != null) {
-      return buildRoute(routeBuilder);
+      case '/welcome':
+        print('WelcomeScreen------');
+        return MaterialPageRoute(
+          builder: (_) => const WelcomeScreen(),
+        );
+      case '/onboarding/gender':
+        return MaterialPageRoute(
+          builder: (_) => const GenderSelectionScreen(),
+        );
+      case '/onboarding/height':
+        return MaterialPageRoute(
+          builder: (_) =>
+              HeightWeightScreen(userData: args as Map<String, dynamic>),
+        );
+      case '/onboarding/birth':
+        print('BirthDateScreen');
+        return MaterialPageRoute(
+          builder: (_) =>
+              BirthDateScreen(userData: args as Map<String, dynamic>),
+        );
+      case '/onboarding/workouts':
+        print('WorkoutFrequencyScreen');
+        return MaterialPageRoute(
+          builder: (_) =>
+              WorkoutFrequencyScreen(userData: args as Map<String, dynamic>),
+        );
+      case '/onboarding/experience':
+        return MaterialPageRoute(
+          builder: (_) =>
+              PreviousExperienceScreen(userData: args as Map<String, dynamic>),
+        );
+      case '/onboarding/goals':
+        return MaterialPageRoute(
+          builder: (_) => GoalsScreen(userData: args as Map<String, dynamic>),
+        );
+      case '/onboarding/desired-weight':
+        return MaterialPageRoute(
+          builder: (_) =>
+              DesiredWeightScreen(userData: args as Map<String, dynamic>),
+        );
+      case '/onboarding/notifications':
+        return MaterialPageRoute(
+          builder: (_) => NotificationPermissionScreen(
+              userData: args as Map<String, dynamic>),
+        );
+      case '/onboarding/complete':
+        return MaterialPageRoute(
+          builder: (_) =>
+              OnboardingCompleteScreen(userData: args as Map<String, dynamic>),
+        );
+      default:
+        return MaterialPageRoute(
+          builder: (_) => const Scaffold(
+            body: Center(child: Text('Route not found')),
+          ),
+        );
     }
-
-    // Default route for unknown routes
-    return MaterialPageRoute(
-      builder: (_) => Scaffold(
-        body: Center(
-          child: Text('Route ${settings.name} not found'),
-        ),
-      ),
-    );
   }
 }

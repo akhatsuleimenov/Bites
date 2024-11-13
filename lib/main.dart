@@ -29,6 +29,8 @@ class MyApp extends StatelessWidget {
         darkTheme: AppTheme.darkTheme,
         initialRoute: '/',
         onGenerateRoute: (settings) {
+          print("MAIN: ${settings.name}");
+          print("MAIN ARGS: ${settings.arguments}");
           if (settings.name == '/') {
             return MaterialPageRoute(builder: (_) => const AuthWrapper());
           }

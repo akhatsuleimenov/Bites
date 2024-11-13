@@ -26,8 +26,8 @@ class _HeightWeightScreenState extends State<HeightWeightScreen> {
   late FixedExtentScrollController _weightController;
 
   // Selected values
-  double _selectedHeight = 170; // Default height in cm
-  double _selectedWeight = 70; // Default weight in kg
+  int _selectedHeight = 170; // Default height in cm
+  int _selectedWeight = 70; // Default weight in kg
 
   @override
   void initState() {
@@ -56,21 +56,22 @@ class _HeightWeightScreenState extends State<HeightWeightScreen> {
 
   void _updateHeight() {
     if (_isMetric) {
-      _selectedHeight = _cmController.selectedItem + 100.0;
+      _selectedHeight = _cmController.selectedItem + 100;
     } else {
       final feet = _feetController.selectedItem + 4;
       final inches = _inchesController.selectedItem;
-      _selectedHeight = (feet * 30.48) + (inches * 2.54); // Convert to cm
+      _selectedHeight =
+          ((feet * 30.48) + (inches * 2.54)).round(); // Convert to cm
     }
     setState(() {});
   }
 
   void _updateWeight() {
     if (_isMetric) {
-      _selectedWeight = _weightController.selectedItem + 30.0;
+      _selectedWeight = _weightController.selectedItem + 30;
     } else {
-      _selectedWeight =
-          (_weightController.selectedItem + 66) * 0.453592; // Convert lbs to kg
+      _selectedWeight = ((_weightController.selectedItem + 66) * 0.453592)
+          .round(); // Convert lbs to kg
     }
     setState(() {});
   }

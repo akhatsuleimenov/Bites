@@ -15,8 +15,8 @@ class DesiredWeightScreen extends StatefulWidget {
 }
 
 class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
-  late double _currentWeight;
-  late double _selectedWeight;
+  late int _currentWeight;
+  late int _selectedWeight;
   late bool _isMetric;
   late FixedExtentScrollController _scrollController;
 
@@ -24,16 +24,16 @@ class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
   void initState() {
     super.initState();
     _isMetric = widget.userData['isMetric'] as bool;
-    _currentWeight = widget.userData['weight'] as double;
+    _currentWeight = widget.userData['weight'] as int;
 
     // Convert current weight to imperial if needed
     if (!_isMetric) {
-      _currentWeight = _currentWeight * 2.20462; // Convert kg to lbs
+      _currentWeight = (_currentWeight * 2.20462).round(); // Convert kg to lbs
     }
     _selectedWeight = _currentWeight;
 
     // Initialize scroll controller based on the unit system
-    final minWeight = _isMetric ? 30.0 : 66.0;
+    final minWeight = _isMetric ? 30 : 66;
     final initialItem = (_currentWeight - minWeight).round();
     _scrollController = FixedExtentScrollController(
       initialItem: initialItem,
@@ -47,7 +47,7 @@ class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
   }
 
   String _formatWeight(int index) {
-    final minWeight = _isMetric ? 30.0 : 66.0;
+    final minWeight = _isMetric ? 30 : 66;
     final weight = index + minWeight;
     return '${weight.toStringAsFixed(1)} ${_isMetric ? 'kg' : 'lbs'}';
   }
@@ -113,7 +113,7 @@ class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
                         physics: const FixedExtentScrollPhysics(),
                         onSelectedItemChanged: (index) {
                           setState(() {
-                            final minWeight = _isMetric ? 30.0 : 66.0;
+                            final minWeight = _isMetric ? 30 : 66;
                             _selectedWeight = index + minWeight;
                           });
                         },
@@ -145,14 +145,14 @@ class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
               PrimaryButton(
                 text: 'Continue',
                 onPressed: () {
-                  double targetWeightKg = _selectedWeight;
-                  double weightDifferenceKg;
+                  int targetWeightKg = _selectedWeight;
+                  int weightDifferenceKg;
 
                   if (!_isMetric) {
                     // Convert target weight from lbs to kg for storage
-                    targetWeightKg = _selectedWeight / 2.20462;
+                    targetWeightKg = (_selectedWeight / 2.20462).round();
                     // Convert current weight from lbs to kg for difference calculation
-                    final currentWeightKg = _currentWeight / 2.20462;
+                    final currentWeightKg = (_currentWeight / 2.20462).round();
                     weightDifferenceKg = targetWeightKg - currentWeightKg;
                   } else {
                     weightDifferenceKg = _selectedWeight - _currentWeight;

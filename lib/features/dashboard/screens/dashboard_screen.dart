@@ -16,16 +16,7 @@ class DashboardScreen extends StatelessWidget {
         child: Consumer<DashboardController>(
           builder: (context, controller, _) {
             return RefreshIndicator(
-              onRefresh: () async {
-                try {
-                  await controller.loadDashboardData();
-                } catch (e) {
-                  print("Error refreshing dashboard: $e");
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error loading data: $e')),
-                  );
-                }
-              },
+              onRefresh: controller.loadDashboardData,
               child: CustomScrollView(
                 slivers: [
                   // Header with user info
@@ -47,7 +38,7 @@ class DashboardScreen extends StatelessWidget {
                     child: CalorieCard(
                       remainingCalories: controller.remainingCalories,
                       remainingMacros: controller.remainingMacros,
-                      goal: controller.todaysPlan?.calories ?? 0,
+                      goal: controller.userGoals.dailyCalories,
                     ),
                   ),
 
@@ -85,6 +76,7 @@ class DashboardScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'dashboardFAB',
         onPressed: () => Navigator.pushNamed(context, '/food-logging'),
         backgroundColor: Colors.black,
         child: Icon(Icons.add),

@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:nutrition_ai/core/navigation/app_scaffold.dart';
 import 'package:nutrition_ai/core/services/auth_service.dart';
 import 'package:nutrition_ai/features/auth/screens/login_screen.dart';
 import 'package:nutrition_ai/features/onboarding/screens/screens.dart';
-import 'package:nutrition_ai/features/dashboard/screens/dashboard_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:nutrition_ai/features/dashboard/controllers/dashboard_controller.dart';
 
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
@@ -52,7 +54,9 @@ class AuthWrapper extends StatelessWidget {
                     ),
                   );
                 }
-                return DashboardScreen();
+                Provider.of<DashboardController>(context, listen: false)
+                    .fetchNutritionPlan();
+                return const AppScaffold(initialIndex: 0);
               },
             );
           },
@@ -80,6 +84,7 @@ class AuthWrapper extends StatelessWidget {
           .collection('users')
           .doc(userId)
           .get();
+
       return doc.data() ?? {};
     } catch (e) {
       return {};
