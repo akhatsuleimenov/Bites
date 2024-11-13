@@ -42,13 +42,16 @@ class DashboardController extends ChangeNotifier {
 
   late final String userId;
   StreamSubscription? _mealLogsSubscription;
+  StreamSubscription? _weeklyLogsSubscription;
 
   List<MealLog> _todaysMealLogs = [];
+  List<MealLog> _weeklyMealLogs = [];
   bool _isLoading = true;
   String? _error;
 
   // Getters
   List<MealLog> get todaysMealLogs => _todaysMealLogs;
+  List<MealLog> get weeklyMealLogs => _weeklyMealLogs;
   bool get isLoading => _isLoading;
   String? get error => _error;
 
@@ -79,6 +82,7 @@ class DashboardController extends ChangeNotifier {
   @override
   void dispose() {
     _mealLogsSubscription?.cancel();
+    _weeklyLogsSubscription?.cancel();
     super.dispose();
   }
 
@@ -91,7 +95,7 @@ class DashboardController extends ChangeNotifier {
       // Load nutrition plan
       _nutritionPlan = await _firebaseService.getUserNutritionPlan(userId);
 
-      // Subscribe to meal logs
+      // Subscribe to today's meal logs
       _mealLogsSubscription?.cancel();
       _mealLogsSubscription = _firebaseService
           .getMealLogsStream(userId: userId, date: DateTime.now())
@@ -103,14 +107,26 @@ class DashboardController extends ChangeNotifier {
           notifyListeners();
         },
         onError: (e) {
-          print('Error loading meal logs: $e');
           _error = 'Failed to load meal logs: $e';
           _isLoading = false;
           notifyListeners();
         },
       );
+
+      // Subscribe to weekly meal logs
+      _weeklyLogsSubscription?.cancel();
+      _weeklyLogsSubscription =
+          _firebaseService.getWeeklyMealLogsStream(userId).listen(
+        (mealLogs) {
+          _weeklyMealLogs = mealLogs;
+          notifyListeners();
+        },
+        onError: (e) {
+          _error = 'Failed to load weekly logs: $e';
+          notifyListeners();
+        },
+      );
     } catch (e) {
-      print('Error loading dashboard data: $e');
       _error = 'Failed to load dashboard data: $e';
       _isLoading = false;
       notifyListeners();

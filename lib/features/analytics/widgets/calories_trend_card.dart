@@ -12,20 +12,29 @@ class CaloriesTrendCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dashboardController = context.watch<DashboardController>();
-    final mealLogs = dashboardController.todaysMealLogs;
+    final weeklyLogs = dashboardController.weeklyMealLogs;
 
-    // Group meal logs by date and calculate daily totals
+    // Calculate daily totals
     final dailyTotals = <DateTime, double>{};
-    for (final log in mealLogs) {
+    for (final log in weeklyLogs) {
       final date =
           DateTime(log.dateTime.year, log.dateTime.month, log.dateTime.day);
       dailyTotals[date] = (dailyTotals[date] ?? 0) + log.totalCalories;
     }
 
-    // Sort dates and get last 7 days
-    final sortedDates = dailyTotals.keys.toList()
-      ..sort((a, b) => a.compareTo(b));
-    final last7Days = sortedDates.take(7).toList();
+    // Get last 7 days in reverse order (today to 7 days ago)
+    final now = DateTime.now();
+    final sortedDates = List.generate(7, (index) {
+      return DateTime(now.year, now.month, now.day)
+          .subtract(Duration(days: 6 - index));
+    });
+
+    final spots = sortedDates.map((date) {
+      return FlSpot(
+        sortedDates.indexOf(date).toDouble(),
+        dailyTotals[date] ?? 0,
+      );
+    }).toList();
 
     return BaseCard(
       child: Column(
@@ -55,9 +64,9 @@ class CaloriesTrendCard extends StatelessWidget {
                     sideTitles: SideTitles(
                       showTitles: true,
                       getTitlesWidget: (value, meta) {
-                        if (value.toInt() >= last7Days.length)
+                        if (value.toInt() >= sortedDates.length)
                           return const Text('');
-                        final date = last7Days[value.toInt()];
+                        final date = sortedDates[value.toInt()];
                         return Text(
                           DateFormat('E').format(date),
                           style: AppTypography.bodySmall,
@@ -69,12 +78,7 @@ class CaloriesTrendCard extends StatelessWidget {
                 borderData: FlBorderData(show: false),
                 lineBarsData: [
                   LineChartBarData(
-                    spots: last7Days.asMap().entries.map((entry) {
-                      return FlSpot(
-                        entry.key.toDouble(),
-                        dailyTotals[entry.value] ?? 0,
-                      );
-                    }).toList(),
+                    spots: spots,
                     isCurved: true,
                     color: Theme.of(context).primaryColor,
                     barWidth: 3,

@@ -10,32 +10,27 @@ class GoalsProgressCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dashboardController = context.watch<DashboardController>();
-    final mealLogs = dashboardController.todaysMealLogs;
+    final weeklyLogs = dashboardController.weeklyMealLogs;
     final nutritionPlan = dashboardController.nutritionPlan;
-
-    // Calculate daily averages for the last 7 days
-    final now = DateTime.now();
-    final last7Days = DateTime(now.year, now.month, now.day)
-        .subtract(const Duration(days: 7));
-
-    final recentLogs =
-        mealLogs.where((log) => log.dateTime.isAfter(last7Days)).toList();
 
     double avgCalories = 0;
     double avgProtein = 0;
     double avgCarbs = 0;
     double avgFat = 0;
 
-    if (recentLogs.isNotEmpty) {
-      avgCalories =
-          recentLogs.map((log) => log.totalCalories).reduce((a, b) => a + b) /
-              7;
-      avgProtein =
-          recentLogs.map((log) => log.totalProtein).reduce((a, b) => a + b) / 7;
-      avgCarbs =
-          recentLogs.map((log) => log.totalCarbs).reduce((a, b) => a + b) / 7;
-      avgFat =
-          recentLogs.map((log) => log.totalFat).reduce((a, b) => a + b) / 7;
+    if (weeklyLogs.isNotEmpty) {
+      final totalCalories =
+          weeklyLogs.fold(0.0, (sum, log) => sum + log.totalCalories);
+      final totalProtein =
+          weeklyLogs.fold(0.0, (sum, log) => sum + log.totalProtein);
+      final totalCarbs =
+          weeklyLogs.fold(0.0, (sum, log) => sum + log.totalCarbs);
+      final totalFat = weeklyLogs.fold(0.0, (sum, log) => sum + log.totalFat);
+
+      avgCalories = totalCalories / 7;
+      avgProtein = totalProtein / 7;
+      avgCarbs = totalCarbs / 7;
+      avgFat = totalFat / 7;
     }
 
     return BaseCard(

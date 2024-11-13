@@ -113,4 +113,20 @@ class FirebaseService {
   ) async {
     await _firestore.collection('users').doc(userId).update(updates);
   }
+
+  Stream<List<MealLog>> getWeeklyMealLogsStream(String userId) {
+    final now = DateTime.now();
+    final startOfWeek = DateTime(now.year, now.month, now.day)
+        .subtract(const Duration(days: 7));
+
+    return _firestore
+        .collection('meal_logs')
+        .where('userId', isEqualTo: userId)
+        .where('dateTime', isGreaterThanOrEqualTo: startOfWeek)
+        .orderBy('dateTime', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => MealLog.fromFirestore(doc, null))
+            .toList());
+  }
 }
