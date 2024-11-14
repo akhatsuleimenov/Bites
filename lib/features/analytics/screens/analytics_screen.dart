@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nutrition_ai/core/constants/app_typography.dart';
-import 'package:nutrition_ai/features/analytics/widgets/calories_trend_card.dart';
-import 'package:nutrition_ai/features/analytics/widgets/goals_progress_card.dart';
-import 'package:nutrition_ai/features/analytics/widgets/macro_distribution_card.dart';
-import 'package:nutrition_ai/features/analytics/widgets/meal_timing_card.dart';
+import 'package:nutrition_ai/features/analytics/widgets/widgets.dart';
 
 class AnalyticsScreen extends StatelessWidget {
   const AnalyticsScreen({super.key});

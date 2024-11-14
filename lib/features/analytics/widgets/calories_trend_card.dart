@@ -29,12 +29,21 @@ class CaloriesTrendCard extends StatelessWidget {
           .subtract(Duration(days: 6 - index));
     });
 
+    // Create spots only for dates with data
     final spots = sortedDates.map((date) {
+      final calories = dailyTotals[date] ?? 0;
       return FlSpot(
         sortedDates.indexOf(date).toDouble(),
-        dailyTotals[date] ?? 0,
+        calories,
       );
     }).toList();
+
+    // Find max calories for y-axis
+    final maxCalories = dailyTotals.values.isEmpty
+        ? 1000.0 // Default max if no data
+        : dailyTotals.values
+            .fold(0.0, (max, value) => value > max ? value : max);
+    final yAxisInterval = (maxCalories / 4).ceilToDouble();
 
     return BaseCard(
       child: Column(
@@ -49,10 +58,34 @@ class CaloriesTrendCard extends StatelessWidget {
             height: 200,
             child: LineChart(
               LineChartData(
-                gridData: const FlGridData(show: false),
+                minY: 0,
+                maxY: maxCalories + yAxisInterval,
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  horizontalInterval: yAxisInterval,
+                  getDrawingHorizontalLine: (value) {
+                    return FlLine(
+                      color: Colors.grey.withOpacity(0.2),
+                      strokeWidth: 1,
+                    );
+                  },
+                ),
                 titlesData: FlTitlesData(
-                  leftTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      interval: yAxisInterval,
+                      reservedSize: 40,
+                      getTitlesWidget: (value, meta) {
+                        return Text(
+                          value.toInt().toString(),
+                          style: AppTypography.bodySmall.copyWith(
+                            color: Colors.grey[600],
+                          ),
+                        );
+                      },
+                    ),
                   ),
                   rightTitles: const AxisTitles(
                     sideTitles: SideTitles(showTitles: false),
@@ -64,12 +97,18 @@ class CaloriesTrendCard extends StatelessWidget {
                     sideTitles: SideTitles(
                       showTitles: true,
                       getTitlesWidget: (value, meta) {
-                        if (value.toInt() >= sortedDates.length)
+                        if (value.toInt() >= sortedDates.length) {
                           return const Text('');
+                        }
                         final date = sortedDates[value.toInt()];
-                        return Text(
-                          DateFormat('E').format(date),
-                          style: AppTypography.bodySmall,
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            DateFormat('E').format(date),
+                            style: AppTypography.bodySmall.copyWith(
+                              color: Colors.grey[600],
+                            ),
+                          ),
                         );
                       },
                     ),
@@ -82,7 +121,16 @@ class CaloriesTrendCard extends StatelessWidget {
                     isCurved: true,
                     color: Theme.of(context).primaryColor,
                     barWidth: 3,
-                    dotData: const FlDotData(show: false),
+                    dotData: FlDotData(
+                      show: true,
+                      getDotPainter: (spot, percent, barData, index) {
+                        return FlDotCirclePainter(
+                            radius: 4,
+                            color: Theme.of(context).primaryColor,
+                            strokeWidth: 2,
+                            strokeColor: Colors.white);
+                      },
+                    ),
                     belowBarData: BarAreaData(
                       show: true,
                       color: Theme.of(context).primaryColor.withOpacity(0.1),
