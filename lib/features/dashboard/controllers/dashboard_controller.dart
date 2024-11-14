@@ -1,10 +1,17 @@
+// Dart imports:
+import 'dart:async';
+
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
+import 'package:firebase_auth/firebase_auth.dart';
+
+// Project imports:
 import 'package:nutrition_ai/core/models/food_entry.dart';
 import 'package:nutrition_ai/core/models/meal_log.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:async';
-import 'package:nutrition_ai/core/services/firebase_service.dart';
 import 'package:nutrition_ai/core/services/auth_service.dart';
+import 'package:nutrition_ai/core/services/firebase_service.dart';
 
 class UserGoals {
   final int dailyCalories;

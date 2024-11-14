@@ -1,10 +1,15 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
+import 'package:provider/provider.dart';
+
+// Project imports:
 import 'package:nutrition_ai/core/models/meal_log.dart';
 import 'package:nutrition_ai/features/dashboard/controllers/dashboard_controller.dart';
 import 'package:nutrition_ai/features/dashboard/widgets/calorie_card.dart';
 import 'package:nutrition_ai/features/dashboard/widgets/meal_log_card.dart';
 import 'package:nutrition_ai/features/dashboard/widgets/meal_log_details.dart';
-import 'package:provider/provider.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});

@@ -1,7 +1,10 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Project imports:
+import 'package:nutrition_ai/core/constants/app_typography.dart';
 import 'package:nutrition_ai/core/services/auth_service.dart';
 import 'package:nutrition_ai/shared/widgets/buttons.dart';
-import 'package:nutrition_ai/core/constants/app_typography.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

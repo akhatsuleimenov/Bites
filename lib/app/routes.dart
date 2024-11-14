@@ -1,8 +1,11 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Project imports:
 import 'package:nutrition_ai/core/navigation/app_scaffold.dart';
-import 'package:nutrition_ai/features/onboarding/screens/screens.dart';
-import 'package:nutrition_ai/features/food_logging/screens/food_logging_screen.dart';
 import 'package:nutrition_ai/features/food_logging/screens/food_logging_results_screen.dart';
+import 'package:nutrition_ai/features/food_logging/screens/food_logging_screen.dart';
+import 'package:nutrition_ai/features/onboarding/screens/screens.dart';
 
 class AppRoutes {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {

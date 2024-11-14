@@ -1,4 +1,7 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Project imports:
 import 'package:nutrition_ai/core/services/auth_service.dart';
 import 'package:nutrition_ai/core/services/firebase_service.dart';
 

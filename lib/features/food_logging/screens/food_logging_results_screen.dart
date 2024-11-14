@@ -1,11 +1,18 @@
+// Dart imports:
 import 'dart:io';
+
+// Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:nutrition_ai/core/constants/app_typography.dart';
-import 'package:nutrition_ai/shared/widgets/buttons.dart';
-import 'package:intl/intl.dart';
+
+// Package imports:
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:nutrition_ai/core/services/firebase_service.dart';
+import 'package:intl/intl.dart';
+
+// Project imports:
+import 'package:nutrition_ai/core/constants/app_typography.dart';
 import 'package:nutrition_ai/core/models/meal_log.dart';
+import 'package:nutrition_ai/core/services/firebase_service.dart';
+import 'package:nutrition_ai/shared/widgets/buttons.dart';
 
 class FoodLoggingResultsScreen extends StatefulWidget {
   final String imagePath;

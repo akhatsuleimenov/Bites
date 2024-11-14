@@ -1,10 +1,17 @@
-import 'package:flutter/material.dart';
-import 'package:nutrition_ai/core/constants/app_typography.dart';
-import 'package:nutrition_ai/shared/widgets/buttons.dart';
-import 'package:image_picker/image_picker.dart';
+// Dart imports:
 import 'dart:io';
-import 'package:nutrition_ai/core/services/foodvisor_service.dart';
+
+// Flutter imports:
+import 'package:flutter/material.dart';
+
+// Package imports:
+import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+// Project imports:
+import 'package:nutrition_ai/core/constants/app_typography.dart';
+import 'package:nutrition_ai/core/services/foodvisor_service.dart';
+import 'package:nutrition_ai/shared/widgets/buttons.dart';
 
 class FoodLoggingScreen extends StatefulWidget {
   const FoodLoggingScreen({super.key});

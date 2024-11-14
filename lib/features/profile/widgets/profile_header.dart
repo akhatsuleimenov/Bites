@@ -1,7 +1,12 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
+import 'package:provider/provider.dart';
+
+// Project imports:
 import 'package:nutrition_ai/core/constants/app_typography.dart';
 import 'package:nutrition_ai/features/profile/controllers/profile_controller.dart';
-import 'package:provider/provider.dart';
 
 class ProfileHeader extends StatelessWidget {
   const ProfileHeader({super.key});

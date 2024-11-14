@@ -1,6 +1,11 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+
+// Package imports:
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:intl/intl.dart';
+
+// Project imports:
 import 'package:nutrition_ai/core/models/meal_log.dart';
 
 class MealLogCard extends StatelessWidget {

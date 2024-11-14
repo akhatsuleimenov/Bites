@@ -1,6 +1,9 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:nutrition_ai/features/dashboard/screens/dashboard_screen.dart';
+
+// Project imports:
 import 'package:nutrition_ai/features/analytics/screens/analytics_screen.dart';
+import 'package:nutrition_ai/features/dashboard/screens/dashboard_screen.dart';
 import 'package:nutrition_ai/features/profile/screens/profile_screen.dart';
 
 class AppScaffold extends StatefulWidget {

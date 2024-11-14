@@ -1,8 +1,13 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:nutrition_ai/core/constants/app_typography.dart';
-import 'package:nutrition_ai/shared/widgets/cards.dart';
-import 'package:nutrition_ai/features/dashboard/controllers/dashboard_controller.dart';
+
+// Package imports:
 import 'package:provider/provider.dart';
+
+// Project imports:
+import 'package:nutrition_ai/core/constants/app_typography.dart';
+import 'package:nutrition_ai/features/dashboard/controllers/dashboard_controller.dart';
+import 'package:nutrition_ai/shared/widgets/cards.dart';
 
 class GoalsProgressCard extends StatelessWidget {
   const GoalsProgressCard({super.key});

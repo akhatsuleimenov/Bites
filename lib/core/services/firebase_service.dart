@@ -1,9 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:nutrition_ai/core/models/meal_log.dart';
+// Dart imports:
 import 'dart:io';
 
+// Package imports:
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+
+// Project imports:
 import 'package:nutrition_ai/core/models/food_entry.dart';
+import 'package:nutrition_ai/core/models/meal_log.dart';
 
 class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

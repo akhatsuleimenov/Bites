@@ -1,10 +1,15 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
 import 'package:fl_chart/fl_chart.dart';
-import 'package:nutrition_ai/core/constants/app_typography.dart';
-import 'package:nutrition_ai/shared/widgets/cards.dart';
-import 'package:nutrition_ai/features/dashboard/controllers/dashboard_controller.dart';
-import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+
+// Project imports:
+import 'package:nutrition_ai/core/constants/app_typography.dart';
+import 'package:nutrition_ai/features/dashboard/controllers/dashboard_controller.dart';
+import 'package:nutrition_ai/shared/widgets/cards.dart';
 
 class MealTimingCard extends StatelessWidget {
   const MealTimingCard({super.key});
