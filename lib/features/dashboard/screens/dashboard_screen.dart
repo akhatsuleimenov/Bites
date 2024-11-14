@@ -1,5 +1,6 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
+import 'package:nutrition_ai/core/constants/app_typography.dart';
 
 // Package imports:
 import 'package:provider/provider.dart';
@@ -22,56 +23,56 @@ class DashboardScreen extends StatelessWidget {
           builder: (context, controller, _) {
             return RefreshIndicator(
               onRefresh: controller.loadDashboardData,
-              child: CustomScrollView(
-                slivers: [
-                  // Header with user info
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Text(
-                        'Today\'s Nutrition',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(24.0).copyWith(bottom: 12.0),
+                    child: Text(
+                      'Today\'s Nutrition',
+                      style: AppTypography.headlineLarge,
+                    ),
+                  ),
+                  Expanded(
+                    child: CustomScrollView(
+                      slivers: [
+                        // Calorie and macro tracking
+                        SliverToBoxAdapter(
+                          child: CalorieCard(
+                            remainingCalories: controller.remainingCalories,
+                            remainingMacros: controller.remainingMacros,
+                            goal: controller.userGoals.dailyCalories,
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
 
-                  // Calorie and macro tracking
-                  SliverToBoxAdapter(
-                    child: CalorieCard(
-                      remainingCalories: controller.remainingCalories,
-                      remainingMacros: controller.remainingMacros,
-                      goal: controller.userGoals.dailyCalories,
-                    ),
-                  ),
-
-                  // Recent meals header
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.all(16).copyWith(bottom: 8),
-                      child: Text(
-                        'Recent Meals',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
+                        // Recent meals header
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 16,
+                              horizontal: 24,
+                            ),
+                            child: Text(
+                              'Recent Meals',
+                              style: AppTypography.headlineMedium,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
 
-                  // Meal logs list
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final mealLog = controller.todaysMealLogs[index];
-                        return MealLogCard(
-                          mealLog: mealLog,
-                          onTap: () => _showMealDetails(context, mealLog),
-                        );
-                      },
-                      childCount: controller.todaysMealLogs.length,
+                        // Meal logs list
+                        SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              final mealLog = controller.todaysMealLogs[index];
+                              return MealLogCard(
+                                mealLog: mealLog,
+                                onTap: () => _showMealDetails(context, mealLog),
+                              );
+                            },
+                            childCount: controller.todaysMealLogs.length,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -84,7 +85,7 @@ class DashboardScreen extends StatelessWidget {
         heroTag: 'dashboardFAB',
         onPressed: () => Navigator.pushNamed(context, '/food-logging'),
         backgroundColor: Colors.black,
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }

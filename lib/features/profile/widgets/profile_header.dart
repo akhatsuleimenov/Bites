@@ -1,5 +1,6 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
+import 'package:nutrition_ai/shared/widgets/cards.dart';
 
 // Package imports:
 import 'package:provider/provider.dart';
@@ -16,34 +17,26 @@ class ProfileHeader extends StatelessWidget {
     final controller = context.watch<ProfileController>();
     final userData = controller.userData;
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            CircleAvatar(
-              radius: 40,
-              backgroundColor: Colors.grey[200],
-              child: Text(
-                (userData?['name'] as String?)?.substring(0, 1).toUpperCase() ??
-                    'U',
-                style: AppTypography.headlineLarge,
-              ),
+    return BaseCard(
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 40,
+            backgroundColor: Colors.grey[200],
+            child: Text(
+              (userData?['name'] as String?)?.substring(0, 1).toUpperCase() ??
+                  'U',
+              style: AppTypography.headlineLarge,
             ),
-            const SizedBox(height: 16),
-            Text(
-              userData?['name'] ?? 'User',
-              style: AppTypography.headlineSmall,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              userData?['email'] ?? '',
-              style: AppTypography.bodyMedium.copyWith(color: Colors.grey[600]),
-            ),
-            const SizedBox(height: 16),
-            _buildStatsRow(userData ?? {}),
-          ],
-        ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            userData?['name'] ?? 'User',
+            style: AppTypography.headlineSmall,
+          ),
+          const SizedBox(height: 8),
+          _buildStatsRow(userData ?? {}),
+        ],
       ),
     );
   }

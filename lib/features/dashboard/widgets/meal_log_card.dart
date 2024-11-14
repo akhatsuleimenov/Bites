@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 
 // Project imports:
 import 'package:nutrition_ai/core/models/meal_log.dart';
+import 'package:nutrition_ai/shared/widgets/cards.dart';
 
 class MealLogCard extends StatelessWidget {
   final MealLog mealLog;
@@ -20,11 +21,11 @@ class MealLogCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
+    return Padding(
+      padding: const EdgeInsets.all(8.0).copyWith(bottom: 4.0, top: 4.0),
+      child: BaseCard(
+        child: InkWell(
+          onTap: onTap,
           child: Row(
             children: [
               // Food Image

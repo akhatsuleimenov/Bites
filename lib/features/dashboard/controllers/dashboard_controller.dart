@@ -170,4 +170,8 @@ class DashboardController extends ChangeNotifier {
       ),
     );
   }
+
+  Future<void> refreshData() async {
+    await loadDashboardData();
+  }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 // Project imports:
 import 'package:nutrition_ai/core/constants/app_typography.dart';
 import 'package:nutrition_ai/core/models/food_entry.dart';
+import 'package:nutrition_ai/shared/widgets/cards.dart';
 
 class CalorieCard extends StatelessWidget {
   final int remainingCalories;
@@ -23,10 +24,9 @@ class CalorieCard extends StatelessWidget {
     print('goal: $goal');
     print('remainingCalories / goal: ${remainingCalories / goal}');
     print('1 - (remainingCalories / goal): ${1 - (remainingCalories / goal)}');
-    return Card(
-      margin: EdgeInsets.all(16),
-      child: Padding(
-        padding: EdgeInsets.all(16),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: BaseCard(
         child: Column(
           children: [
             // Calories

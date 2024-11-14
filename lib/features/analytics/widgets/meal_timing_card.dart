@@ -17,11 +17,11 @@ class MealTimingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dashboardController = context.watch<DashboardController>();
-    final mealLogs = dashboardController.todaysMealLogs;
+    final weeklyLogs = dashboardController.weeklyMealLogs;
 
     // Group meals by hour of day
     final mealsByHour = <int, List<double>>{};
-    for (final log in mealLogs) {
+    for (final log in weeklyLogs) {
       final hour = log.dateTime.hour;
       mealsByHour.putIfAbsent(hour, () => []);
       mealsByHour[hour]!.add(log.totalCalories);
@@ -33,6 +33,16 @@ class MealTimingCard extends StatelessWidget {
       averageByHour[hour] = calories.reduce((a, b) => a + b) / calories.length;
     });
 
+    // Sort hours and create bar groups
+    final sortedHours = averageByHour.keys.toList()..sort();
+
+    // Find max calories for y-axis
+    final maxCalories = averageByHour.values.isEmpty
+        ? 1000.0 // Default max if no data
+        : averageByHour.values
+            .fold(0.0, (max, value) => value > max ? value : max);
+    final yAxisInterval = (maxCalories / 4).ceilToDouble();
+
     return BaseCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,7 +53,7 @@ class MealTimingCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Average calories consumed by time of day',
+            'Average calories consumed by time of day (last 7 days)',
             style: AppTypography.bodySmall.copyWith(color: Colors.grey),
           ),
           const SizedBox(height: 24),
@@ -52,10 +62,8 @@ class MealTimingCard extends StatelessWidget {
             child: BarChart(
               BarChartData(
                 alignment: BarChartAlignment.spaceAround,
-                maxY: averageByHour.values.isEmpty
-                    ? 100
-                    : averageByHour.values.reduce((a, b) => a > b ? a : b) *
-                        1.2,
+                maxY: maxCalories + yAxisInterval,
+                minY: 0,
                 barTouchData: BarTouchData(
                   enabled: true,
                   touchTooltipData: BarTouchTooltipData(
@@ -77,30 +85,58 @@ class MealTimingCard extends StatelessWidget {
                   topTitles: const AxisTitles(
                     sideTitles: SideTitles(showTitles: false),
                   ),
-                  leftTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      interval: yAxisInterval,
+                      reservedSize: 40,
+                      getTitlesWidget: (value, meta) {
+                        return Text(
+                          value.toInt().toString(),
+                          style: AppTypography.bodySmall.copyWith(
+                            color: Colors.grey[600],
+                          ),
+                        );
+                      },
+                    ),
                   ),
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
                       getTitlesWidget: (value, meta) {
                         final hour = value.toInt();
-                        return Text(
-                          _formatHour(hour),
-                          style: AppTypography.bodySmall,
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            _formatHour(hour),
+                            style: AppTypography.bodySmall.copyWith(
+                              color: Colors.grey[600],
+                            ),
+                          ),
                         );
                       },
                       reservedSize: 30,
                     ),
                   ),
                 ),
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  horizontalInterval: yAxisInterval,
+                  getDrawingHorizontalLine: (value) {
+                    return FlLine(
+                      color: Colors.grey.withOpacity(0.2),
+                      strokeWidth: 1,
+                    );
+                  },
+                ),
                 borderData: FlBorderData(show: false),
-                barGroups: averageByHour.entries.map((entry) {
+                barGroups: sortedHours.map((hour) {
                   return BarChartGroupData(
-                    x: entry.key,
+                    x: hour,
                     barRods: [
                       BarChartRodData(
-                        toY: entry.value,
+                        toY: averageByHour[hour]!,
                         color: Theme.of(context).primaryColor,
                         width: 16,
                         borderRadius: const BorderRadius.vertical(
