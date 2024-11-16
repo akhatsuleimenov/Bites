@@ -133,4 +133,48 @@ class FirebaseService {
             .map((doc) => MealLog.fromFirestore(doc, null))
             .toList());
   }
+
+  // Update user goals
+  Future<void> updateUserGoals({
+    required String userId,
+    required String goal,
+    required double targetWeight,
+    required String workoutFrequency,
+  }) async {
+    try {
+      await _firestore.collection('users').doc(userId).update({
+        'goal': goal,
+        'targetWeight': targetWeight,
+        'workoutFrequency': workoutFrequency,
+      });
+    } catch (e) {
+      throw FirebaseException(
+        plugin: 'nutrition_ai',
+        message: 'Failed to update user goals: $e',
+      );
+    }
+  }
+
+  // Update notification settings
+  Future<void> updateNotificationSettings({
+    required String userId,
+    required bool enabled,
+  }) async {
+    try {
+      await _firestore.collection('users').doc(userId).update({
+        'notificationsEnabled': enabled,
+      });
+    } catch (e) {
+      throw FirebaseException(
+        plugin: 'nutrition_ai',
+        message: 'Failed to update notification settings: $e',
+      );
+    }
+  }
+
+  Stream<Map<String, dynamic>> getUserDataStream(String userId) {
+    return _firestore.collection('users').doc(userId).snapshots().map(
+          (doc) => doc.data() ?? {},
+        );
+  }
 }

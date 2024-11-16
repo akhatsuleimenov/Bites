@@ -6,26 +6,31 @@ import 'package:nutrition_ai/core/constants/app_colors.dart';
 import 'package:nutrition_ai/core/constants/app_typography.dart';
 
 class PrimaryButton extends StatelessWidget {
-  final String text;
+  final String? text;
   final VoidCallback onPressed;
   final bool loading;
   final bool enabled;
   final Widget? leading;
+  final double? width;
+  final double? height;
 
   const PrimaryButton({
     super.key,
-    required this.text,
+    this.text,
     required this.onPressed,
     this.loading = false,
     this.enabled = true,
     this.leading,
-  });
+    this.width,
+    this.height,
+  }) : assert(text != null || leading != null,
+            'Either text or leading must be provided');
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 56,
-      width: double.infinity,
+      height: height ?? 56,
+      width: width ?? double.infinity,
       child: ElevatedButton(
         onPressed: (loading || !enabled) ? null : onPressed,
         child: loading
@@ -37,13 +42,14 @@ class PrimaryButton extends StatelessWidget {
                   strokeWidth: 2,
                 ),
               )
-            : Text(
-                text,
-                style: AppTypography.bodyLarge.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+            : leading ??
+                Text(
+                  text!,
+                  style: AppTypography.bodyLarge.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
       ),
     );
   }

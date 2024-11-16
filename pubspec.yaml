@@ -69,6 +69,9 @@ dependencies:
   # Permission Handler
   permission_handler: ^11.0.1
 
+  # URL Launcher
+  url_launcher: ^6.2.5
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2

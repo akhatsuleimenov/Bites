@@ -6,6 +6,7 @@ import 'package:nutrition_ai/core/navigation/app_scaffold.dart';
 import 'package:nutrition_ai/features/food_logging/screens/food_logging_results_screen.dart';
 import 'package:nutrition_ai/features/food_logging/screens/food_logging_screen.dart';
 import 'package:nutrition_ai/features/onboarding/screens/screens.dart';
+import 'package:nutrition_ai/features/settings/screens/screens.dart';
 
 class AppRoutes {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -111,6 +112,18 @@ class AppRoutes {
           builder: (_) =>
               OnboardingCompleteScreen(userData: args as Map<String, dynamic>),
         );
+      case '/settings':
+        return MaterialPageRoute(builder: (_) => const SettingsScreen());
+      case '/settings/goals':
+        return MaterialPageRoute(builder: (_) => const UpdateGoalsScreen());
+      case '/settings/edit-profile':
+        return MaterialPageRoute(builder: (_) => const EditProfileScreen());
+      // case '/settings/notifications':
+      //   return MaterialPageRoute(builder: (_) => const NotificationsScreen());
+      case '/settings/support':
+        return MaterialPageRoute(builder: (_) => const HelpSupportScreen());
+      case '/settings/privacy':
+        return MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen());
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(

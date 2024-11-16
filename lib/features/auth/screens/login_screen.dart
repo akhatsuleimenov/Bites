@@ -78,7 +78,6 @@ class _LoginScreenState extends State<LoginScreen> {
               else
                 PrimaryButton(
                   onPressed: _handleGoogleSignIn,
-                  text: 'Continue with Google',
                   leading: Image.asset(
                     'assets/images/google_logo.png',
                     height: 24,

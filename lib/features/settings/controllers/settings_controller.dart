@@ -1,65 +1,54 @@
-// Flutter imports:
 import 'package:flutter/material.dart';
-
-// Project imports:
 import 'package:nutrition_ai/core/services/auth_service.dart';
 import 'package:nutrition_ai/core/services/firebase_service.dart';
 
-class ProfileController extends ChangeNotifier {
+class SettingsController extends ChangeNotifier {
   final FirebaseService _firebaseService = FirebaseService();
   final AuthService _authService = AuthService();
 
-  bool _isLoading = true;
-  Map<String, dynamic>? _userData;
+  bool _isLoading = false;
   String? _error;
+  Map<String, dynamic>? _userData;
 
   bool get isLoading => _isLoading;
-  Map<String, dynamic>? get userData => _userData;
   String? get error => _error;
-
-  ProfileController() {
-    loadUserData();
-  }
+  Map<String, dynamic>? get userData => _userData;
 
   Future<void> loadUserData() async {
+    if (_isLoading) return;
+
     try {
       _isLoading = true;
-      _error = null;
       notifyListeners();
 
       final userId = _authService.currentUser?.uid;
       if (userId == null) throw Exception('User not logged in');
 
       _userData = await _firebaseService.getUserData(userId);
-      _isLoading = false;
-      notifyListeners();
+      print("Loaded user data in controller: $_userData");
     } catch (e) {
       _error = e.toString();
+    } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  Future<void> signOut(BuildContext context) async {
-    try {
-      await _authService.signOut();
-      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error signing out: $e')),
-      );
-    }
-  }
+  Future<void> updateProfile(Map<String, dynamic> updates) async {
+    if (_isLoading) return;
 
-  Future<void> updateUserData(Map<String, dynamic> updates) async {
     try {
+      _isLoading = true;
+      notifyListeners();
+
       final userId = _authService.currentUser?.uid;
       if (userId == null) throw Exception('User not logged in');
 
       await _firebaseService.updateUserData(userId, updates);
-      await loadUserData(); // Reload data after update
-    } catch (e) {
-      rethrow;
+      await loadUserData();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 }
