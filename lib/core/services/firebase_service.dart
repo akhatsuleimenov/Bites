@@ -16,20 +16,24 @@ class FirebaseService {
   // Meal Logs
   Future<void> saveMealLog(MealLog mealLog, String userId) async {
     try {
-      // Upload image to Firebase Storage
-      final imageFile = File(mealLog.imagePath);
-      final storageRef = _storage
-          .ref()
-          .child('meal_images')
-          .child(userId)
-          .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
-
-      await storageRef.putFile(imageFile);
-      final imageUrl = await storageRef.getDownloadURL();
-
-      // Save meal log to Firestore with the cloud storage URL
       final mealLogData = mealLog.toFirestore();
-      mealLogData['imagePath'] = imageUrl;
+
+      // Only handle image upload if there's an image path
+      if (mealLog.imagePath.isNotEmpty) {
+        final imageFile = File(mealLog.imagePath);
+        final storageRef = _storage
+            .ref()
+            .child('meal_images')
+            .child(userId)
+            .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
+
+        await storageRef.putFile(imageFile);
+        final imageUrl = await storageRef.getDownloadURL();
+        mealLogData['imagePath'] = imageUrl;
+      } else {
+        // For manual entries, set imagePath to empty string
+        mealLogData['imagePath'] = '';
+      }
 
       await _firestore.collection('meal_logs').add(mealLogData);
     } catch (e) {

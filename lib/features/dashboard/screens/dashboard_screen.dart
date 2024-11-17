@@ -83,7 +83,7 @@ class DashboardScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'dashboardFAB',
-        onPressed: () => Navigator.pushNamed(context, '/food-logging'),
+        onPressed: () => _showAddOptions(context),
         backgroundColor: Colors.black,
         child: const Icon(Icons.add),
       ),
@@ -94,6 +94,130 @@ class DashboardScreen extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       builder: (context) => MealLogDetails(mealLog: mealLog),
+    );
+  }
+
+  void _showAddOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: _buildOptionButton(
+                    context,
+                    icon: Icons.camera_alt_outlined,
+                    label: 'Scan food',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/food-logging');
+                    },
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildOptionButton(
+                    context,
+                    icon: Icons.edit_outlined,
+                    label: 'Manual entry',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/manual-entry');
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildOptionButton(
+                    context,
+                    icon: Icons.fitness_center_outlined,
+                    label: 'Log exercise',
+                    onTap: () {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Coming soon!')),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildOptionButton(
+                    context,
+                    icon: Icons.search_outlined,
+                    label: 'Food Database',
+                    onTap: () {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Coming soon!')),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOptionButton(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey[300]!),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Material(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          hoverColor: Colors.grey[100],
+          splashColor: Theme.of(context).primaryColor.withOpacity(0.1),
+          highlightColor: Colors.grey[200],
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  size: 32,
+                  color: Colors.black87,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  label,
+                  style: AppTypography.bodyMedium.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

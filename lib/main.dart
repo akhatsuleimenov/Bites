@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => DashboardController(),
       child: MaterialApp(
-        title: 'NutritionAI',
+        title: 'bites.',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         initialRoute: '/',

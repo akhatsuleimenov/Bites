@@ -43,6 +43,46 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
     'Evening Snack',
   ];
 
+  // Add state for tracking modified items
+  late List<Map<String, dynamic>> _modifiedItems;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize modified items with original values
+    _modifiedItems = (widget.analysisResults['items'] as List).map((item) {
+      final foodInfo = item['food'][0]['food_info'];
+      return {
+        // ...item,
+        'food': [
+          {
+            ...item['food'][0],
+            'food_info': {
+              ...foodInfo,
+              'quantity': foodInfo['quantity'],
+            }
+          }
+        ]
+      };
+    }).toList();
+  }
+
+  void _updateQuantity(int itemIndex, double newQuantity) {
+    setState(() {
+      final foodInfo = _modifiedItems[itemIndex]['food'][0]['food_info'];
+      foodInfo['quantity'] = newQuantity;
+    });
+  }
+
+  void _updateIngredientQuantity(
+      int itemIndex, int ingredientIndex, double newQuantity) {
+    setState(() {
+      final ingredients =
+          _modifiedItems[itemIndex]['food'][0]['ingredients'] as List;
+      ingredients[ingredientIndex]['quantity'] = newQuantity;
+    });
+  }
+
   Future<void> _selectDate() async {
     final picked = await showDatePicker(
       context: context,
@@ -107,7 +147,8 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
 
   Future<void> _saveMealLog() async {
     try {
-      final items = widget.analysisResults['items'] as List;
+      // Use _modifiedItems instead of original items
+      final items = _modifiedItems;
 
       // Combine selected date and time
       final DateTime combinedDateTime = DateTime(
@@ -227,8 +268,8 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final items = widget.analysisResults['items'] as List;
-    final totalCalories = items.fold<double>(
+    // Use _modifiedItems instead of original items
+    final totalCalories = _modifiedItems.fold<double>(
       0,
       (sum, item) =>
           sum +
@@ -323,7 +364,17 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
                   style: AppTypography.headlineLarge,
                 ),
                 const SizedBox(height: 8),
-                ...items.map((item) => _FoodItemCard(item: item)),
+                ...List.generate(
+                    _modifiedItems.length,
+                    (index) => _FoodItemCard(
+                          item: _modifiedItems[index],
+                          onQuantityChanged: (newQuantity) =>
+                              _updateQuantity(index, newQuantity),
+                          onIngredientQuantityChanged:
+                              (ingredientIndex, newQuantity) =>
+                                  _updateIngredientQuantity(
+                                      index, ingredientIndex, newQuantity),
+                        )),
               ],
             ),
           ),
@@ -344,9 +395,13 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
 
 class _FoodItemCard extends StatelessWidget {
   final Map<String, dynamic> item;
+  final Function(double) onQuantityChanged;
+  final Function(int, double) onIngredientQuantityChanged;
 
   const _FoodItemCard({
     required this.item,
+    required this.onQuantityChanged,
+    required this.onIngredientQuantityChanged,
   });
 
   @override
@@ -372,10 +427,23 @@ class _FoodItemCard extends StatelessWidget {
                     style: AppTypography.headlineMedium,
                   ),
                 ),
-                Text(
-                  '${totalWeight.round()}g',
-                  style: AppTypography.bodyMedium.copyWith(
-                    color: Colors.grey[600],
+                SizedBox(
+                  width: 80,
+                  child: TextField(
+                    controller: TextEditingController(
+                        text: totalWeight.round().toString()),
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    decoration: InputDecoration(
+                      suffixText: 'g',
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                    ),
+                    onChanged: (value) {
+                      final newValue = double.tryParse(value);
+                      if (newValue != null) {
+                        onQuantityChanged(newValue);
+                      }
+                    },
                   ),
                 ),
               ],
@@ -429,10 +497,12 @@ class _FoodItemCard extends StatelessWidget {
                       color: Colors.grey[700],
                     ),
                   ),
-                  children: ingredients.map((ingredient) {
+                  children:
+                      List.generate(ingredients.length, (ingredientIndex) {
+                    final ingredient = ingredients[ingredientIndex];
                     final ingredientInfo = ingredient['food_info'];
                     final quantity = ingredient['quantity'] as double;
-                    final ingredientNutrition = ingredientInfo['nutrition'];
+
                     return Padding(
                       padding: const EdgeInsets.only(
                         left: 16,
@@ -453,39 +523,25 @@ class _FoodItemCard extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[200],
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  '${quantity.round()}g',
-                                  style: AppTypography.bodySmall.copyWith(
-                                    color: Colors.grey[700],
+                              SizedBox(
+                                width: 80,
+                                child: TextField(
+                                  controller: TextEditingController(
+                                      text: quantity.round().toString()),
+                                  keyboardType: TextInputType.number,
+                                  textAlign: TextAlign.center,
+                                  decoration: const InputDecoration(
+                                    suffixText: 'g',
+                                    contentPadding:
+                                        EdgeInsets.symmetric(horizontal: 8),
                                   ),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: _getGradeColor(
-                                      ingredientInfo['fv_grade'] as String),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  ingredientInfo['fv_grade'] as String,
-                                  style: AppTypography.bodySmall.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  onChanged: (value) {
+                                    final newValue = double.tryParse(value);
+                                    if (newValue != null) {
+                                      onIngredientQuantityChanged(
+                                          ingredientIndex, newValue);
+                                    }
+                                  },
                                 ),
                               ),
                             ],
@@ -498,13 +554,14 @@ class _FoodItemCard extends StatelessWidget {
                               _NutritionItem(
                                 label: 'Calories',
                                 value:
-                                    '${(ingredientNutrition['calories_100g'] * quantity / 100).round()}',
+                                    '${(ingredientInfo['nutrition']['calories_100g'] * quantity / 100).round()}',
                                 unit: 'kcal',
                                 small: true,
                               ),
                               _NutritionItem(
                                 label: 'Protein',
-                                value: (ingredientNutrition['proteins_100g'] *
+                                value: (ingredientInfo['nutrition']
+                                            ['proteins_100g'] *
                                         quantity /
                                         100)
                                     .toStringAsFixed(1),
@@ -513,7 +570,8 @@ class _FoodItemCard extends StatelessWidget {
                               ),
                               _NutritionItem(
                                 label: 'Carbs',
-                                value: (ingredientNutrition['carbs_100g'] *
+                                value: (ingredientInfo['nutrition']
+                                            ['carbs_100g'] *
                                         quantity /
                                         100)
                                     .toStringAsFixed(1),
@@ -522,7 +580,8 @@ class _FoodItemCard extends StatelessWidget {
                               ),
                               _NutritionItem(
                                 label: 'Fat',
-                                value: (ingredientNutrition['fat_100g'] *
+                                value: (ingredientInfo['nutrition']
+                                            ['fat_100g'] *
                                         quantity /
                                         100)
                                     .toStringAsFixed(1),
@@ -534,7 +593,7 @@ class _FoodItemCard extends StatelessWidget {
                         ],
                       ),
                     );
-                  }).toList(),
+                  }),
                 ),
               ),
             ],
@@ -542,23 +601,6 @@ class _FoodItemCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Color _getGradeColor(String grade) {
-    switch (grade) {
-      case 'A':
-        return Colors.green;
-      case 'B':
-        return Colors.lightGreen;
-      case 'C':
-        return Colors.orange;
-      case 'D':
-        return Colors.deepOrange;
-      case 'E':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
   }
 }
 

@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 
 // Project imports:
 import 'package:nutrition_ai/core/navigation/app_scaffold.dart';
+import 'package:nutrition_ai/features/food_logging/screens/add_log_menu_screen.dart';
 import 'package:nutrition_ai/features/food_logging/screens/food_logging_results_screen.dart';
 import 'package:nutrition_ai/features/food_logging/screens/food_logging_screen.dart';
+import 'package:nutrition_ai/features/food_logging/screens/manual_entry_screen.dart';
 import 'package:nutrition_ai/features/onboarding/screens/screens.dart';
 import 'package:nutrition_ai/features/settings/screens/screens.dart';
 
@@ -124,6 +126,10 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const HelpSupportScreen());
       case '/settings/privacy':
         return MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen());
+      case '/add-log':
+        return MaterialPageRoute(builder: (_) => const AddLogMenuScreen());
+      case '/manual-entry':
+        return MaterialPageRoute(builder: (_) => const ManualEntryScreen());
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(
