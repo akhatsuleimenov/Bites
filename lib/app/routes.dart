@@ -13,7 +13,7 @@ import 'package:nutrition_ai/features/settings/screens/screens.dart';
 class AppRoutes {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     final args = settings.arguments as Map<String, dynamic>?;
-    print("ARGS SETTINGS: ${args}");
+    print("ARGS SETTINGS: $args");
 
     switch (settings.name) {
       case '/':

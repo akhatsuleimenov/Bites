@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:nutrition_ai/core/constants/app_colors.dart';
 import 'package:nutrition_ai/core/constants/app_typography.dart';
 
 class PrimaryButton extends StatelessWidget {

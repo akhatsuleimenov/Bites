@@ -307,51 +307,37 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
 
     try {
       final userId = FirebaseAuth.instance.currentUser!.uid;
-
-      // Calculate nutrition values based on portion size
       final quantity = double.parse(_portionController.text);
       final calories = double.parse(_caloriesController.text);
       final protein = double.parse(_proteinController.text);
       final carbs = double.parse(_carbsController.text);
       final fat = double.parse(_fatController.text);
 
-      // Create a FoodItem
-      final foodItem = FoodItem(
+      final foodInfo = FoodInfo(
+        grade: 'N/A', // Manual entries don't have grades
         name: _nameController.text,
         quantity: quantity,
-        grade: 'N/A', // Manual entries don't have grades
-        totalNutrition: {
-          'calories': calories,
-          'protein': protein,
-          'carbs': carbs,
-          'fat': fat,
-        },
+        calories: calories,
+        carbs: carbs,
+        fat: fat,
+        protein: protein,
         ingredients: [], // Manual entries don't have ingredients
       );
-      print("1");
-      // Create MealLog
+
       final mealLog = MealLog(
         userId: userId,
-        dateTime: DateTime
-            .now(), // You might want to add date/time pickers like in the results screen
+        dateTime: DateTime.now(),
         mealType: _selectedMealType,
-        items: [foodItem],
         imagePath: '', // Manual entries don't have images
-        totalCalories: calories,
-        totalProtein: protein,
-        totalCarbs: carbs,
-        totalFat: fat,
         analysisId: 'manual_entry_${DateTime.now().millisecondsSinceEpoch}',
+        foodInfo: foodInfo,
       );
-      print("2");
+
       await FirebaseService().saveMealLog(mealLog, userId);
-      print("3");
       if (!mounted) return;
-      print("4");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Meal saved successfully')),
       );
-      print("5");
       Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;

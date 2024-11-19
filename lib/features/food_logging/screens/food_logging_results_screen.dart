@@ -33,6 +33,7 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
   String _selectedMealType = 'Lunch';
+  late MealLog _mealLog;
 
   final List<String> _mealTypes = [
     'Breakfast',
@@ -43,43 +44,74 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
     'Evening Snack',
   ];
 
-  // Add state for tracking modified items
-  late List<Map<String, dynamic>> _modifiedItems;
-
   @override
   void initState() {
     super.initState();
-    // Initialize modified items with original values
-    _modifiedItems = (widget.analysisResults['items'] as List).map((item) {
-      final foodInfo = item['food'][0]['food_info'];
-      return {
-        // ...item,
-        'food': [
-          {
-            ...item['food'][0],
-            'food_info': {
-              ...foodInfo,
-              'quantity': foodInfo['quantity'],
-            }
-          }
-        ]
-      };
+    // Convert analysis results to MealLog immediately
+    final foodItem = widget.analysisResults['items'][0]['food'][0];
+    final foodInfo = foodItem['food_info'];
+    final nutrition = foodInfo['nutrition'];
+    final quantity = foodInfo['quantity'] as double;
+
+    // Create ingredients list
+    final ingredients =
+        (foodItem['ingredients'] as List? ?? []).map((ingredient) {
+      final ingredientInfo = ingredient['food_info'];
+      final ingNutrition = ingredientInfo['nutrition'];
+      final ingQuantity = ingredient['quantity'] as double;
+
+      return Ingredient(
+        grade: ingredientInfo['fv_grade'],
+        name: ingredientInfo['display_name'],
+        quantity: ingQuantity,
+        calories: ingNutrition['calories_100g'],
+        carbs: ingNutrition['carbs_100g'],
+        fat: ingNutrition['fat_100g'],
+        protein: ingNutrition['proteins_100g'],
+      );
     }).toList();
+
+    final foodInfoObj = FoodInfo(
+      grade: foodInfo['fv_grade'],
+      name: foodInfo['display_name'],
+      quantity: quantity,
+      calories: nutrition['calories_100g'],
+      carbs: nutrition['carbs_100g'],
+      fat: nutrition['fat_100g'],
+      protein: nutrition['proteins_100g'],
+      ingredients: ingredients,
+    );
+
+    _mealLog = MealLog(
+      userId: FirebaseAuth.instance.currentUser!.uid,
+      dateTime: DateTime.now(),
+      mealType: _selectedMealType,
+      imagePath: widget.imagePath,
+      analysisId: widget.analysisResults['analysis_id'],
+      foodInfo: foodInfoObj,
+    );
   }
 
-  void _updateQuantity(int itemIndex, double newQuantity) {
+  void _updateQuantity(double newQuantity) {
     setState(() {
-      final foodInfo = _modifiedItems[itemIndex]['food'][0]['food_info'];
-      foodInfo['quantity'] = newQuantity;
+      _mealLog.foodInfo.quantity = newQuantity;
     });
   }
 
-  void _updateIngredientQuantity(
-      int itemIndex, int ingredientIndex, double newQuantity) {
+  void _updateCalories(double newCalories) {
     setState(() {
-      final ingredients =
-          _modifiedItems[itemIndex]['food'][0]['ingredients'] as List;
-      ingredients[ingredientIndex]['quantity'] = newQuantity;
+      _mealLog.foodInfo.calories = newCalories;
+    });
+  }
+
+  void _updateIngredient(int index, {double? quantity, double? calories}) {
+    setState(() {
+      if (quantity != null) {
+        _mealLog.foodInfo.ingredients[index].quantity = quantity;
+      }
+      if (calories != null) {
+        _mealLog.foodInfo.ingredients[index].calories = calories;
+      }
     });
   }
 
@@ -147,10 +179,6 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
 
   Future<void> _saveMealLog() async {
     try {
-      // Use _modifiedItems instead of original items
-      final items = _modifiedItems;
-
-      // Combine selected date and time
       final DateTime combinedDateTime = DateTime(
         _selectedDate.year,
         _selectedDate.month,
@@ -159,97 +187,10 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
         _selectedTime.minute,
       );
 
-      double totalCalories = 0;
-      double totalProtein = 0;
-      double totalCarbs = 0;
-      double totalFat = 0;
+      _mealLog.dateTime = combinedDateTime;
+      _mealLog.mealType = _selectedMealType;
 
-      final foodItems = items.map((item) {
-        final food = item['food'][0];
-        final foodInfo = food['food_info'];
-        final quantity = foodInfo['quantity'] as double;
-
-        // Calculate total nutrition for this item
-        final itemCalories =
-            (foodInfo['nutrition']['calories_100g'] as double) * quantity / 100;
-        final itemProtein =
-            (foodInfo['nutrition']['proteins_100g'] as double) * quantity / 100;
-        final itemCarbs =
-            (foodInfo['nutrition']['carbs_100g'] as double) * quantity / 100;
-        final itemFat =
-            (foodInfo['nutrition']['fat_100g'] as double) * quantity / 100;
-
-        // Add to meal totals
-        totalCalories += itemCalories;
-        totalProtein += itemProtein;
-        totalCarbs += itemCarbs;
-        totalFat += itemFat;
-
-        // Handle ingredients
-        final ingredients =
-            (food['ingredients'] as List? ?? []).map((ingredient) {
-          final ingredientInfo = ingredient['food_info'];
-          final ingQuantity = ingredient['quantity'] as double;
-
-          final ingCalories =
-              (ingredientInfo['nutrition']['calories_100g'] as double) *
-                  ingQuantity /
-                  100;
-          final ingProtein =
-              (ingredientInfo['nutrition']['proteins_100g'] as double) *
-                  ingQuantity /
-                  100;
-          final ingCarbs =
-              (ingredientInfo['nutrition']['carbs_100g'] as double) *
-                  ingQuantity /
-                  100;
-          final ingFat = (ingredientInfo['nutrition']['fat_100g'] as double) *
-              ingQuantity /
-              100;
-
-          return Ingredient(
-            name: ingredientInfo['display_name'],
-            quantity: ingQuantity,
-            grade: ingredientInfo['fv_grade'],
-            totalNutrition: {
-              'calories': ingCalories,
-              'protein': ingProtein,
-              'carbs': ingCarbs,
-              'fat': ingFat,
-            },
-          );
-        }).toList();
-
-        return FoodItem(
-          name: foodInfo['display_name'],
-          quantity: quantity,
-          grade: foodInfo['fv_grade'],
-          totalNutrition: {
-            'calories': itemCalories,
-            'protein': itemProtein,
-            'carbs': itemCarbs,
-            'fat': itemFat,
-          },
-          ingredients: ingredients,
-        );
-      }).toList();
-
-      final userId = FirebaseAuth.instance.currentUser!.uid;
-      final mealLog = MealLog(
-        userId: userId,
-        dateTime: combinedDateTime,
-        mealType: _selectedMealType,
-        items: foodItems,
-        imagePath: widget.imagePath,
-        totalCalories: totalCalories,
-        totalProtein: totalProtein,
-        totalCarbs: totalCarbs,
-        totalFat: totalFat,
-        analysisId: widget.analysisResults['analysis_id'],
-      );
-
-      await FirebaseService().saveMealLog(mealLog, userId);
-
+      await FirebaseService().saveMealLog(_mealLog, _mealLog.userId);
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -268,16 +209,6 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Use _modifiedItems instead of original items
-    final totalCalories = _modifiedItems.fold<double>(
-      0,
-      (sum, item) =>
-          sum +
-          (item['food'][0]['food_info']['nutrition']['calories_100g'] *
-              item['food'][0]['food_info']['quantity'] /
-              100),
-    );
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Analysis Results'),
@@ -288,7 +219,7 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
           AspectRatio(
             aspectRatio: 16 / 9,
             child: Image.file(
-              File(widget.imagePath),
+              File(_mealLog.imagePath),
               fit: BoxFit.cover,
             ),
           ),
@@ -337,44 +268,19 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                // Total calories
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        Text(
-                          'Total Calories',
-                          style: AppTypography.headlineMedium,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          '${totalCalories.round()} kcal',
-                          style: AppTypography.headlineLarge,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Detected items
+                // Meal information
                 Text(
-                  'Detected Items',
+                  'Meal Information',
                   style: AppTypography.headlineLarge,
                 ),
                 const SizedBox(height: 8),
-                ...List.generate(
-                    _modifiedItems.length,
-                    (index) => _FoodItemCard(
-                          item: _modifiedItems[index],
-                          onQuantityChanged: (newQuantity) =>
-                              _updateQuantity(index, newQuantity),
-                          onIngredientQuantityChanged:
-                              (ingredientIndex, newQuantity) =>
-                                  _updateIngredientQuantity(
-                                      index, ingredientIndex, newQuantity),
-                        )),
+                _FoodItemCard(
+                  item: _mealLog.foodInfo,
+                  onQuantityChanged: _updateQuantity,
+                  onCaloriesChanged: _updateCalories,
+                  onIngredientChanged: _updateIngredient,
+                  showIngredients: true,
+                ),
               ],
             ),
           ),
@@ -393,24 +299,76 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
   }
 }
 
-class _FoodItemCard extends StatelessWidget {
-  final Map<String, dynamic> item;
+class _FoodItemCard extends StatefulWidget {
+  final dynamic item; // Can be FoodInfo or Ingredient
   final Function(double) onQuantityChanged;
-  final Function(int, double) onIngredientQuantityChanged;
+  final Function(double) onCaloriesChanged;
+  final bool showIngredients;
+  final Function(int, {double? quantity, double? calories})?
+      onIngredientChanged;
 
   const _FoodItemCard({
     required this.item,
     required this.onQuantityChanged,
-    required this.onIngredientQuantityChanged,
+    required this.onCaloriesChanged,
+    this.showIngredients = false,
+    this.onIngredientChanged,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final foodInfo = item['food'][0]['food_info'];
-    final nutrition = foodInfo['nutrition'];
-    final ingredients = item['food'][0]['ingredients'] as List;
-    final totalWeight = foodInfo['quantity'] as double;
+  State<_FoodItemCard> createState() => _FoodItemCardState();
+}
 
+class _FoodItemCardState extends State<_FoodItemCard> {
+  // Add controllers for all editable fields
+  late TextEditingController weightController;
+  late TextEditingController caloriesController;
+  late TextEditingController proteinController;
+  late TextEditingController carbsController;
+  late TextEditingController fatController;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeControllers();
+  }
+
+  void _initializeControllers() {
+    weightController =
+        TextEditingController(text: widget.item.quantity.toStringAsFixed(1));
+    caloriesController =
+        TextEditingController(text: widget.item.calories.toStringAsFixed(1));
+    proteinController =
+        TextEditingController(text: widget.item.protein.toStringAsFixed(1));
+    carbsController =
+        TextEditingController(text: widget.item.carbs.toStringAsFixed(1));
+    fatController =
+        TextEditingController(text: widget.item.fat.toStringAsFixed(1));
+  }
+
+  @override
+  void dispose() {
+    weightController.dispose();
+    caloriesController.dispose();
+    proteinController.dispose();
+    carbsController.dispose();
+    fatController.dispose();
+    super.dispose();
+  }
+
+  // Add this method to access controllers
+  Controllers getControllers() {
+    return Controllers(
+      weightController: weightController,
+      caloriesController: caloriesController,
+      proteinController: proteinController,
+      carbsController: carbsController,
+      fatController: fatController,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
@@ -423,25 +381,27 @@ class _FoodItemCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    foodInfo['display_name'] as String,
+                    widget.item.name,
                     style: AppTypography.headlineMedium,
                   ),
                 ),
                 SizedBox(
                   width: 80,
                   child: TextField(
-                    controller: TextEditingController(
-                        text: totalWeight.round().toString()),
+                    controller: weightController,
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.center,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       suffixText: 'g',
                       contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
                     ),
                     onChanged: (value) {
                       final newValue = double.tryParse(value);
                       if (newValue != null) {
-                        onQuantityChanged(newValue);
+                        widget.onQuantityChanged(newValue);
                       }
                     },
                   ),
@@ -450,42 +410,42 @@ class _FoodItemCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
 
-            // Main food macros
+            // Macros row
             Row(
               children: [
-                _NutritionItem(
+                _EditableNutritionItem(
                   label: 'Calories',
-                  value:
-                      '${(nutrition['calories_100g'] * totalWeight / 100).round()}',
-                  unit: 'kcal',
+                  controller: caloriesController,
+                  unit: 'cal',
+                  onChanged: (value) {
+                    final newValue = double.tryParse(value);
+                    if (newValue != null) {
+                      widget.onCaloriesChanged(newValue);
+                    }
+                  },
                 ),
-                _NutritionItem(
+                _EditableNutritionItem(
                   label: 'Protein',
-                  value: (nutrition['proteins_100g'] * totalWeight / 100)
-                      .toStringAsFixed(1),
+                  controller: proteinController,
                   unit: 'g',
                 ),
-                _NutritionItem(
+                _EditableNutritionItem(
                   label: 'Carbs',
-                  value: (nutrition['carbs_100g'] * totalWeight / 100)
-                      .toStringAsFixed(1),
+                  controller: carbsController,
                   unit: 'g',
                 ),
-                _NutritionItem(
+                _EditableNutritionItem(
                   label: 'Fat',
-                  value: (nutrition['fat_100g'] * totalWeight / 100)
-                      .toStringAsFixed(1),
+                  controller: fatController,
                   unit: 'g',
                 ),
               ],
             ),
 
-            if (ingredients.isNotEmpty) ...[
+            // Ingredients section (only for main food item)
+            if (widget.showIngredients && widget.item is FoodInfo) ...[
               const SizedBox(height: 12),
               const Divider(),
-              const SizedBox(height: 8),
-
-              // Ingredients section
               Theme(
                 data: Theme.of(context).copyWith(
                   dividerColor: Colors.transparent,
@@ -497,103 +457,23 @@ class _FoodItemCard extends StatelessWidget {
                       color: Colors.grey[700],
                     ),
                   ),
-                  children:
-                      List.generate(ingredients.length, (ingredientIndex) {
-                    final ingredient = ingredients[ingredientIndex];
-                    final ingredientInfo = ingredient['food_info'];
-                    final quantity = ingredient['quantity'] as double;
-
-                    return Padding(
-                      padding: const EdgeInsets.only(
-                        left: 16,
-                        right: 16,
-                        bottom: 16,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Ingredient name, weight and grade
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  ingredientInfo['display_name'] as String,
-                                  style: AppTypography.bodyMedium.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 80,
-                                child: TextField(
-                                  controller: TextEditingController(
-                                      text: quantity.round().toString()),
-                                  keyboardType: TextInputType.number,
-                                  textAlign: TextAlign.center,
-                                  decoration: const InputDecoration(
-                                    suffixText: 'g',
-                                    contentPadding:
-                                        EdgeInsets.symmetric(horizontal: 8),
-                                  ),
-                                  onChanged: (value) {
-                                    final newValue = double.tryParse(value);
-                                    if (newValue != null) {
-                                      onIngredientQuantityChanged(
-                                          ingredientIndex, newValue);
-                                    }
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-
-                          // Ingredient nutrition info
-                          Row(
-                            children: [
-                              _NutritionItem(
-                                label: 'Calories',
-                                value:
-                                    '${(ingredientInfo['nutrition']['calories_100g'] * quantity / 100).round()}',
-                                unit: 'kcal',
-                                small: true,
-                              ),
-                              _NutritionItem(
-                                label: 'Protein',
-                                value: (ingredientInfo['nutrition']
-                                            ['proteins_100g'] *
-                                        quantity /
-                                        100)
-                                    .toStringAsFixed(1),
-                                unit: 'g',
-                                small: true,
-                              ),
-                              _NutritionItem(
-                                label: 'Carbs',
-                                value: (ingredientInfo['nutrition']
-                                            ['carbs_100g'] *
-                                        quantity /
-                                        100)
-                                    .toStringAsFixed(1),
-                                unit: 'g',
-                                small: true,
-                              ),
-                              _NutritionItem(
-                                label: 'Fat',
-                                value: (ingredientInfo['nutrition']
-                                            ['fat_100g'] *
-                                        quantity /
-                                        100)
-                                    .toStringAsFixed(1),
-                                unit: 'g',
-                                small: true,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                  children: widget.item.ingredients
+                      .asMap()
+                      .entries
+                      .map<Widget>((entry) {
+                    final index = entry.key;
+                    final ingredient = entry.value;
+                    return _FoodItemCard(
+                      item: ingredient,
+                      onQuantityChanged: (quantity) => widget
+                          .onIngredientChanged
+                          ?.call(index, quantity: quantity),
+                      onCaloriesChanged: (calories) => widget
+                          .onIngredientChanged
+                          ?.call(index, calories: calories),
+                      showIngredients: false,
                     );
-                  }),
+                  }).toList(),
                 ),
               ),
             ],
@@ -604,41 +484,64 @@ class _FoodItemCard extends StatelessWidget {
   }
 }
 
-class _NutritionItem extends StatelessWidget {
+class _EditableNutritionItem extends StatelessWidget {
   final String label;
-  final String value;
+  final TextEditingController? controller;
   final String unit;
-  final bool small;
+  final Function(String)? onChanged;
 
-  const _NutritionItem({
+  const _EditableNutritionItem({
     required this.label,
-    required this.value,
+    required this.controller,
     required this.unit,
-    this.small = false,
+    this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
             label,
-            style: (small ? AppTypography.bodySmall : AppTypography.bodyMedium)
-                .copyWith(
-              color: Colors.grey[600],
-            ),
+            style: AppTypography.bodyMedium.copyWith(color: Colors.grey[600]),
           ),
           const SizedBox(height: 4),
-          Text(
-            '$value$unit',
-            style: (small ? AppTypography.bodySmall : AppTypography.bodyMedium)
-                .copyWith(
-              fontWeight: FontWeight.bold,
+          TextField(
+            controller: controller,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            textAlign: TextAlign.right,
+            onChanged: onChanged,
+            style:
+                AppTypography.bodyMedium.copyWith(fontWeight: FontWeight.bold),
+            decoration: InputDecoration(
+              suffixText: unit,
+              isDense: true,
+              border: InputBorder.none, // Removes underline
+              enabledBorder: InputBorder.none, // Removes underline when enabled
+              focusedBorder: InputBorder.none, // Removes underline when focused
             ),
           ),
         ],
       ),
     );
   }
+}
+
+// Add this class to hold controllers
+class Controllers {
+  final TextEditingController weightController;
+  final TextEditingController caloriesController;
+  final TextEditingController proteinController;
+  final TextEditingController carbsController;
+  final TextEditingController fatController;
+
+  Controllers({
+    required this.weightController,
+    required this.caloriesController,
+    required this.proteinController,
+    required this.carbsController,
+    required this.fatController,
+  });
 }

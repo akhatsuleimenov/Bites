@@ -24,7 +24,7 @@ class CaloriesTrendCard extends StatelessWidget {
     for (final log in weeklyLogs) {
       final date =
           DateTime(log.dateTime.year, log.dateTime.month, log.dateTime.day);
-      dailyTotals[date] = (dailyTotals[date] ?? 0) + log.totalCalories;
+      dailyTotals[date] = (dailyTotals[date] ?? 0) + log.foodInfo.calories;
     }
 
     // Get last 7 days in reverse order (today to 7 days ago)

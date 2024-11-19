@@ -41,11 +41,11 @@ class MealLogDetails extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      mealLog.items.first.name,
+                      mealLog.foodInfo.name,
                       style: AppTypography.headlineMedium,
                     ),
                     Text(
-                      '${mealLog.totalCalories.toInt()} calories',
+                      '${mealLog.foodInfo.calories.toInt()} calories',
                       style: AppTypography.bodyMedium,
                     ),
                   ],
@@ -54,7 +54,7 @@ class MealLogDetails extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          ...mealLog.items.map((item) => _ItemCard(item: item)),
+          ...mealLog.foodInfo.ingredients.map((item) => _ItemCard(item: item)),
         ],
       ),
     );
@@ -62,7 +62,7 @@ class MealLogDetails extends StatelessWidget {
 }
 
 class _ItemCard extends StatelessWidget {
-  final FoodItem item;
+  final Ingredient item;
 
   const _ItemCard({required this.item});
 
@@ -84,22 +84,22 @@ class _ItemCard extends StatelessWidget {
               children: [
                 _NutrientInfo(
                   label: 'Calories',
-                  value: item.totalNutrition['calories']!.toString(),
+                  value: item.calories.toString(),
                   unit: 'kcal',
                 ),
                 _NutrientInfo(
                   label: 'Protein',
-                  value: item.totalNutrition['protein']!.toString(),
+                  value: item.protein.toString(),
                   unit: 'g',
                 ),
                 _NutrientInfo(
                   label: 'Carbs',
-                  value: item.totalNutrition['carbs']!.toString(),
+                  value: item.carbs.toString(),
                   unit: 'g',
                 ),
                 _NutrientInfo(
                   label: 'Fat',
-                  value: item.totalNutrition['fat']!.toString(),
+                  value: item.fat.toString(),
                   unit: 'g',
                 ),
               ],

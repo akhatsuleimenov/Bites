@@ -144,7 +144,7 @@ class DashboardController extends ChangeNotifier {
   int get remainingCalories {
     final consumed = _todaysMealLogs.fold(
       0,
-      (sum, log) => sum + log.totalCalories.toInt(),
+      (sum, log) => sum + log.foodInfo.calories.toInt(),
     );
     return (_nutritionPlan?.calories ?? 0) - consumed;
   }
@@ -164,9 +164,9 @@ class DashboardController extends ChangeNotifier {
     return _todaysMealLogs.fold(
       MacroNutrients.empty(),
       (sum, log) => MacroNutrients(
-        protein: sum.protein + log.totalProtein,
-        carbs: sum.carbs + log.totalCarbs,
-        fats: sum.fats + log.totalFat,
+        protein: sum.protein + log.foodInfo.protein,
+        carbs: sum.carbs + log.foodInfo.carbs,
+        fats: sum.fats + log.foodInfo.fat,
       ),
     );
   }
