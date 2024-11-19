@@ -8,13 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 // Project imports:
-import 'package:nutrition_ai/core/models/food_entry.dart';
-import 'package:nutrition_ai/core/models/meal_log.dart';
+import 'package:nutrition_ai/core/models/food_models.dart';
 import 'package:nutrition_ai/core/services/auth_service.dart';
 import 'package:nutrition_ai/core/services/firebase_service.dart';
 
 class UserGoals {
-  final int dailyCalories;
+  final double dailyCalories;
   final double dailyProtein;
   final double dailyCarbs;
   final double dailyFat;
@@ -31,9 +30,9 @@ class DashboardController extends ChangeNotifier {
   final FirebaseService _firebaseService = FirebaseService();
   final AuthService _authService = AuthService();
 
-  NutritionPlan? _nutritionPlan;
+  NutritionData? _nutritionPlan;
 
-  NutritionPlan get nutritionPlan => _nutritionPlan ?? NutritionPlan.empty();
+  NutritionData get nutritionPlan => _nutritionPlan ?? NutritionData.empty();
 
   Future<void> fetchNutritionPlan() async {
     try {
@@ -75,9 +74,9 @@ class DashboardController extends ChangeNotifier {
 
     return UserGoals(
       dailyCalories: _nutritionPlan!.calories,
-      dailyProtein: _nutritionPlan!.macros.protein,
-      dailyCarbs: _nutritionPlan!.macros.carbs,
-      dailyFat: _nutritionPlan!.macros.fats,
+      dailyProtein: _nutritionPlan!.protein,
+      dailyCarbs: _nutritionPlan!.carbs,
+      dailyFat: _nutritionPlan!.fats,
     );
   }
 
@@ -141,32 +140,36 @@ class DashboardController extends ChangeNotifier {
   }
 
   // Nutrition calculations
-  int get remainingCalories {
+  double get remainingCalories {
     final consumed = _todaysMealLogs.fold(
-      0,
-      (sum, log) => sum + log.foodInfo.calories.toInt(),
+      0.0,
+      (sum, log) => sum + log.foodInfo.nutritionalInfo.nutritionData.calories,
     );
-    return (_nutritionPlan?.calories ?? 0) - consumed;
+    return (_nutritionPlan?.calories ?? 0.0) - consumed;
   }
 
-  MacroNutrients get remainingMacros {
+  NutritionData get remainingMacros {
     final consumed = _calculateConsumedMacros();
-    final goal = _nutritionPlan?.macros ?? MacroNutrients.empty();
+    final goal = _nutritionPlan ?? NutritionData.empty();
 
-    return MacroNutrients(
+    return NutritionData(
+      calories: goal.calories - consumed.calories,
       protein: goal.protein - consumed.protein,
       carbs: goal.carbs - consumed.carbs,
       fats: goal.fats - consumed.fats,
     );
   }
 
-  MacroNutrients _calculateConsumedMacros() {
+  NutritionData _calculateConsumedMacros() {
     return _todaysMealLogs.fold(
-      MacroNutrients.empty(),
-      (sum, log) => MacroNutrients(
-        protein: sum.protein + log.foodInfo.protein,
-        carbs: sum.carbs + log.foodInfo.carbs,
-        fats: sum.fats + log.foodInfo.fat,
+      NutritionData.empty(),
+      (sum, log) => NutritionData(
+        calories:
+            sum.calories + log.foodInfo.nutritionalInfo.nutritionData.calories,
+        protein:
+            sum.protein + log.foodInfo.nutritionalInfo.nutritionData.protein,
+        carbs: sum.carbs + log.foodInfo.nutritionalInfo.nutritionData.carbs,
+        fats: sum.fats + log.foodInfo.nutritionalInfo.nutritionData.fats,
       ),
     );
   }

@@ -6,7 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
 
 // Project imports:
-import 'package:nutrition_ai/core/models/meal_log.dart';
+import 'package:nutrition_ai/core/models/food_models.dart';
 import 'package:nutrition_ai/shared/widgets/cards.dart';
 
 class MealLogCard extends StatelessWidget {
@@ -50,7 +50,7 @@ class MealLogCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      mealLog.foodInfo.name,
+                      mealLog.foodInfo.nutritionalInfo.name,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -60,7 +60,7 @@ class MealLogCard extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          '${mealLog.foodInfo.calories.toInt()} cal',
+                          '${mealLog.foodInfo.nutritionalInfo.nutritionData.calories} cal',
                           style: TextStyle(
                             color: Colors.grey[600],
                           ),

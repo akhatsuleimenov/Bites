@@ -10,7 +10,7 @@ import 'package:intl/intl.dart';
 
 // Project imports:
 import 'package:nutrition_ai/core/constants/app_typography.dart';
-import 'package:nutrition_ai/core/models/meal_log.dart';
+import 'package:nutrition_ai/core/models/food_models.dart';
 import 'package:nutrition_ai/core/services/firebase_service.dart';
 import 'package:nutrition_ai/shared/widgets/buttons.dart';
 
@@ -61,25 +61,31 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
       final ingNutrition = ingredientInfo['nutrition'];
       final ingQuantity = ingredient['quantity'] as double;
 
-      return Ingredient(
+      return NutritionalInfo(
         grade: ingredientInfo['fv_grade'],
         name: ingredientInfo['display_name'],
         quantity: ingQuantity,
-        calories: ingNutrition['calories_100g'],
-        carbs: ingNutrition['carbs_100g'],
-        fat: ingNutrition['fat_100g'],
-        protein: ingNutrition['proteins_100g'],
+        nutritionData: NutritionData(
+          calories: ingNutrition['calories_100g'],
+          carbs: ingNutrition['carbs_100g'],
+          fats: ingNutrition['fat_100g'],
+          protein: ingNutrition['proteins_100g'],
+        ),
       );
     }).toList();
 
     final foodInfoObj = FoodInfo(
-      grade: foodInfo['fv_grade'],
-      name: foodInfo['display_name'],
-      quantity: quantity,
-      calories: nutrition['calories_100g'],
-      carbs: nutrition['carbs_100g'],
-      fat: nutrition['fat_100g'],
-      protein: nutrition['proteins_100g'],
+      nutritionalInfo: NutritionalInfo(
+        grade: foodInfo['fv_grade'],
+        name: foodInfo['display_name'],
+        quantity: quantity,
+        nutritionData: NutritionData(
+          calories: nutrition['calories_100g'],
+          carbs: nutrition['carbs_100g'],
+          fats: nutrition['fat_100g'],
+          protein: nutrition['proteins_100g'],
+        ),
+      ),
       ingredients: ingredients,
     );
 
@@ -95,25 +101,25 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
 
   void _updateValue(String field, double value, [int? ingredientIndex]) {
     setState(() {
-      final target = ingredientIndex != null
+      NutritionalInfo target = ingredientIndex != null
           ? _mealLog.foodInfo.ingredients[ingredientIndex]
-          : _mealLog.foodInfo;
+          : _mealLog.foodInfo.nutritionalInfo;
 
       switch (field) {
         case 'quantity':
           target.quantity = value;
           break;
         case 'calories':
-          target.calories = value;
+          target.nutritionData.calories = value;
           break;
         case 'protein':
-          target.protein = value;
+          target.nutritionData.protein = value;
           break;
         case 'carbs':
-          target.carbs = value;
+          target.nutritionData.carbs = value;
           break;
         case 'fat':
-          target.fat = value;
+          target.nutritionData.fats = value;
           break;
       }
     });
@@ -342,16 +348,20 @@ class _FoodItemCardState extends State<_FoodItemCard> {
   @override
   void initState() {
     super.initState();
+    NutritionalInfo nutritionalInfo = widget.showIngredients == true
+        ? widget.item.nutritionalInfo
+        : widget.item;
     controllers = {
-      'quantity':
-          TextEditingController(text: widget.item.quantity.toStringAsFixed(1)),
-      'calories':
-          TextEditingController(text: widget.item.calories.toStringAsFixed(1)),
-      'protein':
-          TextEditingController(text: widget.item.protein.toStringAsFixed(1)),
-      'carbs':
-          TextEditingController(text: widget.item.carbs.toStringAsFixed(1)),
-      'fat': TextEditingController(text: widget.item.fat.toStringAsFixed(1)),
+      'quantity': TextEditingController(
+          text: nutritionalInfo.quantity.toStringAsFixed(1)),
+      'calories': TextEditingController(
+          text: nutritionalInfo.nutritionData.calories.toStringAsFixed(1)),
+      'protein': TextEditingController(
+          text: nutritionalInfo.nutritionData.protein.toStringAsFixed(1)),
+      'carbs': TextEditingController(
+          text: nutritionalInfo.nutritionData.carbs.toStringAsFixed(1)),
+      'fat': TextEditingController(
+          text: nutritionalInfo.nutritionData.fats.toStringAsFixed(1)),
     };
   }
 
@@ -376,7 +386,9 @@ class _FoodItemCardState extends State<_FoodItemCard> {
               children: [
                 Expanded(
                   child: Text(
-                    widget.item.name,
+                    widget.showIngredients
+                        ? widget.item.nutritionalInfo.name
+                        : widget.item.name,
                     style: AppTypography.headlineSmall,
                   ),
                 ),

@@ -3,27 +3,21 @@ import 'package:flutter/material.dart';
 
 // Project imports:
 import 'package:nutrition_ai/core/constants/app_typography.dart';
-import 'package:nutrition_ai/core/models/food_entry.dart';
 import 'package:nutrition_ai/shared/widgets/cards.dart';
+import 'package:nutrition_ai/core/models/food_models.dart';
 
 class CalorieCard extends StatelessWidget {
-  final int remainingCalories;
-  final MacroNutrients remainingMacros;
-  final int goal;
+  final NutritionData remainingMacros;
+  final double goal;
 
   const CalorieCard({
     super.key,
-    required this.remainingCalories,
     required this.remainingMacros,
     required this.goal,
   });
 
   @override
   Widget build(BuildContext context) {
-    print('remainingCalories: $remainingCalories');
-    print('goal: $goal');
-    print('remainingCalories / goal: ${remainingCalories / goal}');
-    print('1 - (remainingCalories / goal): ${1 - (remainingCalories / goal)}');
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: BaseCard(
@@ -40,7 +34,7 @@ class CalorieCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '$remainingCalories',
+                  '${remainingMacros.calories}',
                   style: AppTypography.headlineSmall.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -49,10 +43,10 @@ class CalorieCard extends StatelessWidget {
             ),
 
             LinearProgressIndicator(
-              value: 1 - (remainingCalories / goal).clamp(0.0, 1.0),
+              value: 1 - (remainingMacros.calories / goal).clamp(0.0, 1.0),
               backgroundColor: Colors.grey[200],
               valueColor: AlwaysStoppedAnimation<Color>(
-                remainingCalories > 0 ? Colors.green : Colors.red,
+                remainingMacros.calories > 0 ? Colors.green : Colors.red,
               ),
             ),
             SizedBox(height: 16),

@@ -6,7 +6,7 @@ import 'package:nutrition_ai/core/constants/app_typography.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
-import 'package:nutrition_ai/core/models/meal_log.dart';
+import 'package:nutrition_ai/core/models/food_models.dart';
 import 'package:nutrition_ai/features/dashboard/controllers/dashboard_controller.dart';
 import 'package:nutrition_ai/features/dashboard/widgets/calorie_card.dart';
 import 'package:nutrition_ai/features/dashboard/widgets/meal_log_card.dart';
@@ -39,7 +39,6 @@ class DashboardScreen extends StatelessWidget {
                         // Calorie and macro tracking
                         SliverToBoxAdapter(
                           child: CalorieCard(
-                            remainingCalories: controller.remainingCalories,
                             remainingMacros: controller.remainingMacros,
                             goal: controller.userGoals.dailyCalories,
                           ),
@@ -63,7 +62,9 @@ class DashboardScreen extends StatelessWidget {
                         SliverList(
                           delegate: SliverChildBuilderDelegate(
                             (context, index) {
+                              print("index: $index");
                               final mealLog = controller.todaysMealLogs[index];
+                              print("mealLog: $mealLog");
                               return MealLogCard(
                                 mealLog: mealLog,
                                 onTap: () => _showMealDetails(context, mealLog),

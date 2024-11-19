@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nutrition_ai/core/constants/app_typography.dart';
 import 'package:nutrition_ai/shared/widgets/buttons.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:nutrition_ai/core/models/meal_log.dart';
+import 'package:nutrition_ai/core/models/food_models.dart';
 import 'package:nutrition_ai/core/services/firebase_service.dart';
 
 class ManualEntryScreen extends StatefulWidget {
@@ -21,17 +21,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
   final _carbsController = TextEditingController();
   final _fatController = TextEditingController();
 
-  String _selectedMealType = 'Lunch';
-
-  // Add meal types list
-  final List<String> _mealTypes = [
-    'Breakfast',
-    'Morning Snack',
-    'Lunch',
-    'Afternoon Snack',
-    'Dinner',
-    'Evening Snack',
-  ];
+  MealType _selectedMealType = MealType.lunch;
 
   // Add the dialog method
   void _showMealTypeDialog() {
@@ -52,17 +42,17 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
               ),
               const SizedBox(height: 16),
               ...List.generate(
-                _mealTypes.length,
+                MealType.values.length,
                 (index) => ListTile(
-                  title: Text(_mealTypes[index]),
-                  trailing: _selectedMealType == _mealTypes[index]
+                  title: Text(MealType.values[index].name),
+                  trailing: _selectedMealType == MealType.values[index]
                       ? Icon(
                           Icons.check_circle,
                           color: Theme.of(context).primaryColor,
                         )
                       : null,
                   onTap: () {
-                    setState(() => _selectedMealType = _mealTypes[index]);
+                    setState(() => _selectedMealType = MealType.values[index]);
                     Navigator.pop(context);
                   },
                 ),
@@ -118,7 +108,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                   OutlinedButton.icon(
                     onPressed: _showMealTypeDialog,
                     icon: const Icon(Icons.schedule),
-                    label: Text(_selectedMealType),
+                    label: Text(_selectedMealType.name),
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size.fromHeight(48),
                       shape: RoundedRectangleBorder(
@@ -314,20 +304,24 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
       final fat = double.parse(_fatController.text);
 
       final foodInfo = FoodInfo(
-        grade: 'N/A', // Manual entries don't have grades
-        name: _nameController.text,
-        quantity: quantity,
-        calories: calories,
-        carbs: carbs,
-        fat: fat,
-        protein: protein,
+        nutritionalInfo: NutritionalInfo(
+          grade: 'N/A', // Manual entries don't have grades
+          name: _nameController.text,
+          quantity: quantity,
+          nutritionData: NutritionData(
+            calories: calories,
+            carbs: carbs,
+            fats: fat,
+            protein: protein,
+          ),
+        ),
         ingredients: [], // Manual entries don't have ingredients
       );
 
       final mealLog = MealLog(
         userId: userId,
         dateTime: DateTime.now(),
-        mealType: _selectedMealType,
+        mealType: _selectedMealType.name,
         imagePath: '', // Manual entries don't have images
         analysisId: 'manual_entry_${DateTime.now().millisecondsSinceEpoch}',
         foodInfo: foodInfo,
@@ -344,7 +338,6 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to save meal: $e')),
       );
-      print(e);
     }
   }
 

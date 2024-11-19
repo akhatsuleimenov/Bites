@@ -24,9 +24,9 @@ class MacroDistributionCard extends StatelessWidget {
     double totalFat = 0;
 
     for (final log in mealLogs) {
-      totalProtein += log.foodInfo.protein;
-      totalCarbs += log.foodInfo.carbs;
-      totalFat += log.foodInfo.fat;
+      totalProtein += log.foodInfo.nutritionalInfo.nutritionData.protein;
+      totalCarbs += log.foodInfo.nutritionalInfo.nutritionData.carbs;
+      totalFat += log.foodInfo.nutritionalInfo.nutritionData.fats;
     }
 
     final totalMacros = totalProtein + totalCarbs + totalFat;

@@ -6,8 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 // Project imports:
-import 'package:nutrition_ai/core/models/food_entry.dart';
-import 'package:nutrition_ai/core/models/meal_log.dart';
+import 'package:nutrition_ai/core/models/food_models.dart';
 
 class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -45,19 +44,17 @@ class FirebaseService {
   }
 
   // Get user's nutrition plan
-  Future<NutritionPlan?> getUserNutritionPlan(String userId) async {
+  Future<NutritionData?> getUserNutritionPlan(String userId) async {
     try {
       final userDoc = await _firestore.collection('users').doc(userId).get();
       if (!userDoc.exists) return null;
 
       final userData = userDoc.data()!;
-      return NutritionPlan(
-        calories: userData['dailyCalories'] as int,
-        macros: MacroNutrients(
-          protein: (userData['dailyCalories'] * 0.3 / 4).roundToDouble(),
-          carbs: (userData['dailyCalories'] * 0.4 / 4).roundToDouble(),
-          fats: (userData['dailyCalories'] * 0.3 / 9).roundToDouble(),
-        ),
+      return NutritionData(
+        calories: userData['dailyCalories'].toDouble(),
+        protein: (userData['dailyCalories'] * 0.3 / 4).roundToDouble(),
+        carbs: (userData['dailyCalories'] * 0.4 / 4).roundToDouble(),
+        fats: (userData['dailyCalories'] * 0.3 / 9).roundToDouble(),
       );
     } catch (e) {
       throw FirebaseException(

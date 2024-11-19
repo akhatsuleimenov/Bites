@@ -24,14 +24,18 @@ class GoalsProgressCard extends StatelessWidget {
     double avgFat = 0;
 
     if (weeklyLogs.isNotEmpty) {
-      final totalCalories =
-          weeklyLogs.fold(0.0, (sum, log) => sum + log.foodInfo.calories);
-      final totalProtein =
-          weeklyLogs.fold(0.0, (sum, log) => sum + log.foodInfo.protein);
-      final totalCarbs =
-          weeklyLogs.fold(0.0, (sum, log) => sum + log.foodInfo.carbs);
-      final totalFat =
-          weeklyLogs.fold(0.0, (sum, log) => sum + log.foodInfo.fat);
+      final totalCalories = weeklyLogs.fold(
+          0.0,
+          (sum, log) =>
+              sum + log.foodInfo.nutritionalInfo.nutritionData.calories);
+      final totalProtein = weeklyLogs.fold(
+          0.0,
+          (sum, log) =>
+              sum + log.foodInfo.nutritionalInfo.nutritionData.protein);
+      final totalCarbs = weeklyLogs.fold(0.0,
+          (sum, log) => sum + log.foodInfo.nutritionalInfo.nutritionData.carbs);
+      final totalFat = weeklyLogs.fold(0.0,
+          (sum, log) => sum + log.foodInfo.nutritionalInfo.nutritionData.fats);
 
       avgCalories = totalCalories / 7;
       avgProtein = totalProtein / 7;
@@ -59,7 +63,7 @@ class GoalsProgressCard extends StatelessWidget {
           _GoalProgressItem(
             label: 'Average Protein',
             current: avgProtein,
-            target: nutritionPlan.macros.protein,
+            target: nutritionPlan.protein,
             unit: 'g',
             color: Colors.red,
           ),
@@ -67,7 +71,7 @@ class GoalsProgressCard extends StatelessWidget {
           _GoalProgressItem(
             label: 'Average Carbs',
             current: avgCarbs,
-            target: nutritionPlan.macros.carbs,
+            target: nutritionPlan.carbs,
             unit: 'g',
             color: Colors.blue,
           ),
@@ -75,7 +79,7 @@ class GoalsProgressCard extends StatelessWidget {
           _GoalProgressItem(
             label: 'Average Fat',
             current: avgFat,
-            target: nutritionPlan.macros.fats,
+            target: nutritionPlan.fats,
             unit: 'g',
             color: Colors.yellow,
           ),

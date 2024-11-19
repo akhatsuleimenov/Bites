@@ -24,7 +24,8 @@ class MealTimingCard extends StatelessWidget {
     for (final log in weeklyLogs) {
       final hour = log.dateTime.hour;
       mealsByHour.putIfAbsent(hour, () => []);
-      mealsByHour[hour]!.add(log.foodInfo.calories);
+      mealsByHour[hour]!
+          .add(log.foodInfo.nutritionalInfo.nutritionData.calories);
     }
 
     // Calculate average calories per hour

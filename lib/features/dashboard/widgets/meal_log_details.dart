@@ -6,7 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 // Project imports:
 import 'package:nutrition_ai/core/constants/app_typography.dart';
-import 'package:nutrition_ai/core/models/meal_log.dart';
+import 'package:nutrition_ai/core/models/food_models.dart';
 
 class MealLogDetails extends StatelessWidget {
   final MealLog mealLog;
@@ -41,11 +41,11 @@ class MealLogDetails extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      mealLog.foodInfo.name,
+                      mealLog.foodInfo.nutritionalInfo.name,
                       style: AppTypography.headlineMedium,
                     ),
                     Text(
-                      '${mealLog.foodInfo.calories.toInt()} calories',
+                      '${mealLog.foodInfo.nutritionalInfo.nutritionData.calories.toInt()} calories',
                       style: AppTypography.bodyMedium,
                     ),
                   ],
@@ -62,7 +62,7 @@ class MealLogDetails extends StatelessWidget {
 }
 
 class _ItemCard extends StatelessWidget {
-  final Ingredient item;
+  final NutritionalInfo item;
 
   const _ItemCard({required this.item});
 
@@ -84,22 +84,22 @@ class _ItemCard extends StatelessWidget {
               children: [
                 _NutrientInfo(
                   label: 'Calories',
-                  value: item.calories.toString(),
+                  value: item.nutritionData.calories.toString(),
                   unit: 'kcal',
                 ),
                 _NutrientInfo(
                   label: 'Protein',
-                  value: item.protein.toString(),
+                  value: item.nutritionData.protein.toString(),
                   unit: 'g',
                 ),
                 _NutrientInfo(
                   label: 'Carbs',
-                  value: item.carbs.toString(),
+                  value: item.nutritionData.carbs.toString(),
                   unit: 'g',
                 ),
                 _NutrientInfo(
                   label: 'Fat',
-                  value: item.fat.toString(),
+                  value: item.nutritionData.fats.toString(),
                   unit: 'g',
                 ),
               ],
