@@ -46,13 +46,31 @@ class MealLog {
   }
 }
 
-class FoodInfo {
+abstract class NutritionItem {
+  double get quantity;
+  set quantity(double value);
+  double get calories;
+  set calories(double value);
+  double get protein;
+  set protein(double value);
+  double get carbs;
+  set carbs(double value);
+  double get fat;
+  set fat(double value);
+}
+
+class FoodInfo implements NutritionItem {
   final String grade;
   final String name;
+  @override
   double quantity;
+  @override
   double calories;
+  @override
   double carbs;
+  @override
   double fat;
+  @override
   double protein;
   List<Ingredient> ingredients;
 
@@ -94,13 +112,18 @@ class FoodInfo {
   }
 }
 
-class Ingredient {
+class Ingredient implements NutritionItem {
   final String grade;
   final String name;
+  @override
   double quantity;
+  @override
   double calories;
+  @override
   double carbs;
+  @override
   double fat;
+  @override
   double protein;
 
   Ingredient({

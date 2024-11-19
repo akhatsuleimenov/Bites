@@ -80,3 +80,7 @@ coverage/
 # Mason related
 .mason/
 mason-lock.json
+
+
+*.json
+.cursorignore

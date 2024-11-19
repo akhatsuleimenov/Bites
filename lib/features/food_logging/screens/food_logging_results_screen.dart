@@ -34,6 +34,7 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
   TimeOfDay _selectedTime = TimeOfDay.now();
   String _selectedMealType = 'Lunch';
   late MealLog _mealLog;
+  bool _isSaving = false;
 
   final List<String> _mealTypes = [
     'Breakfast',
@@ -92,25 +93,28 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
     );
   }
 
-  void _updateQuantity(double newQuantity) {
+  void _updateValue(String field, double value, [int? ingredientIndex]) {
     setState(() {
-      _mealLog.foodInfo.quantity = newQuantity;
-    });
-  }
+      final target = ingredientIndex != null
+          ? _mealLog.foodInfo.ingredients[ingredientIndex]
+          : _mealLog.foodInfo;
 
-  void _updateCalories(double newCalories) {
-    setState(() {
-      _mealLog.foodInfo.calories = newCalories;
-    });
-  }
-
-  void _updateIngredient(int index, {double? quantity, double? calories}) {
-    setState(() {
-      if (quantity != null) {
-        _mealLog.foodInfo.ingredients[index].quantity = quantity;
-      }
-      if (calories != null) {
-        _mealLog.foodInfo.ingredients[index].calories = calories;
+      switch (field) {
+        case 'quantity':
+          target.quantity = value;
+          break;
+        case 'calories':
+          target.calories = value;
+          break;
+        case 'protein':
+          target.protein = value;
+          break;
+        case 'carbs':
+          target.carbs = value;
+          break;
+        case 'fat':
+          target.fat = value;
+          break;
       }
     });
   }
@@ -178,6 +182,10 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
   }
 
   Future<void> _saveMealLog() async {
+    if (_isSaving) return; // Prevent double-taps
+
+    setState(() => _isSaving = true);
+
     try {
       final DateTime combinedDateTime = DateTime(
         _selectedDate.year,
@@ -191,19 +199,30 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
       _mealLog.mealType = _selectedMealType;
 
       await FirebaseService().saveMealLog(_mealLog, _mealLog.userId);
+
       if (!mounted) return;
 
+      // Show success feedback
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Meal saved successfully')),
+        const SnackBar(
+          content: Text('Meal saved successfully'),
+          backgroundColor: Colors.green,
+        ),
       );
 
-      // Pop twice to return to dashboard
       Navigator.popUntil(context, (route) => route.isFirst);
     } catch (e) {
       if (!mounted) return;
+
+      // Show error feedback
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to save meal: $e')),
+        SnackBar(
+          content: Text('Failed to save meal: $e'),
+          backgroundColor: Colors.red,
+        ),
       );
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
     }
   }
 
@@ -276,9 +295,9 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
                 const SizedBox(height: 8),
                 _FoodItemCard(
                   item: _mealLog.foodInfo,
-                  onQuantityChanged: _updateQuantity,
-                  onCaloriesChanged: _updateCalories,
-                  onIngredientChanged: _updateIngredient,
+                  onValueChanged: _updateValue,
+                  onIngredientChanged: (index, field, value) =>
+                      _updateValue(field, value, index),
                   showIngredients: true,
                 ),
               ],
@@ -289,8 +308,9 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
           Padding(
             padding: const EdgeInsets.all(16),
             child: PrimaryButton(
-              text: 'Save to Log',
               onPressed: _saveMealLog,
+              loading: _isSaving,
+              text: 'Save to Log',
             ),
           ),
         ],
@@ -300,17 +320,14 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
 }
 
 class _FoodItemCard extends StatefulWidget {
-  final dynamic item; // Can be FoodInfo or Ingredient
-  final Function(double) onQuantityChanged;
-  final Function(double) onCaloriesChanged;
+  final dynamic item;
+  final Function(String field, double value) onValueChanged;
   final bool showIngredients;
-  final Function(int, {double? quantity, double? calories})?
-      onIngredientChanged;
+  final Function(int index, String field, double value)? onIngredientChanged;
 
   const _FoodItemCard({
     required this.item,
-    required this.onQuantityChanged,
-    required this.onCaloriesChanged,
+    required this.onValueChanged,
     this.showIngredients = false,
     this.onIngredientChanged,
   });
@@ -320,51 +337,30 @@ class _FoodItemCard extends StatefulWidget {
 }
 
 class _FoodItemCardState extends State<_FoodItemCard> {
-  // Add controllers for all editable fields
-  late TextEditingController weightController;
-  late TextEditingController caloriesController;
-  late TextEditingController proteinController;
-  late TextEditingController carbsController;
-  late TextEditingController fatController;
+  late Map<String, TextEditingController> controllers;
 
   @override
   void initState() {
     super.initState();
-    _initializeControllers();
-  }
-
-  void _initializeControllers() {
-    weightController =
-        TextEditingController(text: widget.item.quantity.toStringAsFixed(1));
-    caloriesController =
-        TextEditingController(text: widget.item.calories.toStringAsFixed(1));
-    proteinController =
-        TextEditingController(text: widget.item.protein.toStringAsFixed(1));
-    carbsController =
-        TextEditingController(text: widget.item.carbs.toStringAsFixed(1));
-    fatController =
-        TextEditingController(text: widget.item.fat.toStringAsFixed(1));
+    controllers = {
+      'quantity':
+          TextEditingController(text: widget.item.quantity.toStringAsFixed(1)),
+      'calories':
+          TextEditingController(text: widget.item.calories.toStringAsFixed(1)),
+      'protein':
+          TextEditingController(text: widget.item.protein.toStringAsFixed(1)),
+      'carbs':
+          TextEditingController(text: widget.item.carbs.toStringAsFixed(1)),
+      'fat': TextEditingController(text: widget.item.fat.toStringAsFixed(1)),
+    };
   }
 
   @override
   void dispose() {
-    weightController.dispose();
-    caloriesController.dispose();
-    proteinController.dispose();
-    carbsController.dispose();
-    fatController.dispose();
+    for (var controller in controllers.values) {
+      controller.dispose();
+    }
     super.dispose();
-  }
-
-  // Add this method to access controllers
-  Controllers getControllers() {
-    return Controllers(
-      weightController: weightController,
-      caloriesController: caloriesController,
-      proteinController: proteinController,
-      carbsController: carbsController,
-      fatController: fatController,
-    );
   }
 
   @override
@@ -376,105 +372,44 @@ class _FoodItemCardState extends State<_FoodItemCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Food name and total weight
             Row(
               children: [
                 Expanded(
                   child: Text(
                     widget.item.name,
-                    style: AppTypography.headlineMedium,
+                    style: AppTypography.headlineSmall,
                   ),
                 ),
-                SizedBox(
-                  width: 80,
-                  child: TextField(
-                    controller: weightController,
-                    keyboardType: TextInputType.number,
-                    textAlign: TextAlign.center,
-                    decoration: const InputDecoration(
-                      suffixText: 'g',
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                      border: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                    ),
-                    onChanged: (value) {
-                      final newValue = double.tryParse(value);
-                      if (newValue != null) {
-                        widget.onQuantityChanged(newValue);
-                      }
-                    },
-                  ),
-                ),
+                _buildEditableField('quantity', 'g'),
               ],
             ),
             const SizedBox(height: 8),
-
-            // Macros row
             Row(
               children: [
-                _EditableNutritionItem(
-                  label: 'Calories',
-                  controller: caloriesController,
-                  unit: 'cal',
-                  onChanged: (value) {
-                    final newValue = double.tryParse(value);
-                    if (newValue != null) {
-                      widget.onCaloriesChanged(newValue);
-                    }
-                  },
-                ),
-                _EditableNutritionItem(
-                  label: 'Protein',
-                  controller: proteinController,
-                  unit: 'g',
-                ),
-                _EditableNutritionItem(
-                  label: 'Carbs',
-                  controller: carbsController,
-                  unit: 'g',
-                ),
-                _EditableNutritionItem(
-                  label: 'Fat',
-                  controller: fatController,
-                  unit: 'g',
-                ),
+                _buildEditableField('calories', 'kcal', label: 'Calories'),
+                _buildEditableField('protein', 'g', label: 'Protein'),
+                _buildEditableField('carbs', 'g', label: 'Carbs'),
+                _buildEditableField('fat', 'g', label: 'Fat'),
               ],
             ),
-
-            // Ingredients section (only for main food item)
             if (widget.showIngredients && widget.item is FoodInfo) ...[
-              const SizedBox(height: 12),
-              const Divider(),
-              Theme(
-                data: Theme.of(context).copyWith(
-                  dividerColor: Colors.transparent,
+              ExpansionTile(
+                title: Text(
+                  'Ingredients',
+                  style: AppTypography.headlineSmall
+                      .copyWith(color: Colors.grey[700]),
                 ),
-                child: ExpansionTile(
-                  title: Text(
-                    'Ingredients',
-                    style: AppTypography.headlineSmall.copyWith(
-                      color: Colors.grey[700],
-                    ),
-                  ),
-                  children: widget.item.ingredients
-                      .asMap()
-                      .entries
-                      .map<Widget>((entry) {
-                    final index = entry.key;
-                    final ingredient = entry.value;
-                    return _FoodItemCard(
-                      item: ingredient,
-                      onQuantityChanged: (quantity) => widget
-                          .onIngredientChanged
-                          ?.call(index, quantity: quantity),
-                      onCaloriesChanged: (calories) => widget
-                          .onIngredientChanged
-                          ?.call(index, calories: calories),
-                      showIngredients: false,
-                    );
-                  }).toList(),
-                ),
+                children: widget.item.ingredients
+                    .asMap()
+                    .entries
+                    .map<Widget>((entry) {
+                  return _FoodItemCard(
+                    item: entry.value,
+                    onValueChanged: (field, value) => widget.onIngredientChanged
+                        ?.call(entry.key, field, value),
+                    showIngredients: false,
+                  );
+                }).toList(),
               ),
             ],
           ],
@@ -482,66 +417,37 @@ class _FoodItemCardState extends State<_FoodItemCard> {
       ),
     );
   }
-}
 
-class _EditableNutritionItem extends StatelessWidget {
-  final String label;
-  final TextEditingController? controller;
-  final String unit;
-  final Function(String)? onChanged;
-
-  const _EditableNutritionItem({
-    required this.label,
-    required this.controller,
-    required this.unit,
-    this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildEditableField(String field, String unit, {String? label}) {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Text(
-            label,
-            style: AppTypography.bodyMedium.copyWith(color: Colors.grey[600]),
-          ),
-          const SizedBox(height: 4),
+          if (label != null) ...[
+            Text(
+              label,
+              style: AppTypography.bodyMedium.copyWith(color: Colors.grey[600]),
+            ),
+            const SizedBox(height: 4),
+          ],
           TextField(
-            controller: controller,
+            controller: controllers[field],
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             textAlign: TextAlign.right,
-            onChanged: onChanged,
-            style:
-                AppTypography.bodyMedium.copyWith(fontWeight: FontWeight.bold),
             decoration: InputDecoration(
               suffixText: unit,
               isDense: true,
-              border: InputBorder.none, // Removes underline
-              enabledBorder: InputBorder.none, // Removes underline when enabled
-              focusedBorder: InputBorder.none, // Removes underline when focused
+              border: InputBorder.none,
             ),
+            onChanged: (value) {
+              final newValue = double.tryParse(value);
+              if (newValue != null) {
+                widget.onValueChanged(field, newValue);
+              }
+            },
           ),
         ],
       ),
     );
   }
-}
-
-// Add this class to hold controllers
-class Controllers {
-  final TextEditingController weightController;
-  final TextEditingController caloriesController;
-  final TextEditingController proteinController;
-  final TextEditingController carbsController;
-  final TextEditingController fatController;
-
-  Controllers({
-    required this.weightController,
-    required this.caloriesController,
-    required this.proteinController,
-    required this.carbsController,
-    required this.fatController,
-  });
 }
