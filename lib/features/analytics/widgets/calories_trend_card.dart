@@ -16,17 +16,16 @@ class CaloriesTrendCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dashboardController = context.watch<DashboardController>();
-    final weeklyLogs = dashboardController.weeklyMealLogs;
+    final weeklyLogs = context.watch<DashboardController>().weeklyMealLogs;
 
-    // Calculate daily totals
-    final dailyTotals = <DateTime, double>{};
-    for (final log in weeklyLogs) {
+    // Use a Map to store daily totals more efficiently
+    final dailyTotals = weeklyLogs.fold<Map<DateTime, double>>({}, (map, log) {
       final date =
           DateTime(log.dateTime.year, log.dateTime.month, log.dateTime.day);
-      dailyTotals[date] = (dailyTotals[date] ?? 0) +
+      map[date] = (map[date] ?? 0) +
           log.foodInfo.nutritionalInfo.nutritionData.calories;
-    }
+      return map;
+    });
 
     // Get last 7 days in reverse order (today to 7 days ago)
     final now = DateTime.now();

@@ -18,30 +18,21 @@ class GoalsProgressCard extends StatelessWidget {
     final weeklyLogs = dashboardController.weeklyMealLogs;
     final nutritionPlan = dashboardController.nutritionPlan;
 
-    double avgCalories = 0;
-    double avgProtein = 0;
-    double avgCarbs = 0;
-    double avgFat = 0;
+    final totalCalories = weeklyLogs.fold(
+        0.0,
+        (sum, log) =>
+            sum + log.foodInfo.nutritionalInfo.nutritionData.calories);
+    final totalProtein = weeklyLogs.fold(0.0,
+        (sum, log) => sum + log.foodInfo.nutritionalInfo.nutritionData.protein);
+    final totalCarbs = weeklyLogs.fold(0.0,
+        (sum, log) => sum + log.foodInfo.nutritionalInfo.nutritionData.carbs);
+    final totalFat = weeklyLogs.fold(0.0,
+        (sum, log) => sum + log.foodInfo.nutritionalInfo.nutritionData.fats);
 
-    if (weeklyLogs.isNotEmpty) {
-      final totalCalories = weeklyLogs.fold(
-          0.0,
-          (sum, log) =>
-              sum + log.foodInfo.nutritionalInfo.nutritionData.calories);
-      final totalProtein = weeklyLogs.fold(
-          0.0,
-          (sum, log) =>
-              sum + log.foodInfo.nutritionalInfo.nutritionData.protein);
-      final totalCarbs = weeklyLogs.fold(0.0,
-          (sum, log) => sum + log.foodInfo.nutritionalInfo.nutritionData.carbs);
-      final totalFat = weeklyLogs.fold(0.0,
-          (sum, log) => sum + log.foodInfo.nutritionalInfo.nutritionData.fats);
-
-      avgCalories = totalCalories / 7;
-      avgProtein = totalProtein / 7;
-      avgCarbs = totalCarbs / 7;
-      avgFat = totalFat / 7;
-    }
+    final avgCalories = totalCalories / 7;
+    final avgProtein = totalProtein / 7;
+    final avgCarbs = totalCarbs / 7;
+    final avgFat = totalFat / 7;
 
     return BaseCard(
       child: Column(

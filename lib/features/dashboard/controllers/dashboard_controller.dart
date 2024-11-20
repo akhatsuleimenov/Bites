@@ -19,7 +19,6 @@ class DashboardController extends ChangeNotifier {
 
   // Variables
   StreamSubscription? _mealLogsSubscription;
-  StreamSubscription? _weeklyLogsSubscription;
   late final String userId;
   NutritionData _nutritionPlan = NutritionData.empty();
   List<MealLog> _todaysMealLogs = [];
@@ -64,19 +63,7 @@ class DashboardController extends ChangeNotifier {
         (mealLogs) {
           _todaysMealLogs = mealLogs
             ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
-          notifyListeners();
-        },
-        onError: (e) {
-          notifyListeners();
-        },
-      );
-
-      // Subscribe to weekly meal logs
-      _weeklyLogsSubscription?.cancel();
-      _weeklyLogsSubscription =
-          _firebaseService.getWeeklyMealLogsStream(userId).listen(
-        (mealLogs) {
-          _weeklyMealLogs = mealLogs;
+          _updateWeeklyLogs();
           notifyListeners();
         },
         onError: (e) {
@@ -86,6 +73,15 @@ class DashboardController extends ChangeNotifier {
     } catch (e) {
       notifyListeners();
     }
+  }
+
+  void _updateWeeklyLogs() async {
+    final now = DateTime.now();
+    final weekStart = now.subtract(Duration(days: now.weekday - 1));
+
+    _weeklyMealLogs =
+        await _firebaseService.getWeeklyMealLogs(userId, weekStart);
+    notifyListeners();
   }
 
   NutritionData get remainingMacros {
@@ -116,7 +112,6 @@ class DashboardController extends ChangeNotifier {
   @override
   void dispose() {
     _mealLogsSubscription?.cancel();
-    _weeklyLogsSubscription?.cancel();
     super.dispose();
   }
 }

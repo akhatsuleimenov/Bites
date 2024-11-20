@@ -71,11 +71,13 @@ class OnboardingCompleteScreen extends StatelessWidget {
                 onPressed: () async {
                   await _saveUserData(
                       userId); // Save user data before navigating
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    '/dashboard',
-                    (route) => false,
-                  );
+                  if (context.mounted) {
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/dashboard',
+                      (route) => false,
+                    );
+                  }
                 },
               ),
             ],
