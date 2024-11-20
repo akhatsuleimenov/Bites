@@ -1,5 +1,6 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
+import 'package:nutrition_ai/shared/widgets/user_profile.dart';
 
 // Package imports:
 import 'package:provider/provider.dart';
@@ -30,21 +31,15 @@ class UpdateGoalsScreenContent extends StatefulWidget {
 }
 
 class _UpdateGoalsScreenState extends State<UpdateGoalsScreenContent> {
-  String? _selectedGoal;
-  late double _targetWeight;
-  String? _workoutFrequency;
+  late UserProfile _profile;
   late FixedExtentScrollController _weightController;
 
   @override
   void initState() {
     super.initState();
-    _targetWeight = 70.0;
-    _initializeControllers();
-  }
-
-  void _initializeControllers() {
+    _profile = UserProfile();
     _weightController = FixedExtentScrollController(
-      initialItem: _targetWeight.toInt() - 30,
+      initialItem: _profile.targetWeight.toInt() - 30,
     );
   }
 
@@ -67,11 +62,9 @@ class _UpdateGoalsScreenState extends State<UpdateGoalsScreenContent> {
         }
 
         // Initialize values from userData only once
-        if (_selectedGoal == null) {
-          _selectedGoal = userData['goal'] ?? 'maintain_weight';
-          _workoutFrequency = userData['workoutFrequency'] ?? 'moderate';
-          _targetWeight = userData['targetWeight']?.toDouble() ?? 70.0;
-          _weightController.jumpToItem(_targetWeight.toInt() - 30);
+        if (_profile.isEmpty()) {
+          _profile = UserProfile.fromMap(userData);
+          _weightController.jumpToItem(_profile.targetWeight.toInt() - 30);
         }
 
         return Scaffold(
@@ -93,8 +86,8 @@ class _UpdateGoalsScreenState extends State<UpdateGoalsScreenContent> {
                     title: goal['title'],
                     subtitle: goal['subtitle'],
                     icon: goal['icon'],
-                    isSelected: _selectedGoal == goal['id'],
-                    onTap: () => setState(() => _selectedGoal = goal['id']),
+                    isSelected: _profile.goal == goal['id'],
+                    onTap: () => setState(() => _profile.goal = goal['id']),
                   ),
                 );
               }),
@@ -110,9 +103,9 @@ class _UpdateGoalsScreenState extends State<UpdateGoalsScreenContent> {
                     title: frequency['title'],
                     subtitle: frequency['subtitle'],
                     icon: frequency['icon'],
-                    isSelected: _workoutFrequency == frequency['id'],
-                    onTap: () =>
-                        setState(() => _workoutFrequency = frequency['id']),
+                    isSelected: _profile.workoutFrequency == frequency['id'],
+                    onTap: () => setState(
+                        () => _profile.workoutFrequency = frequency['id']),
                   ),
                 );
               }),
@@ -125,7 +118,7 @@ class _UpdateGoalsScreenState extends State<UpdateGoalsScreenContent> {
                   itemExtent: 50,
                   onSelectedItemChanged: (value) {
                     setState(() {
-                      _targetWeight = (value + 30).toDouble();
+                      _profile.targetWeight = (value + 30).toDouble();
                     });
                   },
                   childDelegate: ListWheelChildBuilderDelegate(
@@ -161,9 +154,13 @@ class _UpdateGoalsScreenState extends State<UpdateGoalsScreenContent> {
   Future<void> _saveChanges() async {
     try {
       await context.read<SettingsController>().updateProfile({
-        'goal': _selectedGoal!,
-        'targetWeight': _targetWeight,
-        'workoutFrequency': _workoutFrequency!,
+        'goal': _profile.goal,
+        'targetWeight': _profile.targetWeight,
+        'workoutFrequency': _profile.workoutFrequency,
+        'calorieAdjustment': goals
+            .firstWhere((g) => g['id'] == _profile.goal)['calorieAdjustment'],
+        'activityMultiplier': frequencies.firstWhere(
+            (f) => f['id'] == _profile.workoutFrequency)['multiplier'],
       });
 
       if (!mounted) return;
