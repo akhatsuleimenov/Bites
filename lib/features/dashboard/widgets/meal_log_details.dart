@@ -45,7 +45,7 @@ class MealLogDetails extends StatelessWidget {
                       style: AppTypography.headlineMedium,
                     ),
                     Text(
-                      '${mealLog.foodInfo.nutritionalInfo.nutritionData.calories.toInt()} calories',
+                      '${mealLog.foodInfo.nutritionalInfo.nutritionData.calories} calories',
                       style: AppTypography.bodyMedium,
                     ),
                   ],

@@ -62,15 +62,22 @@ class DashboardScreen extends StatelessWidget {
                         SliverList(
                           delegate: SliverChildBuilderDelegate(
                             (context, index) {
-                              print("index: $index");
+                              if (controller.todaysMealLogs.isEmpty) {
+                                return const Padding(
+                                  padding: EdgeInsets.all(24.0),
+                                  child: Text('No meals logged today'),
+                                );
+                              }
+
                               final mealLog = controller.todaysMealLogs[index];
-                              print("mealLog: $mealLog");
                               return MealLogCard(
                                 mealLog: mealLog,
                                 onTap: () => _showMealDetails(context, mealLog),
                               );
                             },
-                            childCount: controller.todaysMealLogs.length,
+                            childCount: controller.todaysMealLogs.isEmpty
+                                ? 1
+                                : controller.todaysMealLogs.length,
                           ),
                         ),
                       ],

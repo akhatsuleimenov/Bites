@@ -31,9 +31,9 @@ class MealLog {
 
   factory MealLog.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
-    SnapshotOptions? options,
   ) {
     final data = snapshot.data()!;
+
     return MealLog(
       id: snapshot.id,
       userId: data['userId'],
@@ -94,7 +94,7 @@ class NutritionalInfo {
     return NutritionalInfo(
       grade: map['grade'],
       name: map['name'],
-      quantity: ((map['quantity'] as num).toDouble() * 10).round() / 10,
+      quantity: map['quantity'],
       nutritionData: NutritionData.fromMap(map['nutritionData']),
     );
   }
@@ -127,12 +127,14 @@ class NutritionData {
         'fats': fats,
       };
 
-  factory NutritionData.fromMap(Map<String, dynamic> map) => NutritionData(
-        calories: map['calories'],
-        protein: map['protein'],
-        carbs: map['carbs'],
-        fats: map['fats'],
-      );
+  factory NutritionData.fromMap(Map<String, dynamic> map) {
+    return NutritionData(
+      calories: map['calories'],
+      protein: map['protein'],
+      carbs: map['carbs'],
+      fats: map['fats'],
+    );
+  }
 }
 
 enum MealType {

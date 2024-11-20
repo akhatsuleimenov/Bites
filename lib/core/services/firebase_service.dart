@@ -78,9 +78,8 @@ class FirebaseService {
         .where('dateTime', isGreaterThanOrEqualTo: startOfDay)
         .where('dateTime', isLessThan: endOfDay)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => MealLog.fromFirestore(doc, null))
-            .toList());
+        .map((snapshot) =>
+            snapshot.docs.map((doc) => MealLog.fromFirestore(doc)).toList());
   }
 
   // Delete meal log
@@ -130,9 +129,8 @@ class FirebaseService {
         .where('dateTime', isGreaterThanOrEqualTo: startOfWeek)
         .orderBy('dateTime', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => MealLog.fromFirestore(doc, null))
-            .toList());
+        .map((snapshot) =>
+            snapshot.docs.map((doc) => MealLog.fromFirestore(doc)).toList());
   }
 
   // Update user goals
@@ -175,7 +173,7 @@ class FirebaseService {
 
   Stream<Map<String, dynamic>> getUserDataStream(String userId) {
     return _firestore.collection('users').doc(userId).snapshots().map(
-          (doc) => doc.data() ?? {},
+          (doc) => doc.data()!,
         );
   }
 }
