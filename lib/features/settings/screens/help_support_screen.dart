@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 // Project imports:
-import 'package:nutrition_ai/core/constants/app_typography.dart';
-import 'package:nutrition_ai/shared/widgets/buttons.dart';
+import 'package:bytes/core/constants/app_typography.dart';
+import 'package:bytes/shared/widgets/buttons.dart';
 
 class HelpSupportScreen extends StatelessWidget {
   const HelpSupportScreen({super.key});
@@ -81,15 +81,15 @@ class HelpSupportScreen extends StatelessWidget {
             children: [
               _buildSocialButton(
                 icon: Icons.facebook,
-                onTap: () => _launchUrl('https://facebook.com/nutritionai'),
+                onTap: () => _launchUrl('https://facebook.com/bytes'),
               ),
               _buildSocialButton(
                 icon: Icons.telegram,
-                onTap: () => _launchUrl('https://t.me/nutritionai'),
+                onTap: () => _launchUrl('https://t.me/bytes'),
               ),
               _buildSocialButton(
                 icon: Icons.discord,
-                onTap: () => _launchUrl('https://discord.gg/nutritionai'),
+                onTap: () => _launchUrl('https://discord.gg/bytes'),
               ),
             ],
           ),

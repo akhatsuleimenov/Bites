@@ -7,11 +7,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
-import 'package:nutrition_ai/core/navigation/app_scaffold.dart';
-import 'package:nutrition_ai/core/services/auth_service.dart';
-import 'package:nutrition_ai/features/dashboard/controllers/dashboard_controller.dart';
-import 'package:nutrition_ai/features/login/screens/login_screen.dart';
-import 'package:nutrition_ai/features/onboarding/screens/screens.dart';
+import 'package:bytes/core/navigation/app_scaffold.dart';
+import 'package:bytes/core/services/auth_service.dart';
+import 'package:bytes/features/dashboard/controllers/dashboard_controller.dart';
+import 'package:bytes/features/login/screens/login_screen.dart';
+import 'package:bytes/features/onboarding/screens/screens.dart';
 
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});

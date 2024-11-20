@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:nutrition_ai/core/constants/app_colors.dart';
+import 'package:bytes/core/constants/app_colors.dart';
 
 class AppTypography {
   static const headlineLarge = TextStyle(

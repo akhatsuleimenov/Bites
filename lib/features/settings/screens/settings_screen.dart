@@ -2,8 +2,9 @@
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:nutrition_ai/shared/widgets/buttons.dart';
-import 'package:nutrition_ai/shared/widgets/cards.dart';
+import 'package:bytes/shared/widgets/buttons.dart';
+import 'package:bytes/shared/widgets/cards.dart';
+import 'package:bytes/core/services/auth_service.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -15,38 +16,65 @@ class SettingsScreen extends StatelessWidget {
         title: const Text('Settings'),
         leading: const CustomBackButton(),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          SettingsCard(
-            title: 'Edit Profile',
-            icon: Icons.person,
-            onTap: () => Navigator.pushNamed(context, '/settings/edit-profile'),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                SettingsCard(
+                  title: 'Edit Profile',
+                  icon: Icons.person,
+                  onTap: () =>
+                      Navigator.pushNamed(context, '/settings/edit-profile'),
+                ),
+                const SizedBox(height: 12),
+                SettingsCard(
+                  title: 'Update Goals',
+                  icon: Icons.track_changes,
+                  onTap: () => Navigator.pushNamed(context, '/settings/goals'),
+                ),
+                const SizedBox(height: 12),
+                SettingsCard(
+                  title: 'Help & Support',
+                  icon: Icons.help_outline,
+                  onTap: () =>
+                      Navigator.pushNamed(context, '/settings/support'),
+                ),
+                const SizedBox(height: 12),
+                SettingsCard(
+                  title: 'Privacy Policy',
+                  icon: Icons.privacy_tip_outlined,
+                  onTap: () =>
+                      Navigator.pushNamed(context, '/settings/privacy'),
+                ),
+                const SizedBox(height: 24),
+              ],
+            ),
           ),
-          const SizedBox(height: 12),
-          SettingsCard(
-            title: 'Update Goals',
-            icon: Icons.track_changes,
-            onTap: () => Navigator.pushNamed(context, '/settings/goals'),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: SettingsCard(
+              title: 'Sign Out',
+              icon: Icons.logout,
+              onTap: () async {
+                final authService = AuthService();
+                await authService.signOut();
+                if (context.mounted) {
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/login',
+                    (route) => false,
+                  );
+                }
+              },
+              textColor: Colors.red.shade900,
+              iconColor: Colors.red.shade900,
+              isTrailingIcon: false,
+            ),
           ),
-          // const SizedBox(height: 12),
-          // SettingsCard(
-          //   title: 'Notifications',
-          //   icon: Icons.notifications_outlined,
-          //   onTap: () => Navigator.pushNamed(context, '/settings/notifications'),
-          // ),
-          const SizedBox(height: 12),
-          SettingsCard(
-            title: 'Help & Support',
-            icon: Icons.help_outline,
-            onTap: () => Navigator.pushNamed(context, '/settings/support'),
-          ),
-          const SizedBox(height: 12),
-          SettingsCard(
-            title: 'Privacy Policy',
-            icon: Icons.privacy_tip_outlined,
-            onTap: () => Navigator.pushNamed(context, '/settings/privacy'),
-          ),
+          const SizedBox(height: 16),
         ],
       ),
     );

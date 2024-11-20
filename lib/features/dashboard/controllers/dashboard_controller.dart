@@ -8,9 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 // Project imports:
-import 'package:nutrition_ai/core/models/food_models.dart';
-import 'package:nutrition_ai/core/services/auth_service.dart';
-import 'package:nutrition_ai/core/services/firebase_service.dart';
+import 'package:bytes/core/models/food_models.dart';
+import 'package:bytes/core/services/auth_service.dart';
+import 'package:bytes/core/services/firebase_service.dart';
 
 class DashboardController extends ChangeNotifier {
   // Services

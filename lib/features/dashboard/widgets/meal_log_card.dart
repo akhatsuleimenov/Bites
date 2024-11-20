@@ -6,8 +6,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
 
 // Project imports:
-import 'package:nutrition_ai/core/models/food_models.dart';
-import 'package:nutrition_ai/shared/widgets/cards.dart';
+import 'package:bytes/core/models/food_models.dart';
+import 'package:bytes/shared/widgets/cards.dart';
 
 class MealLogCard extends StatelessWidget {
   final MealLog mealLog;

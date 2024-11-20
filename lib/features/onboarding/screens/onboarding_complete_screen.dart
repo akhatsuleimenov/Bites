@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 // Project imports:
-import 'package:nutrition_ai/core/constants/app_typography.dart';
-import 'package:nutrition_ai/core/services/auth_service.dart';
-import 'package:nutrition_ai/shared/widgets/buttons.dart';
+import 'package:bytes/core/constants/app_typography.dart';
+import 'package:bytes/core/services/auth_service.dart';
+import 'package:bytes/shared/widgets/buttons.dart';
 
 class OnboardingCompleteScreen extends StatelessWidget {
   final Map<String, dynamic> userData;

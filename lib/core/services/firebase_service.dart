@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 // Project imports:
-import 'package:nutrition_ai/core/models/food_models.dart';
+import 'package:bytes/core/models/food_models.dart';
 
 class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -37,7 +37,7 @@ class FirebaseService {
       await _firestore.collection('meal_logs').add(mealLogData);
     } catch (e) {
       throw FirebaseException(
-        plugin: 'nutrition_ai',
+        plugin: 'bytes',
         message: 'Failed to save meal log: $e',
       );
     }
@@ -100,7 +100,7 @@ class FirebaseService {
       }
     } catch (e) {
       throw FirebaseException(
-        plugin: 'nutrition_ai',
+        plugin: 'bytes',
         message: 'Failed to delete meal log: $e',
       );
     }
@@ -150,7 +150,7 @@ class FirebaseService {
       });
     } catch (e) {
       throw FirebaseException(
-        plugin: 'nutrition_ai',
+        plugin: 'bytes',
         message: 'Failed to update user goals: $e',
       );
     }
@@ -167,7 +167,7 @@ class FirebaseService {
       });
     } catch (e) {
       throw FirebaseException(
-        plugin: 'nutrition_ai',
+        plugin: 'bytes',
         message: 'Failed to update notification settings: $e',
       );
     }

@@ -2,10 +2,11 @@
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:nutrition_ai/core/navigation/app_scaffold.dart';
-import 'package:nutrition_ai/features/food_logging/screens/screens.dart';
-import 'package:nutrition_ai/features/onboarding/screens/screens.dart';
-import 'package:nutrition_ai/features/settings/screens/screens.dart';
+import 'package:bytes/core/navigation/app_scaffold.dart';
+import 'package:bytes/features/food_logging/screens/screens.dart';
+import 'package:bytes/features/login/screens/login_screen.dart';
+import 'package:bytes/features/onboarding/screens/screens.dart';
+import 'package:bytes/features/settings/screens/screens.dart';
 
 class AppRoutes {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -19,6 +20,11 @@ class AppRoutes {
           builder: (_) => const WelcomeScreen(),
         );
 
+      case '/login':
+        print('LoginScreen');
+        return MaterialPageRoute(
+          builder: (_) => const LoginScreen(),
+        );
       case '/dashboard':
         print('DashboardScreen');
         return MaterialPageRoute(

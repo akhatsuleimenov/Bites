@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 // Project imports:
-import 'package:nutrition_ai/core/constants/app_typography.dart';
-import 'package:nutrition_ai/core/models/food_models.dart';
-import 'package:nutrition_ai/core/services/firebase_service.dart';
-import 'package:nutrition_ai/shared/widgets/buttons.dart';
+import 'package:bytes/core/constants/app_typography.dart';
+import 'package:bytes/core/models/food_models.dart';
+import 'package:bytes/core/services/firebase_service.dart';
+import 'package:bytes/shared/widgets/buttons.dart';
 
 class ManualEntryScreen extends StatefulWidget {
   const ManualEntryScreen({super.key});

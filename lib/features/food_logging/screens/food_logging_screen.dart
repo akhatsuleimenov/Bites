@@ -9,9 +9,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 // Project imports:
-import 'package:nutrition_ai/core/constants/app_typography.dart';
-import 'package:nutrition_ai/core/services/foodvisor_service.dart';
-import 'package:nutrition_ai/shared/widgets/buttons.dart';
+import 'package:bytes/core/constants/app_typography.dart';
+import 'package:bytes/core/services/foodvisor_service.dart';
+import 'package:bytes/shared/widgets/buttons.dart';
 
 class FoodLoggingScreen extends StatefulWidget {
   const FoodLoggingScreen({super.key});

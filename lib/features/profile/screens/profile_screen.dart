@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 // Project imports:
-import 'package:nutrition_ai/core/constants/app_typography.dart';
-import 'package:nutrition_ai/core/services/auth_service.dart';
-import 'package:nutrition_ai/core/services/firebase_service.dart';
+import 'package:bytes/core/constants/app_typography.dart';
+import 'package:bytes/core/services/auth_service.dart';
+import 'package:bytes/core/services/firebase_service.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});

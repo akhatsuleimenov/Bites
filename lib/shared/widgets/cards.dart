@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:nutrition_ai/core/constants/app_colors.dart';
-import 'package:nutrition_ai/core/constants/app_typography.dart';
+import 'package:bytes/core/constants/app_colors.dart';
+import 'package:bytes/core/constants/app_typography.dart';
 
 class BaseCard extends StatelessWidget {
   final Widget child;
@@ -102,22 +102,41 @@ class SettingsCard extends StatelessWidget {
   final String title;
   final IconData icon;
   final VoidCallback onTap;
+  final Color? textColor;
+  final Color? iconColor;
+  final bool? isTrailingIcon;
 
   const SettingsCard({
     super.key,
     required this.title,
     required this.icon,
     required this.onTap,
+    this.textColor,
+    this.iconColor,
+    this.isTrailingIcon = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: Icon(icon),
-        title: Text(title, style: AppTypography.bodyLarge),
-        trailing: const Icon(Icons.chevron_right),
+        leading: isTrailingIcon == true ? Icon(icon) : null,
+        title: isTrailingIcon == false
+            ? Center(
+                child: Text(
+                  title,
+                  style: AppTypography.bodyLarge.copyWith(
+                    color: textColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              )
+            : Text(title, style: AppTypography.bodyLarge),
+        trailing:
+            isTrailingIcon == true ? const Icon(Icons.chevron_right) : null,
         onTap: onTap,
+        textColor: textColor,
+        iconColor: iconColor,
       ),
     );
   }

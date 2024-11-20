@@ -2,9 +2,9 @@
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:nutrition_ai/core/constants/app_typography.dart';
-import 'package:nutrition_ai/core/services/auth_service.dart';
-import 'package:nutrition_ai/shared/widgets/buttons.dart';
+import 'package:bytes/core/constants/app_typography.dart';
+import 'package:bytes/core/services/auth_service.dart';
+import 'package:bytes/shared/widgets/buttons.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -22,6 +22,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       await _authService.signInWithGoogle();
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/dashboard');
+      }
     } catch (e) {
       print('Error during Google Sign-In: $e'); // Log the error
       if (!mounted) return;
@@ -57,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
               // Welcome text
               Text(
-                'Welcome to NutritionAI',
+                'Welcome to bytes.',
                 style: AppTypography.headlineLarge,
                 textAlign: TextAlign.center,
               ),
@@ -73,14 +76,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
               // Sign in button
               if (_isLoading)
-                const CircularProgressIndicator()
+                const Center(child: CircularProgressIndicator())
               else
                 PrimaryButton(
                   onPressed: _handleGoogleSignIn,
-                  leading: Image.asset(
-                    'assets/images/google_logo.png',
-                    height: 24,
-                  ),
+                  // leading: Image.asset(
+                  //   'assets/images/google_logo.png',
+                  //   height: 24,
+                  // ),
+                  text: 'Sign in with Google',
                 ),
             ],
           ),
