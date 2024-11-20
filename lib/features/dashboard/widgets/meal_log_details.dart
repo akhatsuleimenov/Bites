@@ -18,44 +18,86 @@ class MealLogDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              if (mealLog.imagePath.isNotEmpty)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: CachedNetworkImage(
-                    imageUrl: mealLog.imagePath,
-                    width: 80,
-                    height: 80,
-                    fit: BoxFit.cover,
+    return SingleChildScrollView(
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                if (mealLog.imagePath.isNotEmpty)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: CachedNetworkImage(
+                      imageUrl: mealLog.imagePath,
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        mealLog.foodInfo.nutritionalInfo.name,
+                        style: AppTypography.headlineMedium,
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _NutrientInfo(
+                            label: 'Calories',
+                            value: mealLog
+                                .foodInfo.nutritionalInfo.nutritionData.calories
+                                .toString(),
+                            unit: 'kcal',
+                          ),
+                          _NutrientInfo(
+                            label: 'Protein',
+                            value: mealLog
+                                .foodInfo.nutritionalInfo.nutritionData.protein
+                                .toString(),
+                            unit: 'g',
+                          ),
+                          _NutrientInfo(
+                            label: 'Carbs',
+                            value: mealLog
+                                .foodInfo.nutritionalInfo.nutritionData.carbs
+                                .toString(),
+                            unit: 'g',
+                          ),
+                          _NutrientInfo(
+                            label: 'Fat',
+                            value: mealLog
+                                .foodInfo.nutritionalInfo.nutritionData.fats
+                                .toString(),
+                            unit: 'g',
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      mealLog.foodInfo.nutritionalInfo.name,
-                      style: AppTypography.headlineMedium,
-                    ),
-                    Text(
-                      '${mealLog.foodInfo.nutritionalInfo.nutritionData.calories} calories',
-                      style: AppTypography.bodyMedium,
-                    ),
-                  ],
-                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Theme(
+              data:
+                  Theme.of(context).copyWith(dividerColor: Colors.transparent),
+              child: ExpansionTile(
+                title: Text(
+                    'Ingredients (${mealLog.foodInfo.ingredients.length})'),
+                children: mealLog.foodInfo.ingredients
+                    .map((item) => _ItemCard(item: item))
+                    .toList(),
               ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          ...mealLog.foodInfo.ingredients.map((item) => _ItemCard(item: item)),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
