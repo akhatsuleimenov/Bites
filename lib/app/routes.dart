@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 
 // Project imports:
 import 'package:nutrition_ai/core/navigation/app_scaffold.dart';
-import 'package:nutrition_ai/features/food_logging/screens/add_log_menu_screen.dart';
-import 'package:nutrition_ai/features/food_logging/screens/food_logging_results_screen.dart';
-import 'package:nutrition_ai/features/food_logging/screens/food_logging_screen.dart';
-import 'package:nutrition_ai/features/food_logging/screens/manual_entry_screen.dart';
+import 'package:nutrition_ai/features/food_logging/screens/screens.dart';
 import 'package:nutrition_ai/features/onboarding/screens/screens.dart';
 import 'package:nutrition_ai/features/settings/screens/screens.dart';
 
@@ -89,11 +86,6 @@ class AppRoutes {
         return MaterialPageRoute(
           builder: (_) =>
               WorkoutFrequencyScreen(userData: args as Map<String, dynamic>),
-        );
-      case '/onboarding/experience':
-        return MaterialPageRoute(
-          builder: (_) =>
-              PreviousExperienceScreen(userData: args as Map<String, dynamic>),
         );
       case '/onboarding/goals':
         return MaterialPageRoute(

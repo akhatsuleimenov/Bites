@@ -1,4 +1,7 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Project imports:
 import 'package:nutrition_ai/shared/widgets/buttons.dart';
 import 'package:nutrition_ai/shared/widgets/cards.dart';
 

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 // Project imports:
 import 'package:nutrition_ai/core/constants/app_typography.dart';
+import 'package:nutrition_ai/core/constants/fitness_goals_data.dart';
 import 'package:nutrition_ai/shared/widgets/buttons.dart';
 
 class WorkoutFrequencyScreen extends StatefulWidget {
@@ -19,44 +20,6 @@ class WorkoutFrequencyScreen extends StatefulWidget {
 
 class _WorkoutFrequencyScreenState extends State<WorkoutFrequencyScreen> {
   String? _selectedFrequency;
-
-  final List<Map<String, dynamic>> _frequencies = [
-    {
-      'id': 'sedentary',
-      'title': 'Sedentary',
-      'subtitle': 'Little to no exercise',
-      'icon': Icons.weekend,
-      'multiplier': 1.2,
-    },
-    {
-      'id': 'light',
-      'title': '1-2 times a week',
-      'subtitle': 'Light exercise',
-      'icon': Icons.directions_walk,
-      'multiplier': 1.375,
-    },
-    {
-      'id': 'moderate',
-      'title': '3-5 times a week',
-      'subtitle': 'Moderate exercise',
-      'icon': Icons.directions_run,
-      'multiplier': 1.55,
-    },
-    {
-      'id': 'active',
-      'title': '6-7 times a week',
-      'subtitle': 'Very active',
-      'icon': Icons.fitness_center,
-      'multiplier': 1.725,
-    },
-    {
-      'id': 'athlete',
-      'title': 'Athlete',
-      'subtitle': 'Professional/Intense training',
-      'icon': Icons.sports_gymnastics,
-      'multiplier': 1.9,
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -83,11 +46,11 @@ class _WorkoutFrequencyScreenState extends State<WorkoutFrequencyScreen> {
               const SizedBox(height: 32),
               Expanded(
                 child: ListView.separated(
-                  itemCount: _frequencies.length,
+                  itemCount: frequencies.length,
                   separatorBuilder: (context, index) =>
                       const SizedBox(height: 16),
                   itemBuilder: (context, index) {
-                    final frequency = _frequencies[index];
+                    final frequency = frequencies[index];
                     final isSelected = _selectedFrequency == frequency['id'];
 
                     return _FrequencyCard(
@@ -106,7 +69,7 @@ class _WorkoutFrequencyScreenState extends State<WorkoutFrequencyScreen> {
               PrimaryButton(
                 text: 'Continue',
                 onPressed: () {
-                  final selectedFrequency = _frequencies.firstWhere(
+                  final selectedFrequency = frequencies.firstWhere(
                     (f) => f['id'] == _selectedFrequency,
                   );
 
@@ -118,7 +81,7 @@ class _WorkoutFrequencyScreenState extends State<WorkoutFrequencyScreen> {
 
                   Navigator.pushNamed(
                     context,
-                    '/onboarding/experience',
+                    '/onboarding/goals',
                     arguments: updatedUserData,
                   );
                 },

@@ -1,11 +1,13 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
 
+// Package imports:
+import 'package:intl/intl.dart';
+
 // Project imports:
 import 'package:nutrition_ai/core/constants/app_typography.dart';
 import 'package:nutrition_ai/core/services/auth_service.dart';
 import 'package:nutrition_ai/core/services/firebase_service.dart';
-import 'package:intl/intl.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -13,11 +15,12 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userId = AuthService().currentUser?.uid;
+    final firebaseService = FirebaseService();
 
     return Scaffold(
       body: SafeArea(
         child: StreamBuilder<Map<String, dynamic>>(
-          stream: FirebaseService().getUserDataStream(userId!),
+          stream: firebaseService.getUserDataStream(userId!),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
@@ -220,12 +223,6 @@ class ProfileScreen extends StatelessWidget {
               'Target Weight',
               '${userData['targetWeight']?.round() ?? 0} kg',
               Icons.track_changes_outlined,
-            ),
-            const Divider(height: 24),
-            _buildInfoRow(
-              'Weight Difference',
-              '${userData['weightDifference']?.round() ?? 0} kg',
-              Icons.compare_arrows_outlined,
             ),
           ],
         ),

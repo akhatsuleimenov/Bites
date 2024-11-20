@@ -149,23 +149,15 @@ class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
                 text: 'Continue',
                 onPressed: () {
                   int targetWeightKg = _selectedWeight;
-                  int weightDifferenceKg;
 
                   if (!_isMetric) {
                     // Convert target weight from lbs to kg for storage
                     targetWeightKg = (_selectedWeight / 2.20462).round();
-                    // Convert current weight from lbs to kg for difference calculation
-                    final currentWeightKg = (_currentWeight / 2.20462).round();
-                    weightDifferenceKg = targetWeightKg - currentWeightKg;
-                  } else {
-                    weightDifferenceKg = _selectedWeight - _currentWeight;
                   }
 
                   final updatedUserData = {
                     ...widget.userData,
                     'targetWeight': targetWeightKg, // Always store in kg
-                    'weightDifference':
-                        weightDifferenceKg, // Always store in kg
                     'displayUnit': _isMetric
                         ? 'metric'
                         : 'imperial', // Store user's preference

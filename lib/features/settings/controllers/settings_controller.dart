@@ -1,4 +1,7 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Project imports:
 import 'package:nutrition_ai/core/services/auth_service.dart';
 import 'package:nutrition_ai/core/services/firebase_service.dart';
 
@@ -9,7 +12,6 @@ class SettingsController extends ChangeNotifier {
   bool _isLoading = false;
   Map<String, dynamic>? _userData;
 
-  bool get isLoading => _isLoading;
   Map<String, dynamic>? get userData => _userData;
 
   Future<void> loadUserData() async {

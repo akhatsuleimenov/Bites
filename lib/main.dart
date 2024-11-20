@@ -10,7 +10,7 @@ import 'package:nutrition_ai/app/routes.dart';
 import 'package:nutrition_ai/core/auth/auth_wrapper.dart';
 import 'package:nutrition_ai/core/themes/app_theme.dart';
 import 'package:nutrition_ai/features/dashboard/controllers/dashboard_controller.dart';
-import 'firebase_options.dart';
+import 'core/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

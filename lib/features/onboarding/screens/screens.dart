@@ -3,7 +3,6 @@ export 'gender_selection_screen.dart';
 export 'height_weight_screen.dart';
 export 'birth_date_screen.dart';
 export 'workout_frequency_screen.dart';
-export 'previous_experience_screen.dart';
 export 'goals_screen.dart';
 export 'desired_weight_screen.dart';
 export 'notification_permission_screen.dart';

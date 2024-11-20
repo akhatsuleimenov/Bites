@@ -22,7 +22,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       await _authService.signInWithGoogle();
-      // Navigation will be handled by AuthWrapper
     } catch (e) {
       print('Error during Google Sign-In: $e'); // Log the error
       if (!mounted) return;

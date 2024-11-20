@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 // Project imports:
 import 'package:nutrition_ai/core/constants/app_typography.dart';
-import 'package:nutrition_ai/shared/widgets/cards.dart';
 import 'package:nutrition_ai/core/models/food_models.dart';
+import 'package:nutrition_ai/shared/widgets/cards.dart';
 
 class CalorieCard extends StatelessWidget {
   final NutritionData remainingMacros;

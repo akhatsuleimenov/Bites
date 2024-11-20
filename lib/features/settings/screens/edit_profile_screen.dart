@@ -1,5 +1,10 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
 import 'package:provider/provider.dart';
+
+// Project imports:
 import 'package:nutrition_ai/core/constants/app_typography.dart';
 import 'package:nutrition_ai/features/settings/controllers/settings_controller.dart';
 import 'package:nutrition_ai/shared/widgets/buttons.dart';
@@ -219,13 +224,14 @@ class _EditProfileScreenContentState extends State<EditProfileScreenContent> {
         'weight': _weight,
         'isMetric': _isMetric,
       });
-
+      print('Profile updated successfully');
       if (!mounted) return;
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Profile updated successfully')),
       );
     } catch (e) {
+      print('Error updating profile: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error updating profile: $e')),
       );

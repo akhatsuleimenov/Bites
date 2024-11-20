@@ -1,11 +1,11 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:nutrition_ai/core/constants/app_typography.dart';
 
 // Package imports:
 import 'package:provider/provider.dart';
 
 // Project imports:
+import 'package:nutrition_ai/core/constants/app_typography.dart';
 import 'package:nutrition_ai/core/models/food_models.dart';
 import 'package:nutrition_ai/features/dashboard/controllers/dashboard_controller.dart';
 import 'package:nutrition_ai/features/dashboard/widgets/calorie_card.dart';

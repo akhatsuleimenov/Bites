@@ -1,11 +1,13 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
 
+// Package imports:
+import 'package:provider/provider.dart';
+
 // Project imports:
 import 'package:nutrition_ai/core/constants/app_typography.dart';
 import 'package:nutrition_ai/features/analytics/widgets/widgets.dart';
 import 'package:nutrition_ai/features/dashboard/controllers/dashboard_controller.dart';
-import 'package:provider/provider.dart';
 
 class AnalyticsScreen extends StatelessWidget {
   const AnalyticsScreen({super.key});

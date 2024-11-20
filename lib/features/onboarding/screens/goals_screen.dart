@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 // Project imports:
 import 'package:nutrition_ai/core/constants/app_typography.dart';
+import 'package:nutrition_ai/core/constants/fitness_goals_data.dart';
 import 'package:nutrition_ai/shared/widgets/buttons.dart';
 
 class GoalsScreen extends StatefulWidget {
@@ -19,37 +20,6 @@ class GoalsScreen extends StatefulWidget {
 
 class _GoalsScreenState extends State<GoalsScreen> {
   String? _selectedGoal;
-
-  final List<Map<String, dynamic>> _goals = [
-    {
-      'id': 'lose_weight',
-      'title': 'Lose Weight',
-      'subtitle': 'I want to reduce my body weight',
-      'icon': Icons.trending_down,
-      'calorieAdjustment': -500, // 500 calorie deficit
-    },
-    {
-      'id': 'maintain',
-      'title': 'Maintain Weight',
-      'subtitle': 'I\'m happy with my current weight',
-      'icon': Icons.balance,
-      'calorieAdjustment': 0,
-    },
-    {
-      'id': 'lean_bulk',
-      'title': 'Lean Bulk',
-      'subtitle': 'I want to gain muscle mass without gaining fat',
-      'icon': Icons.fitness_center,
-      'calorieAdjustment': 300, // Moderate surplus for muscle gain
-    },
-    {
-      'id': 'gain_weight',
-      'title': 'Gain Weight',
-      'subtitle': 'I want to increase my body weight',
-      'icon': Icons.trending_up,
-      'calorieAdjustment': 500, // 500 calorie surplus
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -76,11 +46,11 @@ class _GoalsScreenState extends State<GoalsScreen> {
               const SizedBox(height: 32),
               Expanded(
                 child: ListView.separated(
-                  itemCount: _goals.length,
+                  itemCount: goals.length,
                   separatorBuilder: (context, index) =>
                       const SizedBox(height: 16),
                   itemBuilder: (context, index) {
-                    final goal = _goals[index];
+                    final goal = goals[index];
                     final isSelected = _selectedGoal == goal['id'];
 
                     return _GoalCard(
@@ -102,7 +72,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
                 text: 'Continue',
                 onPressed: () {
                   if (_selectedGoal != null) {
-                    final selectedGoal = _goals.firstWhere(
+                    final selectedGoal = goals.firstWhere(
                       (g) => g['id'] == _selectedGoal,
                     );
 

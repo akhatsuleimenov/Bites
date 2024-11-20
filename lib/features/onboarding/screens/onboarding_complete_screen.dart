@@ -69,8 +69,7 @@ class OnboardingCompleteScreen extends StatelessWidget {
               PrimaryButton(
                 text: 'Let\'s Begin!',
                 onPressed: () async {
-                  await _saveUserData(
-                      userId); // Save user data before navigating
+                  await _saveUserData(userId);
                   if (context.mounted) {
                     Navigator.pushNamedAndRemoveUntil(
                       context,
