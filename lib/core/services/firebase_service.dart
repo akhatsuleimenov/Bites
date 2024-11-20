@@ -44,10 +44,12 @@ class FirebaseService {
   }
 
   // Get user's nutrition plan
-  Future<NutritionData?> getUserNutritionPlan(String userId) async {
+  Future<NutritionData> getUserNutritionPlan(String userId) async {
     try {
       final userDoc = await _firestore.collection('users').doc(userId).get();
-      if (!userDoc.exists) return null;
+      if (!userDoc.exists) {
+        return NutritionData.empty();
+      }
 
       final userData = userDoc.data()!;
       return NutritionData(
@@ -58,7 +60,7 @@ class FirebaseService {
       );
     } catch (e) {
       throw FirebaseException(
-        plugin: 'nutrition_ai',
+        plugin: 'bytes',
         message: 'Failed to fetch user nutrition plan: $e',
       );
     }
@@ -121,7 +123,7 @@ class FirebaseService {
   Stream<List<MealLog>> getWeeklyMealLogsStream(String userId) {
     final now = DateTime.now();
     final startOfWeek = DateTime(now.year, now.month, now.day)
-        .subtract(const Duration(days: 7));
+        .subtract(const Duration(days: 1)); // CHANGE THIS TO 7
 
     return _firestore
         .collection('meal_logs')

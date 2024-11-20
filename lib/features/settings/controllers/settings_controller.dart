@@ -7,11 +7,9 @@ class SettingsController extends ChangeNotifier {
   final AuthService _authService = AuthService();
 
   bool _isLoading = false;
-  String? _error;
   Map<String, dynamic>? _userData;
 
   bool get isLoading => _isLoading;
-  String? get error => _error;
   Map<String, dynamic>? get userData => _userData;
 
   Future<void> loadUserData() async {
@@ -25,9 +23,6 @@ class SettingsController extends ChangeNotifier {
       if (userId == null) throw Exception('User not logged in');
 
       _userData = await _firebaseService.getUserData(userId);
-      print("Loaded user data in controller: $_userData");
-    } catch (e) {
-      _error = e.toString();
     } finally {
       _isLoading = false;
       notifyListeners();

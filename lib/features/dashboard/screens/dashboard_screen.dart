@@ -40,7 +40,7 @@ class DashboardScreen extends StatelessWidget {
                         SliverToBoxAdapter(
                           child: CalorieCard(
                             remainingMacros: controller.remainingMacros,
-                            goal: controller.userGoals.dailyCalories,
+                            goal: controller.nutritionPlan.calories,
                           ),
                         ),
 
