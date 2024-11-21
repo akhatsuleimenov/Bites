@@ -52,7 +52,7 @@ class DashboardController extends ChangeNotifier {
       _nutritionPlan = await _firebaseService.getUserNutritionPlan(userId);
       notifyListeners();
     } catch (e) {
-      print('Error fetching nutrition plan: $e');
+      rethrow;
     }
   }
 
@@ -82,7 +82,6 @@ class DashboardController extends ChangeNotifier {
       );
       await loadWeightLogs();
     } catch (e) {
-      print('Error loading dashboard data: $e');
       notifyListeners();
     }
   }
@@ -146,7 +145,6 @@ class DashboardController extends ChangeNotifier {
         });
       }
     } catch (e) {
-      debugPrint('Error logging weight: $e');
       rethrow;
     }
   }

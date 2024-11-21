@@ -11,43 +11,36 @@ import 'package:bytes/features/settings/screens/screens.dart';
 class AppRoutes {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     final args = settings.arguments as Map<String, dynamic>?;
-    print("ARGS SETTINGS: $args");
 
     switch (settings.name) {
       case '/':
-        print('WelcomeScreen!!!');
         return MaterialPageRoute(
           builder: (_) => const WelcomeScreen(),
         );
 
       case '/login':
-        print('LoginScreen');
         return MaterialPageRoute(
           builder: (_) => const LoginScreen(),
         );
       case '/dashboard':
-        print('DashboardScreen');
         return MaterialPageRoute(
           builder: (_) => const AppScaffold(initialIndex: 0),
           settings: settings,
         );
 
       case '/analytics':
-        print('AnalyticsScreen');
         return MaterialPageRoute(
           builder: (_) => const AppScaffold(initialIndex: 1),
           settings: settings,
         );
 
       case '/profile':
-        print('ProfileScreen');
         return MaterialPageRoute(
           builder: (_) => const AppScaffold(initialIndex: 2),
           settings: settings,
         );
 
       case '/food-logging':
-        print('FoodLoggingScreen');
         return MaterialPageRoute(
           builder: (_) => const FoodLoggingScreen(),
           fullscreenDialog: true,
@@ -68,7 +61,6 @@ class AppRoutes {
         );
 
       case '/welcome':
-        print('WelcomeScreen------');
         return MaterialPageRoute(
           builder: (_) => const WelcomeScreen(),
         );
@@ -82,13 +74,11 @@ class AppRoutes {
               HeightWeightScreen(userData: args as Map<String, dynamic>),
         );
       case '/onboarding/birth':
-        print('BirthDateScreen');
         return MaterialPageRoute(
           builder: (_) =>
               BirthDateScreen(userData: args as Map<String, dynamic>),
         );
       case '/onboarding/workouts':
-        print('WorkoutFrequencyScreen');
         return MaterialPageRoute(
           builder: (_) =>
               WorkoutFrequencyScreen(userData: args as Map<String, dynamic>),
@@ -118,8 +108,6 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const UpdateGoalsScreen());
       case '/settings/edit-profile':
         return MaterialPageRoute(builder: (_) => const EditProfileScreen());
-      // case '/settings/notifications':
-      //   return MaterialPageRoute(builder: (_) => const NotificationsScreen());
       case '/settings/support':
         return MaterialPageRoute(builder: (_) => const HelpSupportScreen());
       case '/settings/privacy':

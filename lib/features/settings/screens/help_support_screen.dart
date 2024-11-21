@@ -176,8 +176,5 @@ class HelpSupportScreen extends StatelessWidget {
     }
   }
 
-  void _launchChat() {
-    // Implement your chat functionality here
-    debugPrint('Launch chat');
-  }
+  void _launchChat() {}
 }

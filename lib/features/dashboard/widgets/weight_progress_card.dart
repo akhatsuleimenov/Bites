@@ -36,7 +36,6 @@ class WeightProgressCard extends StatelessWidget {
     if (weightLogs.isEmpty) {
       return const SizedBox.shrink();
     }
-    print('Weight logs: ${weightLogs.length}');
 
     final spots = _getSpots();
     final minX = 0.0;

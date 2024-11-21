@@ -24,8 +24,7 @@ class OnboardingCompleteScreen extends StatelessWidget {
         ...userData, // Spread the user data to save it
       });
     } catch (e) {
-      // Handle error (e.g., show a snackbar or log the error)
-      print('Error saving user data: $e');
+      rethrow;
     }
   }
 

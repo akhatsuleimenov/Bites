@@ -186,7 +186,6 @@ class DashboardScreen extends StatelessWidget {
                       if (result == true && weightController.text.isNotEmpty) {
                         final weight = double.tryParse(weightController.text);
                         if (weight != null) {
-                          print('Logging weight: $weight');
                           await dashboardController.logWeight(weight);
                           await dashboardController.loadDashboardData();
                         }

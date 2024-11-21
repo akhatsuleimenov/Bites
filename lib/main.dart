@@ -32,10 +32,9 @@ class MyApp extends StatelessWidget {
         title: 'bites.',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
+        debugShowCheckedModeBanner: false,
         initialRoute: '/',
         onGenerateRoute: (settings) {
-          print("MAIN: ${settings.name}");
-          print("MAIN ARGS: ${settings.arguments}");
           if (settings.name == '/') {
             return MaterialPageRoute(builder: (_) => AuthWrapper());
           }

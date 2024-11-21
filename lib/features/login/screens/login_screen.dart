@@ -26,7 +26,6 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushReplacementNamed(context, '/dashboard');
       }
     } catch (e) {
-      print('Error during Google Sign-In: $e'); // Log the error
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(

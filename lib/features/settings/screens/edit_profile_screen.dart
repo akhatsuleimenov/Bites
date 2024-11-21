@@ -114,8 +114,6 @@ class _EditProfileScreenContentState extends State<EditProfileScreenContent> {
                               setState(() {
                                 _profile.height =
                                     value + (_profile.isMetric ? 100 : 4);
-                                print(
-                                    "Height updated to: ${_profile.height}"); // Debug print
                               });
                             },
                             childDelegate: ListWheelChildBuilderDelegate(
@@ -161,8 +159,6 @@ class _EditProfileScreenContentState extends State<EditProfileScreenContent> {
                               setState(() {
                                 _profile.weight =
                                     value + (_profile.isMetric ? 30 : 66);
-                                print(
-                                    "Weight updated to: ${_profile.weight}"); // Debug print
                               });
                             },
                             childDelegate: ListWheelChildBuilderDelegate(

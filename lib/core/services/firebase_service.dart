@@ -161,7 +161,6 @@ class FirebaseService {
   Future<void> logWeight(String userId, double weight) async {
     try {
       // Log weight history
-      print('Logging weight in FirebaseService: $weight');
       await _firestore
           .collection('users')
           .doc(userId)
@@ -170,11 +169,9 @@ class FirebaseService {
         'weight': weight,
         'date': DateTime.now().toIso8601String(),
       });
-      print('Weight logged');
 
       // Update latest weight
       updateUserData(userId, {'weight': weight});
-      print('Latest weight updated');
     } catch (e) {
       throw FirebaseException(
         plugin: 'bytes',

@@ -29,7 +29,6 @@ class _AppScaffoldState extends State<AppScaffold> {
 
   @override
   Widget build(BuildContext context) {
-    print('AppScaffold');
     return Scaffold(
       body: IndexedStack(
         index: _selectedIndex,
