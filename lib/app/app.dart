@@ -14,7 +14,7 @@ class BytesApp extends StatelessWidget {
     return MaterialApp(
       title: 'bytes.',
       theme: AppTheme.lightTheme,
-      home: const AuthWrapper(),
+      home: AuthWrapper(),
       onGenerateRoute: AppRoutes.onGenerateRoute,
     );
   }

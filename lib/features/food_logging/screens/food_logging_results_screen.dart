@@ -10,9 +10,9 @@ import 'package:intl/intl.dart';
 
 // Project imports:
 import 'package:bytes/core/constants/app_typography.dart';
-import 'package:bytes/core/models/food_models.dart';
+import 'package:bytes/core/models/food_model.dart';
 import 'package:bytes/core/services/firebase_service.dart';
-import 'package:bytes/shared/widgets/buttons.dart';
+import 'package:bytes/core/widgets/buttons.dart';
 
 class FoodLoggingResultsScreen extends StatefulWidget {
   final String imagePath;

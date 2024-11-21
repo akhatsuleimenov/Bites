@@ -6,7 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 // Project imports:
 import 'package:bytes/core/constants/app_typography.dart';
-import 'package:bytes/core/models/food_models.dart';
+import 'package:bytes/core/models/food_model.dart';
 
 class MealLogDetails extends StatelessWidget {
   final MealLog mealLog;

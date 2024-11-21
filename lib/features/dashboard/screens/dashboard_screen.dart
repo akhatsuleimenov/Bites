@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 // Project imports:
 import 'package:bytes/core/constants/app_typography.dart';
-import 'package:bytes/core/models/food_models.dart';
+import 'package:bytes/core/models/food_model.dart';
 import 'package:bytes/features/dashboard/controllers/dashboard_controller.dart';
 import 'package:bytes/features/dashboard/widgets/widgets.dart';
 

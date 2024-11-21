@@ -3,10 +3,24 @@ import 'package:flutter/material.dart';
 
 // Project imports:
 import 'package:bytes/core/constants/app_typography.dart';
-import 'package:bytes/shared/widgets/buttons.dart';
+import 'package:bytes/core/widgets/buttons.dart';
 
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
+
+  @override
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState extends State<WelcomeScreen> {
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,41 +31,93 @@ class WelcomeScreen extends StatelessWidget {
           child: Column(
             children: [
               const Spacer(),
-
-              // Main content
-              Column(
-                children: [
-                  Text(
-                    'Calorie tracking\nmade easy',
-                    style: AppTypography.headlineLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Just snap a quick photo of your meal and\nwe\'ll do the rest',
-                    style: AppTypography.bodyLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 32),
-                  _PageIndicator(
-                    currentPage: 0,
-                    totalPages: 3,
-                  ),
-                ],
+              Expanded(
+                child: PageView(
+                  controller: _pageController,
+                  onPageChanged: (page) => setState(() => _currentPage = page),
+                  children: const [
+                    _WelcomePage(
+                      title: 'Calorie tracking\nmade easy',
+                      subtitle:
+                          'Just snap a quick photo of your meal and\nwe\'ll do the rest',
+                      currentPage: 0,
+                    ),
+                    _WelcomePage(
+                      title: 'Track your progress',
+                      subtitle:
+                          'Set goals and monitor your daily\ncalorie intake with ease',
+                      currentPage: 1,
+                    ),
+                    _WelcomePage(
+                      title: 'Smart insights',
+                      subtitle:
+                          'Get personalized recommendations\nbased on your eating habits',
+                      currentPage: 2,
+                    ),
+                    _WelcomePage(
+                      title: 'Join the community',
+                      subtitle:
+                          'Connect with others and share\nyour healthy journey',
+                      currentPage: 3,
+                    ),
+                  ],
+                ),
               ),
-
               const Spacer(),
-
-              // Bottom button
               PrimaryButton(
-                text: 'Get Started',
-                onPressed: () =>
-                    Navigator.pushNamed(context, '/onboarding/gender'),
+                text: _currentPage == 3 ? 'Get Started' : 'Next',
+                onPressed: () {
+                  if (_currentPage < 3) {
+                    _pageController.nextPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  } else {
+                    Navigator.pushNamed(context, '/onboarding/gender');
+                  }
+                },
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class _WelcomePage extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final int currentPage;
+
+  const _WelcomePage({
+    required this.title,
+    required this.subtitle,
+    required this.currentPage,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          title,
+          style: AppTypography.headlineLarge,
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 16),
+        Text(
+          subtitle,
+          style: AppTypography.bodyLarge,
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 32),
+        _PageIndicator(
+          currentPage: currentPage,
+          totalPages: 4,
+        ),
+      ],
     );
   }
 }

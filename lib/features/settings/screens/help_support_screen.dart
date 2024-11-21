@@ -6,7 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 // Project imports:
 import 'package:bytes/core/constants/app_typography.dart';
-import 'package:bytes/shared/widgets/buttons.dart';
+import 'package:bytes/core/widgets/buttons.dart';
 
 class HelpSupportScreen extends StatelessWidget {
   const HelpSupportScreen({super.key});

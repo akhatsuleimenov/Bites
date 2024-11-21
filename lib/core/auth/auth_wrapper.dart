@@ -1,8 +1,8 @@
 // Flutter imports:
+import 'package:bytes/core/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
@@ -14,7 +14,8 @@ import 'package:bytes/features/login/screens/login_screen.dart';
 import 'package:bytes/features/onboarding/screens/screens.dart';
 
 class AuthWrapper extends StatelessWidget {
-  const AuthWrapper({super.key});
+  AuthWrapper({super.key});
+  final FirebaseService _firebaseService = FirebaseService();
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +50,7 @@ class AuthWrapper extends StatelessWidget {
             }
 
             return FutureBuilder<Map<String, dynamic>>(
-              future: _getUserData(snapshot.data!.uid),
+              future: _firebaseService.getUserData(snapshot.data!.uid),
               builder: (context, userDataSnapshot) {
                 if (userDataSnapshot.connectionState ==
                     ConnectionState.waiting) {
@@ -58,6 +59,9 @@ class AuthWrapper extends StatelessWidget {
                       child: CircularProgressIndicator(),
                     ),
                   );
+                }
+                if (!userDataSnapshot.hasData) {
+                  return const WelcomeScreen();
                 }
                 Provider.of<DashboardController>(context, listen: false)
                     .fetchNutritionPlan();
@@ -72,27 +76,10 @@ class AuthWrapper extends StatelessWidget {
 
   Future<bool> _checkOnboardingStatus(String userId) async {
     try {
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
-
-      return doc.exists && doc.data()?['onboardingCompleted'] == true;
+      final doc = await _firebaseService.getUserData(userId);
+      return doc['onboardingCompleted'] == true;
     } catch (e) {
       return false;
-    }
-  }
-
-  Future<Map<String, dynamic>> _getUserData(String userId) async {
-    try {
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
-
-      return doc.data() ?? {};
-    } catch (e) {
-      return {};
     }
   }
 }

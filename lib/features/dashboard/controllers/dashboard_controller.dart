@@ -2,17 +2,17 @@
 import 'dart:async';
 
 // Flutter imports:
-import 'package:bytes/core/models/weight_log.dart';
+import 'package:bytes/core/models/weight_log_model.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:firebase_auth/firebase_auth.dart';
 
 // Project imports:
-import 'package:bytes/core/models/food_models.dart';
+import 'package:bytes/core/models/food_model.dart';
 import 'package:bytes/core/services/auth_service.dart';
 import 'package:bytes/core/services/firebase_service.dart';
-import 'package:bytes/shared/widgets/user_profile.dart';
+import 'package:bytes/core/models/user_profile_model.dart';
 
 class DashboardController extends ChangeNotifier {
   // Services
@@ -164,6 +164,9 @@ class DashboardController extends ChangeNotifier {
   @override
   void dispose() {
     _mealLogsSubscription?.cancel();
+    _todaysMealLogs = [];
+    _weeklyMealLogs = [];
+    _weightLogs = [];
     super.dispose();
   }
 }

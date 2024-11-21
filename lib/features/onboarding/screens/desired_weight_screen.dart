@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 // Project imports:
 import 'package:bytes/core/constants/app_typography.dart';
-import 'package:bytes/shared/widgets/buttons.dart';
+import 'package:bytes/core/widgets/buttons.dart';
 
 class DesiredWeightScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -18,8 +18,8 @@ class DesiredWeightScreen extends StatefulWidget {
 }
 
 class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
-  late int _currentWeight;
-  late int _selectedWeight;
+  late double _currentWeight;
+  late double _selectedWeight;
   late bool _isMetric;
   late FixedExtentScrollController _scrollController;
 
@@ -27,11 +27,11 @@ class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
   void initState() {
     super.initState();
     _isMetric = widget.userData['isMetric'] as bool;
-    _currentWeight = widget.userData['weight'] as int;
+    _currentWeight = widget.userData['weight'] as double;
 
     // Convert current weight to imperial if needed
     if (!_isMetric) {
-      _currentWeight = (_currentWeight * 2.20462).round(); // Convert kg to lbs
+      _currentWeight = _currentWeight * 2.20462; // Convert kg to lbs
     }
     _selectedWeight = _currentWeight;
 
@@ -117,7 +117,7 @@ class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
                         onSelectedItemChanged: (index) {
                           setState(() {
                             final minWeight = _isMetric ? 30 : 66;
-                            _selectedWeight = index + minWeight;
+                            _selectedWeight = index.toDouble() + minWeight;
                           });
                         },
                         childDelegate: ListWheelChildBuilderDelegate(
@@ -148,11 +148,11 @@ class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
               PrimaryButton(
                 text: 'Continue',
                 onPressed: () {
-                  int targetWeightKg = _selectedWeight;
+                  double targetWeightKg = _selectedWeight;
 
                   if (!_isMetric) {
                     // Convert target weight from lbs to kg for storage
-                    targetWeightKg = (_selectedWeight / 2.20462).round();
+                    targetWeightKg = _selectedWeight / 2.20462;
                   }
 
                   final updatedUserData = {

@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
           print("MAIN: ${settings.name}");
           print("MAIN ARGS: ${settings.arguments}");
           if (settings.name == '/') {
-            return MaterialPageRoute(builder: (_) => const AuthWrapper());
+            return MaterialPageRoute(builder: (_) => AuthWrapper());
           }
           return AppRoutes.onGenerateRoute(settings);
         },

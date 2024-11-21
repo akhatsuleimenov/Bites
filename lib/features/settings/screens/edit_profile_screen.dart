@@ -7,8 +7,8 @@ import 'package:provider/provider.dart';
 // Project imports:
 import 'package:bytes/core/constants/app_typography.dart';
 import 'package:bytes/features/settings/controllers/settings_controller.dart';
-import 'package:bytes/shared/widgets/buttons.dart';
-import 'package:bytes/shared/widgets/user_profile.dart';
+import 'package:bytes/core/widgets/buttons.dart';
+import 'package:bytes/core/models/user_profile_model.dart';
 
 class EditProfileScreen extends StatelessWidget {
   const EditProfileScreen({super.key});

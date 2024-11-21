@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 // Project imports:
 import 'package:bytes/core/constants/app_typography.dart';
-import 'package:bytes/shared/widgets/buttons.dart';
+import 'package:bytes/core/widgets/buttons.dart';
 
 class HeightWeightScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -239,7 +239,7 @@ class _HeightWeightScreenState extends State<HeightWeightScreen> {
                   final updatedUserData = {
                     ...widget.userData,
                     'height': _selectedHeight,
-                    'weight': _selectedWeight,
+                    'weight': _selectedWeight.toDouble(),
                     'isMetric': _isMetric,
                   };
 

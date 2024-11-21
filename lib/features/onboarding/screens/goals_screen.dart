@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 // Project imports:
 import 'package:bytes/core/constants/app_typography.dart';
 import 'package:bytes/core/constants/fitness_goals_data.dart';
-import 'package:bytes/shared/widgets/buttons.dart';
+import 'package:bytes/core/widgets/buttons.dart';
 
 class GoalsScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -111,7 +111,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
 
   double _calculateBMR(Map<String, dynamic> userData) {
     // Mifflin-St Jeor Equation
-    final int weight = userData['weight'];
+    final double weight = userData['weight'];
     final int height = userData['height'];
     final int age = userData['age'];
     final String gender = userData['gender'];

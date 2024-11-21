@@ -7,7 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 // Project imports:
 import 'package:bytes/core/constants/app_typography.dart';
 import 'package:bytes/core/services/auth_service.dart';
-import 'package:bytes/shared/widgets/buttons.dart';
+import 'package:bytes/core/widgets/buttons.dart';
 
 class OnboardingCompleteScreen extends StatelessWidget {
   final Map<String, dynamic> userData;

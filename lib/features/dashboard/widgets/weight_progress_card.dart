@@ -1,7 +1,7 @@
-import 'package:bytes/shared/widgets/cards.dart';
+import 'package:bytes/core/widgets/cards.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:bytes/core/models/weight_log.dart';
+import 'package:bytes/core/models/weight_log_model.dart';
 import 'package:bytes/core/constants/app_typography.dart';
 
 class WeightProgressCard extends StatelessWidget {

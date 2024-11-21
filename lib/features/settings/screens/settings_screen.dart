@@ -2,9 +2,11 @@
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:bytes/shared/widgets/buttons.dart';
-import 'package:bytes/shared/widgets/cards.dart';
+import 'package:bytes/core/widgets/buttons.dart';
+import 'package:bytes/core/widgets/cards.dart';
 import 'package:bytes/core/services/auth_service.dart';
+import 'package:bytes/features/dashboard/controllers/dashboard_controller.dart';
+import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -59,8 +61,13 @@ class SettingsScreen extends StatelessWidget {
               title: 'Sign Out',
               icon: Icons.logout,
               onTap: () async {
+                // Dispose the DashboardController before logout
+                Provider.of<DashboardController>(context, listen: false)
+                    .dispose();
+
                 final authService = AuthService();
                 await authService.signOut();
+
                 if (context.mounted) {
                   Navigator.pushNamedAndRemoveUntil(
                     context,

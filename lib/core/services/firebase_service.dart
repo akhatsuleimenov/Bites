@@ -6,8 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 // Project imports:
-import 'package:bytes/core/models/food_models.dart';
-import 'package:bytes/core/models/weight_log.dart';
+import 'package:bytes/core/models/food_model.dart';
+import 'package:bytes/core/models/weight_log_model.dart';
 
 class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
