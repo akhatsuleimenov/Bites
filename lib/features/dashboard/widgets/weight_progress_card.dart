@@ -52,7 +52,7 @@ class WeightProgressCard extends StatelessWidget {
               children: [
                 Text(
                   'Weight Progress',
-                  style: AppTypography.bodyMedium.copyWith(
+                  style: AppTypography.bodyLarge.copyWith(
                     color: Colors.grey[600],
                   ),
                 ),

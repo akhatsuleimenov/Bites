@@ -121,42 +121,6 @@ class FirebaseService {
     await _firestore.collection('users').doc(userId).update(updates);
   }
 
-  Stream<List<MealLog>> getWeeklyMealLogsStream(String userId) {
-    final now = DateTime.now();
-    final startOfWeek = DateTime(now.year, now.month, now.day)
-        .subtract(const Duration(days: 1)); // CHANGE THIS TO 7
-
-    return _firestore
-        .collection('meal_logs')
-        .where('userId', isEqualTo: userId)
-        .where('dateTime', isGreaterThanOrEqualTo: startOfWeek)
-        .orderBy('dateTime', descending: true)
-        .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => MealLog.fromFirestore(doc)).toList());
-  }
-
-  // Update user goals
-  Future<void> updateUserGoals({
-    required String userId,
-    required String goal,
-    required double targetWeight,
-    required String workoutFrequency,
-  }) async {
-    try {
-      await _firestore.collection('users').doc(userId).update({
-        'goal': goal,
-        'targetWeight': targetWeight,
-        'workoutFrequency': workoutFrequency,
-      });
-    } catch (e) {
-      throw FirebaseException(
-        plugin: 'bytes',
-        message: 'Failed to update user goals: $e',
-      );
-    }
-  }
-
   // Update notification settings
   Future<void> updateNotificationSettings({
     required String userId,
@@ -182,7 +146,7 @@ class FirebaseService {
 
   Future<List<MealLog>> getWeeklyMealLogs(
       String userId, DateTime weekStart) async {
-    final weekEnd = weekStart.add(const Duration(days: 1));
+    final weekEnd = weekStart.add(const Duration(days: 7));
 
     final snapshot = await _firestore
         .collection('meal_logs')

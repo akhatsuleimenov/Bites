@@ -80,7 +80,6 @@ class DashboardController extends ChangeNotifier {
           notifyListeners();
         },
       );
-
       await loadWeightLogs();
     } catch (e) {
       print('Error loading dashboard data: $e');

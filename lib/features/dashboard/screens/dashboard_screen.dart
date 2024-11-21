@@ -8,10 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:bytes/core/constants/app_typography.dart';
 import 'package:bytes/core/models/food_models.dart';
 import 'package:bytes/features/dashboard/controllers/dashboard_controller.dart';
-import 'package:bytes/features/dashboard/widgets/calorie_card.dart';
-import 'package:bytes/features/dashboard/widgets/meal_log_card.dart';
-import 'package:bytes/features/dashboard/widgets/meal_log_details.dart';
-import 'package:bytes/features/dashboard/widgets/weight_progress_card.dart';
+import 'package:bytes/features/dashboard/widgets/widgets.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -30,7 +27,7 @@ class DashboardScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(24.0).copyWith(bottom: 12.0),
                     child: Text(
-                      'Today\'s Nutrition',
+                      'Today\'s Dashboard',
                       style: AppTypography.headlineLarge,
                     ),
                   ),
@@ -39,9 +36,25 @@ class DashboardScreen extends StatelessWidget {
                       slivers: [
                         // Calorie and macro tracking
                         SliverToBoxAdapter(
-                          child: CalorieCard(
-                            remainingMacros: controller.remainingMacros,
-                            goal: controller.nutritionPlan.calories,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CalorieCard(
+                                  targetCalories:
+                                      controller.nutritionPlan.calories,
+                                  remainingCalories:
+                                      controller.remainingMacros.calories,
+                                ),
+                                const SizedBox(height: 16),
+                                NutritionGrid(
+                                  targetNutrition: controller.nutritionPlan,
+                                  remainingNutrition:
+                                      controller.remainingMacros,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
 
