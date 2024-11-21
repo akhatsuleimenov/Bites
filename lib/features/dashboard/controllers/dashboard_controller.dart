@@ -2,6 +2,7 @@
 import 'dart:async';
 
 // Flutter imports:
+import 'package:bytes/core/models/weight_log.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -11,6 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:bytes/core/models/food_models.dart';
 import 'package:bytes/core/services/auth_service.dart';
 import 'package:bytes/core/services/firebase_service.dart';
+import 'package:bytes/shared/widgets/user_profile.dart';
 
 class DashboardController extends ChangeNotifier {
   // Services
@@ -23,11 +25,17 @@ class DashboardController extends ChangeNotifier {
   NutritionData _nutritionPlan = NutritionData.empty();
   List<MealLog> _todaysMealLogs = [];
   List<MealLog> _weeklyMealLogs = [];
+  List<WeightLog> _weightLogs = [];
+  UserProfile? _userProfile;
 
   // Getters
   NutritionData get nutritionPlan => _nutritionPlan;
   List<MealLog> get todaysMealLogs => _todaysMealLogs;
   List<MealLog> get weeklyMealLogs => _weeklyMealLogs;
+  List<WeightLog> get weightLogs => _weightLogs;
+  double? get latestWeight =>
+      _weightLogs.isNotEmpty ? _weightLogs.first.weight : null;
+  UserProfile? get userProfile => _userProfile;
 
   // Constructor
   DashboardController() {
@@ -54,7 +62,9 @@ class DashboardController extends ChangeNotifier {
 
       // Load nutrition plan
       _nutritionPlan = await _firebaseService.getUserNutritionPlan(userId);
-
+      // Load user profile
+      final userData = await _firebaseService.getUserData(userId);
+      _userProfile = UserProfile.fromMap(userData);
       // Subscribe to today's meal logs
       _mealLogsSubscription?.cancel();
       _mealLogsSubscription = _firebaseService
@@ -70,7 +80,10 @@ class DashboardController extends ChangeNotifier {
           notifyListeners();
         },
       );
+
+      await loadWeightLogs();
     } catch (e) {
+      print('Error loading dashboard data: $e');
       notifyListeners();
     }
   }
@@ -107,6 +120,46 @@ class DashboardController extends ChangeNotifier {
 
   Future<void> refreshData() async {
     await loadDashboardData();
+  }
+
+  Future<void> loadWeightLogs() async {
+    _firebaseService.getWeightLogs(userId).listen((logs) {
+      _weightLogs = logs;
+      notifyListeners();
+    });
+  }
+
+  Future<void> logWeight(double weight) async {
+    try {
+      await _firebaseService.logWeight(userId, weight);
+
+      // Update metrics if we have user profile
+      if (_userProfile != null) {
+        _userProfile!.weight = weight;
+        final bmr = _calculateBMR();
+        final tdee = bmr * _userProfile!.activityMultiplier;
+        final dailyCalories = (tdee + _userProfile!.calorieAdjustment).round();
+
+        await _firebaseService.updateUserData(userId, {
+          'bmr': bmr,
+          'tdee': tdee,
+          'dailyCalories': dailyCalories,
+        });
+      }
+    } catch (e) {
+      debugPrint('Error logging weight: $e');
+      rethrow;
+    }
+  }
+
+  double _calculateBMR() {
+    if (_userProfile == null) return 0;
+
+    double bmr = (10 * _userProfile!.weight) +
+        (6.25 * _userProfile!.height) -
+        (5 * _userProfile!.age);
+    bmr += _userProfile!.gender == 'male' ? 5 : -161;
+    return bmr;
   }
 
   @override

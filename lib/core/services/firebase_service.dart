@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 // Project imports:
 import 'package:bytes/core/models/food_models.dart';
+import 'package:bytes/core/models/weight_log.dart';
 
 class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -191,5 +192,42 @@ class FirebaseService {
         .get();
 
     return snapshot.docs.map((doc) => MealLog.fromFirestore(doc)).toList();
+  }
+
+  Future<void> logWeight(String userId, double weight) async {
+    try {
+      // Log weight history
+      print('Logging weight in FirebaseService: $weight');
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('weight_logs')
+          .add({
+        'weight': weight,
+        'date': DateTime.now().toIso8601String(),
+      });
+      print('Weight logged');
+
+      // Update latest weight
+      updateUserData(userId, {'weight': weight});
+      print('Latest weight updated');
+    } catch (e) {
+      throw FirebaseException(
+        plugin: 'bytes',
+        message: 'Failed to log user weight: $e',
+      );
+    }
+  }
+
+  Stream<List<WeightLog>> getWeightLogs(String userId) {
+    return _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('weight_logs')
+        .orderBy('date', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => WeightLog.fromJson(doc.data()))
+            .toList());
   }
 }

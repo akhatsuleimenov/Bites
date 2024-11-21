@@ -45,7 +45,7 @@ class _EditProfileScreenContentState extends State<EditProfileScreenContent> {
       initialItem: _profile.height - (_profile.isMetric ? 100 : 4),
     );
     _weightController = FixedExtentScrollController(
-      initialItem: _profile.weight - (_profile.isMetric ? 30 : 66),
+      initialItem: (_profile.weight - (_profile.isMetric ? 30 : 66)).toInt(),
     );
   }
 
@@ -75,8 +75,8 @@ class _EditProfileScreenContentState extends State<EditProfileScreenContent> {
           _nameController.text = _profile.name;
           _heightController
               .jumpToItem(_profile.height - (_profile.isMetric ? 100 : 4));
-          _weightController
-              .jumpToItem(_profile.weight - (_profile.isMetric ? 30 : 66));
+          _weightController.jumpToItem(
+              (_profile.weight - (_profile.isMetric ? 30 : 66)).toInt());
         }
 
         return Scaffold(

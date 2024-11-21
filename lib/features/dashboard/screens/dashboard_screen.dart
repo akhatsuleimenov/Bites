@@ -11,6 +11,7 @@ import 'package:bytes/features/dashboard/controllers/dashboard_controller.dart';
 import 'package:bytes/features/dashboard/widgets/calorie_card.dart';
 import 'package:bytes/features/dashboard/widgets/meal_log_card.dart';
 import 'package:bytes/features/dashboard/widgets/meal_log_details.dart';
+import 'package:bytes/features/dashboard/widgets/weight_progress_card.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -41,6 +42,14 @@ class DashboardScreen extends StatelessWidget {
                           child: CalorieCard(
                             remainingMacros: controller.remainingMacros,
                             goal: controller.nutritionPlan.calories,
+                          ),
+                        ),
+
+                        // Weight progress card
+                        SliverToBoxAdapter(
+                          child: WeightProgressCard(
+                            weightLogs: controller.weightLogs,
+                            latestWeight: controller.latestWeight,
                           ),
                         ),
 
@@ -106,6 +115,9 @@ class DashboardScreen extends StatelessWidget {
   }
 
   void _showAddOptions(BuildContext context) {
+    final dashboardController =
+        Provider.of<DashboardController>(context, listen: false);
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -123,11 +135,49 @@ class DashboardScreen extends StatelessWidget {
                 Expanded(
                   child: _buildOptionButton(
                     context,
-                    icon: Icons.camera_alt_outlined,
-                    label: 'Scan food',
-                    onTap: () {
+                    icon: Icons.monitor_weight_outlined,
+                    label: 'Log Weight',
+                    onTap: () async {
                       Navigator.pop(context);
-                      Navigator.pushNamed(context, '/food-logging');
+                      final TextEditingController weightController =
+                          TextEditingController(
+                              text: dashboardController.latestWeight
+                                      ?.toString() ??
+                                  '');
+
+                      final result = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Log Weight'),
+                          content: TextField(
+                            controller: weightController,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              labelText: 'Weight (kg)',
+                              suffixText: 'kg',
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              child: const Text('Save'),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (result == true && weightController.text.isNotEmpty) {
+                        final weight = double.tryParse(weightController.text);
+                        if (weight != null) {
+                          print('Logging weight: $weight');
+                          await dashboardController.logWeight(weight);
+                          await dashboardController.loadDashboardData();
+                        }
+                      }
                     },
                   ),
                 ),
@@ -135,11 +185,11 @@ class DashboardScreen extends StatelessWidget {
                 Expanded(
                   child: _buildOptionButton(
                     context,
-                    icon: Icons.edit_outlined,
-                    label: 'Manual entry',
+                    icon: Icons.camera_alt_outlined,
+                    label: 'Scan food',
                     onTap: () {
                       Navigator.pop(context);
-                      Navigator.pushNamed(context, '/manual-entry');
+                      Navigator.pushNamed(context, '/food-logging');
                     },
                   ),
                 ),
@@ -151,13 +201,11 @@ class DashboardScreen extends StatelessWidget {
                 Expanded(
                   child: _buildOptionButton(
                     context,
-                    icon: Icons.fitness_center_outlined,
-                    label: 'Log exercise',
+                    icon: Icons.edit_outlined,
+                    label: 'Manual entry',
                     onTap: () {
                       Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Coming soon!')),
-                      );
+                      Navigator.pushNamed(context, '/manual-entry');
                     },
                   ),
                 ),
@@ -165,8 +213,8 @@ class DashboardScreen extends StatelessWidget {
                 Expanded(
                   child: _buildOptionButton(
                     context,
-                    icon: Icons.search_outlined,
-                    label: 'Food Database',
+                    icon: Icons.fitness_center_outlined,
+                    label: 'Log exercise',
                     onTap: () {
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(

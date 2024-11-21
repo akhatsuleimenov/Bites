@@ -1,7 +1,7 @@
 class UserProfile {
   String name;
   int height;
-  int weight;
+  double weight;
   bool isMetric;
   int age;
   String gender;
