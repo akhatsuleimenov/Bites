@@ -6,8 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 // Project imports:
-import 'package:bytes/core/models/food_model.dart';
-import 'package:bytes/core/models/weight_log_model.dart';
+import 'package:bites/core/models/food_model.dart';
+import 'package:bites/core/models/weight_log_model.dart';
 
 class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -38,7 +38,7 @@ class FirebaseService {
       await _firestore.collection('meal_logs').add(mealLogData);
     } catch (e) {
       throw FirebaseException(
-        plugin: 'bytes',
+        plugin: 'bites',
         message: 'Failed to save meal log: $e',
       );
     }
@@ -61,7 +61,7 @@ class FirebaseService {
       );
     } catch (e) {
       throw FirebaseException(
-        plugin: 'bytes',
+        plugin: 'bites',
         message: 'Failed to fetch user nutrition plan: $e',
       );
     }
@@ -101,7 +101,7 @@ class FirebaseService {
       }
     } catch (e) {
       throw FirebaseException(
-        plugin: 'bytes',
+        plugin: 'bites',
         message: 'Failed to delete meal log: $e',
       );
     }
@@ -132,16 +132,20 @@ class FirebaseService {
       });
     } catch (e) {
       throw FirebaseException(
-        plugin: 'bytes',
+        plugin: 'bites',
         message: 'Failed to update notification settings: $e',
       );
     }
   }
 
   Stream<Map<String, dynamic>> getUserDataStream(String userId) {
+    print('Starting getUserDataStream for userId: $userId');
     return _firestore.collection('users').doc(userId).snapshots().map(
-          (doc) => doc.data()!,
-        );
+      (doc) {
+        print('Received user data stream update');
+        return doc.data()!;
+      },
+    );
   }
 
   Future<List<MealLog>> getWeeklyMealLogs(
@@ -174,7 +178,7 @@ class FirebaseService {
       updateUserData(userId, {'weight': weight});
     } catch (e) {
       throw FirebaseException(
-        plugin: 'bytes',
+        plugin: 'bites',
         message: 'Failed to log user weight: $e',
       );
     }

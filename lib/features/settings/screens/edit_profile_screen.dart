@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
-import 'package:bytes/core/constants/app_typography.dart';
-import 'package:bytes/features/settings/controllers/settings_controller.dart';
-import 'package:bytes/core/widgets/buttons.dart';
-import 'package:bytes/core/models/user_profile_model.dart';
+import 'package:bites/core/constants/app_typography.dart';
+import 'package:bites/features/settings/controllers/settings_controller.dart';
+import 'package:bites/core/widgets/buttons.dart';
+import 'package:bites/core/models/user_profile_model.dart';
 
 class EditProfileScreen extends StatelessWidget {
   const EditProfileScreen({super.key});
@@ -41,12 +41,8 @@ class _EditProfileScreenContentState extends State<EditProfileScreenContent> {
     super.initState();
     _profile = UserProfile();
     _nameController = TextEditingController();
-    _heightController = FixedExtentScrollController(
-      initialItem: _profile.height - (_profile.isMetric ? 100 : 4),
-    );
-    _weightController = FixedExtentScrollController(
-      initialItem: (_profile.weight - (_profile.isMetric ? 30 : 66)).toInt(),
-    );
+    _heightController = FixedExtentScrollController(initialItem: 0);
+    _weightController = FixedExtentScrollController(initialItem: 0);
   }
 
   @override
@@ -73,10 +69,14 @@ class _EditProfileScreenContentState extends State<EditProfileScreenContent> {
         if (_profile.isEmpty()) {
           _profile = UserProfile.fromMap(userData);
           _nameController.text = _profile.name;
-          _heightController
-              .jumpToItem(_profile.height - (_profile.isMetric ? 100 : 4));
-          _weightController.jumpToItem(
-              (_profile.weight - (_profile.isMetric ? 30 : 66)).toInt());
+          final heightIndex = _profile.height - (_profile.isMetric ? 100 : 4);
+          final weightIndex =
+              (_profile.weight - (_profile.isMetric ? 30 : 66)).toInt();
+
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _heightController.jumpToItem(heightIndex);
+            _weightController.jumpToItem(weightIndex);
+          });
         }
 
         return Scaffold(
@@ -213,6 +213,8 @@ class _EditProfileScreenContentState extends State<EditProfileScreenContent> {
       await context.read<SettingsController>().updateProfile(
         {
           'name': _nameController.text,
+          'height': _profile.height,
+          'weight': _profile.weight,
           'bmr': bmr,
           'tdee': tdee,
           'dailyCalories': dailyCalories,

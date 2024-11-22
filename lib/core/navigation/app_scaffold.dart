@@ -2,9 +2,9 @@
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:bytes/features/analytics/screens/analytics_screen.dart';
-import 'package:bytes/features/dashboard/screens/dashboard_screen.dart';
-import 'package:bytes/features/profile/screens/profile_screen.dart';
+import 'package:bites/features/analytics/screens/analytics_screen.dart';
+import 'package:bites/features/dashboard/screens/dashboard_screen.dart';
+import 'package:bites/features/profile/screens/profile_screen.dart';
 
 class AppScaffold extends StatefulWidget {
   final int initialIndex;

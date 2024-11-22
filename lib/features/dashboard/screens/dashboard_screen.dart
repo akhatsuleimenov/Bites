@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
-import 'package:bytes/core/constants/app_typography.dart';
-import 'package:bytes/core/models/food_model.dart';
-import 'package:bytes/features/dashboard/controllers/dashboard_controller.dart';
-import 'package:bytes/features/dashboard/widgets/widgets.dart';
+import 'package:bites/core/constants/app_typography.dart';
+import 'package:bites/core/models/food_model.dart';
+import 'package:bites/features/dashboard/controllers/dashboard_controller.dart';
+import 'package:bites/features/dashboard/widgets/widgets.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});

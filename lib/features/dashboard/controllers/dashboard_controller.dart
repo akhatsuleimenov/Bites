@@ -2,17 +2,17 @@
 import 'dart:async';
 
 // Flutter imports:
-import 'package:bytes/core/models/weight_log_model.dart';
+import 'package:bites/core/models/weight_log_model.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:firebase_auth/firebase_auth.dart';
 
 // Project imports:
-import 'package:bytes/core/models/food_model.dart';
-import 'package:bytes/core/services/auth_service.dart';
-import 'package:bytes/core/services/firebase_service.dart';
-import 'package:bytes/core/models/user_profile_model.dart';
+import 'package:bites/core/models/food_model.dart';
+import 'package:bites/core/services/auth_service.dart';
+import 'package:bites/core/services/firebase_service.dart';
+import 'package:bites/core/models/user_profile_model.dart';
 
 class DashboardController extends ChangeNotifier {
   // Services
@@ -161,10 +161,15 @@ class DashboardController extends ChangeNotifier {
 
   @override
   void dispose() {
+    print('DashboardController dispose called');
     _mealLogsSubscription?.cancel();
+    print('Meal logs subscription cancelled');
     _todaysMealLogs = [];
     _weeklyMealLogs = [];
     _weightLogs = [];
+    _nutritionPlan = NutritionData.empty();
+    _userProfile = null;
+    print('DashboardController dispose completed');
     super.dispose();
   }
 }

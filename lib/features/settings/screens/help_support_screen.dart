@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 // Project imports:
-import 'package:bytes/core/constants/app_typography.dart';
-import 'package:bytes/core/widgets/buttons.dart';
+import 'package:bites/core/constants/app_typography.dart';
+import 'package:bites/core/widgets/buttons.dart';
 
 class HelpSupportScreen extends StatelessWidget {
   const HelpSupportScreen({super.key});
@@ -81,15 +81,15 @@ class HelpSupportScreen extends StatelessWidget {
             children: [
               _buildSocialButton(
                 icon: Icons.facebook,
-                onTap: () => _launchUrl('https://facebook.com/bytes'),
+                onTap: () => _launchUrl('https://facebook.com/bites'),
               ),
               _buildSocialButton(
                 icon: Icons.telegram,
-                onTap: () => _launchUrl('https://t.me/bytes'),
+                onTap: () => _launchUrl('https://t.me/bites'),
               ),
               _buildSocialButton(
                 icon: Icons.discord,
-                onTap: () => _launchUrl('https://discord.gg/bytes'),
+                onTap: () => _launchUrl('https://discord.gg/bites'),
               ),
             ],
           ),

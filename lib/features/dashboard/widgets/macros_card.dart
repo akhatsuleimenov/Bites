@@ -1,6 +1,6 @@
-import 'package:bytes/core/constants/app_typography.dart';
-import 'package:bytes/core/models/food_model.dart';
-import 'package:bytes/core/widgets/cards.dart';
+import 'package:bites/core/constants/app_typography.dart';
+import 'package:bites/core/models/food_model.dart';
+import 'package:bites/core/widgets/cards.dart';
 import 'package:flutter/material.dart';
 
 class CalorieCard extends StatelessWidget {

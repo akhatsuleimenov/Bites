@@ -3,6 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
+  AuthService() {
+    print('AuthService constructor called');
+  }
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
@@ -47,9 +50,11 @@ class AuthService {
 
   // Sign out
   Future<void> signOut() async {
+    print('Signing out in AuthService');
     await Future.wait([
       _auth.signOut(),
       _googleSignIn.signOut(),
     ]);
+    print('Sign out completed in AuthService');
   }
 }

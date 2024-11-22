@@ -1,15 +1,15 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:bytes/core/models/user_profile_model.dart';
+import 'package:bites/core/models/user_profile_model.dart';
 
 // Package imports:
 import 'package:provider/provider.dart';
 
 // Project imports:
-import 'package:bytes/core/constants/app_typography.dart';
-import 'package:bytes/core/constants/fitness_goals_data.dart';
-import 'package:bytes/features/settings/controllers/settings_controller.dart';
-import 'package:bytes/core/widgets/buttons.dart';
+import 'package:bites/core/constants/app_typography.dart';
+import 'package:bites/core/constants/fitness_goals_data.dart';
+import 'package:bites/features/settings/controllers/settings_controller.dart';
+import 'package:bites/core/widgets/buttons.dart';
 
 class UpdateGoalsScreen extends StatelessWidget {
   const UpdateGoalsScreen({super.key});

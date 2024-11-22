@@ -6,9 +6,9 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
-import 'package:bytes/core/constants/app_typography.dart';
-import 'package:bytes/features/dashboard/controllers/dashboard_controller.dart';
-import 'package:bytes/core/widgets/cards.dart';
+import 'package:bites/core/constants/app_typography.dart';
+import 'package:bites/features/dashboard/controllers/dashboard_controller.dart';
+import 'package:bites/core/widgets/cards.dart';
 
 class MacroDistributionCard extends StatelessWidget {
   const MacroDistributionCard({super.key});

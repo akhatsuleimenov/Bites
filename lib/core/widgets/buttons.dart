@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:bytes/core/constants/app_typography.dart';
+import 'package:bites/core/constants/app_typography.dart';
 
 class PrimaryButton extends StatelessWidget {
   final String? text;

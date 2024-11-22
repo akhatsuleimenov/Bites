@@ -1,5 +1,5 @@
 // Flutter imports:
-import 'package:bytes/core/services/firebase_service.dart';
+import 'package:bites/core/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -7,11 +7,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
-import 'package:bytes/core/navigation/app_scaffold.dart';
-import 'package:bytes/core/services/auth_service.dart';
-import 'package:bytes/features/dashboard/controllers/dashboard_controller.dart';
-import 'package:bytes/features/login/screens/login_screen.dart';
-import 'package:bytes/features/onboarding/screens/screens.dart';
+import 'package:bites/core/navigation/app_scaffold.dart';
+import 'package:bites/core/services/auth_service.dart';
+import 'package:bites/features/dashboard/controllers/dashboard_controller.dart';
+import 'package:bites/features/login/screens/login_screen.dart';
+import 'package:bites/features/onboarding/screens/screens.dart';
 
 class AuthWrapper extends StatelessWidget {
   AuthWrapper({super.key});
@@ -22,6 +22,7 @@ class AuthWrapper extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: AuthService().authStateChanges,
       builder: (context, snapshot) {
+        print('AuthWrapper stream update. HasData: ${snapshot.hasData}');
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(

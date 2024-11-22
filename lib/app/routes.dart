@@ -2,11 +2,11 @@
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:bytes/core/navigation/app_scaffold.dart';
-import 'package:bytes/features/food_logging/screens/screens.dart';
-import 'package:bytes/features/login/screens/login_screen.dart';
-import 'package:bytes/features/onboarding/screens/screens.dart';
-import 'package:bytes/features/settings/screens/screens.dart';
+import 'package:bites/core/navigation/app_scaffold.dart';
+import 'package:bites/features/food_logging/screens/screens.dart';
+import 'package:bites/features/login/screens/login_screen.dart';
+import 'package:bites/features/onboarding/screens/screens.dart';
+import 'package:bites/features/settings/screens/screens.dart';
 
 class AppRoutes {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {

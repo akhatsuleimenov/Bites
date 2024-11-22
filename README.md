@@ -1,4 +1,4 @@
-# bytes.
+# bites.
 
 A new Flutter project.
 

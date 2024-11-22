@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:bytes/core/services/auth_service.dart';
-import 'package:bytes/core/services/firebase_service.dart';
+import 'package:bites/core/services/auth_service.dart';
+import 'package:bites/core/services/firebase_service.dart';
 
 class SettingsController extends ChangeNotifier {
   final FirebaseService _firebaseService = FirebaseService();
@@ -40,9 +40,11 @@ class SettingsController extends ChangeNotifier {
 
       final userId = _authService.currentUser?.uid;
       if (userId == null) throw Exception('User not logged in');
-
+      print('Updating user data for user: $userId with updates: $updates');
       await _firebaseService.updateUserData(userId, updates);
+      print('User data updated successfully');
       await loadUserData();
+      print('User data loaded successfully');
     } finally {
       _isLoading = false;
       notifyListeners();

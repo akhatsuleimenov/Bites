@@ -6,11 +6,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
-import 'package:bytes/app/routes.dart';
-import 'package:bytes/core/auth/auth_wrapper.dart';
-import 'package:bytes/core/themes/app_theme.dart';
-import 'package:bytes/features/dashboard/controllers/dashboard_controller.dart';
-import 'core/firebase_options.dart';
+import 'package:bites/app/routes.dart';
+import 'package:bites/core/auth/auth_wrapper.dart';
+import 'package:bites/core/themes/app_theme.dart';
+import 'package:bites/features/dashboard/controllers/dashboard_controller.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

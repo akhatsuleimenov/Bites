@@ -2,10 +2,10 @@
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:bytes/core/widgets/buttons.dart';
-import 'package:bytes/core/widgets/cards.dart';
-import 'package:bytes/core/services/auth_service.dart';
-import 'package:bytes/features/dashboard/controllers/dashboard_controller.dart';
+import 'package:bites/core/widgets/buttons.dart';
+import 'package:bites/core/widgets/cards.dart';
+import 'package:bites/core/services/auth_service.dart';
+import 'package:bites/features/dashboard/controllers/dashboard_controller.dart';
 import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -61,20 +61,24 @@ class SettingsScreen extends StatelessWidget {
               title: 'Sign Out',
               icon: Icons.logout,
               onTap: () async {
-                // Dispose the DashboardController before logout
+                print('Starting sign out process');
                 Provider.of<DashboardController>(context, listen: false)
                     .dispose();
+                print('DashboardController disposed');
 
+                if (!context.mounted) return;
+
+                print('Navigating to login screen');
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/login',
+                  (route) => false,
+                );
+
+                print('About to sign out');
                 final authService = AuthService();
                 await authService.signOut();
-
-                if (context.mounted) {
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    '/login',
-                    (route) => false,
-                  );
-                }
+                print('Sign out completed');
               },
               textColor: Colors.red.shade900,
               iconColor: Colors.red.shade900,

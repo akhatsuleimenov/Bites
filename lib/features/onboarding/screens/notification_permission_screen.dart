@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 // Project imports:
-import 'package:bytes/core/constants/app_typography.dart';
-import 'package:bytes/core/widgets/buttons.dart';
+import 'package:bites/core/constants/app_typography.dart';
+import 'package:bites/core/widgets/buttons.dart';
 
 class NotificationPermissionScreen extends StatelessWidget {
   final Map<String, dynamic> userData;

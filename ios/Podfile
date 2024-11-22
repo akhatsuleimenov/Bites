@@ -27,18 +27,11 @@ require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelpe
 
 flutter_ios_podfile_setup
 
-
 target 'Runner' do
   use_frameworks!
   use_modular_headers!
 
-  pod 'Firebase/Analytics', :modular_headers => true
-  pod 'Firebase/Auth', :modular_headers => true
-  pod 'Firebase/Core', :modular_headers => true
-  pod 'Firebase/Firestore', :modular_headers => true
-
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-
   target 'RunnerTests' do
     inherit! :search_paths
   end
@@ -47,11 +40,5 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
-    # Fix for BoringSSL-GRPC compiler flags
-    if target.name == 'BoringSSL-GRPC'
-      target.build_configurations.each do |config|
-        config.build_settings['COMPILER_FLAGS'] = '-DOPENSSL_NO_ASM'
-      end
-    end
   end
 end

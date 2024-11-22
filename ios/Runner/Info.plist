@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Nutrition Ai</string>
+	<string>Bites</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>nutrition_ai</string>
+	<string>bites</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -47,14 +47,16 @@
 	<true/>
 	<key>NSUserNotificationUsageDescription</key>
 	<string>We need to send you notifications for daily reminders and updates about your nutrition goals.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need access to your photo library to select images.</string>
 	<key>GIDClientID</key>
-	<string>434708174044-6ac0s29th4pqpnt4689u4gs3dusa4tvs.apps.googleusercontent.com</string>
+	<string>247608885092-9lmkqe9dj9hvnshfi541ni6asnv3uaml.apps.googleusercontent.com</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.434708174044-6ac0s29th4pqpnt4689u4gs3dusa4tvs</string>
+				<string>com.googleusercontent.apps.247608885092-9lmkqe9dj9hvnshfi541ni6asnv3uaml</string>
 			</array>
 		</dict>
 	</array>

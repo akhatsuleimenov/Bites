@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 // Project imports:
-import 'package:bytes/core/constants/app_typography.dart';
-import 'package:bytes/core/services/auth_service.dart';
-import 'package:bytes/core/widgets/buttons.dart';
+import 'package:bites/core/constants/app_typography.dart';
+import 'package:bites/core/services/auth_service.dart';
+import 'package:bites/core/widgets/buttons.dart';
 
 class OnboardingCompleteScreen extends StatelessWidget {
   final Map<String, dynamic> userData;
@@ -19,11 +19,14 @@ class OnboardingCompleteScreen extends StatelessWidget {
 
   Future<void> _saveUserData(String userId) async {
     try {
+      print('Saving user data for user: $userId');
       await FirebaseFirestore.instance.collection('users').doc(userId).set({
         'onboardingCompleted': true,
         ...userData, // Spread the user data to save it
       });
+      print('User data saved successfully');
     } catch (e) {
+      print('Error saving user data: $e');
       rethrow;
     }
   }

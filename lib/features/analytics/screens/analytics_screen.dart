@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
-import 'package:bytes/core/constants/app_typography.dart';
-import 'package:bytes/features/analytics/widgets/widgets.dart';
-import 'package:bytes/features/dashboard/controllers/dashboard_controller.dart';
+import 'package:bites/core/constants/app_typography.dart';
+import 'package:bites/features/analytics/widgets/widgets.dart';
+import 'package:bites/features/dashboard/controllers/dashboard_controller.dart';
 
 class AnalyticsScreen extends StatelessWidget {
   const AnalyticsScreen({super.key});

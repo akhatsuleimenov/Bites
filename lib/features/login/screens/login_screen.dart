@@ -2,9 +2,9 @@
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:bytes/core/constants/app_typography.dart';
-import 'package:bytes/core/services/auth_service.dart';
-import 'package:bytes/core/widgets/buttons.dart';
+import 'package:bites/core/constants/app_typography.dart';
+import 'package:bites/core/services/auth_service.dart';
+import 'package:bites/core/widgets/buttons.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,14 +18,18 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
 
   Future<void> _handleGoogleSignIn() async {
+    print('LoginScreen _handleGoogleSignIn called');
     setState(() => _isLoading = true);
 
     try {
+      print('Attempting to sign in with Google');
       await _authService.signInWithGoogle();
+      print('Sign in with Google completed');
       if (mounted) {
         Navigator.pushReplacementNamed(context, '/dashboard');
       }
     } catch (e) {
+      print('Sign in with Google error: $e');
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -59,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
               // Welcome text
               Text(
-                'Welcome to bytes.',
+                'Welcome to bites.',
                 style: AppTypography.headlineLarge,
                 textAlign: TextAlign.center,
               ),

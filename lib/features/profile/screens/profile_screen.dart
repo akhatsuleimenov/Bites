@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 // Project imports:
-import 'package:bytes/core/constants/app_typography.dart';
-import 'package:bytes/core/services/auth_service.dart';
-import 'package:bytes/core/services/firebase_service.dart';
+import 'package:bites/core/constants/app_typography.dart';
+import 'package:bites/core/services/auth_service.dart';
+import 'package:bites/core/services/firebase_service.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -22,7 +22,10 @@ class ProfileScreen extends StatelessWidget {
         child: StreamBuilder<Map<String, dynamic>>(
           stream: firebaseService.getUserDataStream(userId!),
           builder: (context, snapshot) {
+            print(
+                'ProfileScreen stream builder called. HasError: ${snapshot.hasError}');
             if (snapshot.hasError) {
+              print('ProfileScreen stream error: ${snapshot.error}');
               return Center(child: Text('Error: ${snapshot.error}'));
             }
 
@@ -108,7 +111,7 @@ class ProfileScreen extends StatelessWidget {
           radius: 50,
           backgroundColor: Colors.grey[200],
           child: Text(
-            userData['name']?[0].toUpperCase() ?? 'U',
+            userData['name'] != '' ? userData['name'][0].toUpperCase() : 'U',
             style: AppTypography.headlineLarge,
           ),
         ),
@@ -247,16 +250,6 @@ class ProfileScreen extends StatelessWidget {
               'Workout Frequency',
               frequencyText,
               Icons.fitness_center_outlined,
-            ),
-            const Divider(height: 24),
-            _buildInfoRow(
-              'Experience Level',
-              userData['experienceLevel']
-                      ?.toString()
-                      .replaceAll('_', ' ')
-                      .capitalize() ??
-                  '',
-              Icons.stars_outlined,
             ),
             const Divider(height: 24),
             _buildInfoRow(

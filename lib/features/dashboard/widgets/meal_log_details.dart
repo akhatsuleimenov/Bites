@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 // Project imports:
-import 'package:bytes/core/constants/app_typography.dart';
-import 'package:bytes/core/models/food_model.dart';
+import 'package:bites/core/constants/app_typography.dart';
+import 'package:bites/core/models/food_model.dart';
 
 class MealLogDetails extends StatelessWidget {
   final MealLog mealLog;

@@ -2,9 +2,9 @@
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:bytes/core/constants/app_typography.dart';
-import 'package:bytes/core/constants/fitness_goals_data.dart';
-import 'package:bytes/core/widgets/buttons.dart';
+import 'package:bites/core/constants/app_typography.dart';
+import 'package:bites/core/constants/fitness_goals_data.dart';
+import 'package:bites/core/widgets/buttons.dart';
 
 class WorkoutFrequencyScreen extends StatefulWidget {
   final Map<String, dynamic> userData;

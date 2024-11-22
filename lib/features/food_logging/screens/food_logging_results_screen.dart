@@ -9,10 +9,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
 // Project imports:
-import 'package:bytes/core/constants/app_typography.dart';
-import 'package:bytes/core/models/food_model.dart';
-import 'package:bytes/core/services/firebase_service.dart';
-import 'package:bytes/core/widgets/buttons.dart';
+import 'package:bites/core/constants/app_typography.dart';
+import 'package:bites/core/models/food_model.dart';
+import 'package:bites/core/services/firebase_service.dart';
+import 'package:bites/core/widgets/buttons.dart';
 
 class FoodLoggingResultsScreen extends StatefulWidget {
   final String imagePath;
