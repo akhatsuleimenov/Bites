@@ -84,3 +84,6 @@ mason-lock.json
 
 *.json
 .cursorignore
+
+# Firebase
+google-services.json
