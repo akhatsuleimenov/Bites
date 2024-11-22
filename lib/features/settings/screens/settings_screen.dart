@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:bites/core/widgets/buttons.dart';
 import 'package:bites/core/widgets/cards.dart';
 import 'package:bites/core/services/auth_service.dart';
-import 'package:bites/features/dashboard/controllers/dashboard_controller.dart';
 import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -13,6 +12,8 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context, listen: false);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
@@ -61,24 +62,10 @@ class SettingsScreen extends StatelessWidget {
               title: 'Sign Out',
               icon: Icons.logout,
               onTap: () async {
-                print('Starting sign out process');
-                Provider.of<DashboardController>(context, listen: false)
-                    .dispose();
-                print('DashboardController disposed');
-
-                if (!context.mounted) return;
-
-                print('Navigating to login screen');
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  '/login',
-                  (route) => false,
-                );
-
-                print('About to sign out');
-                final authService = AuthService();
                 await authService.signOut();
-                print('Sign out completed');
+                if (!context.mounted) return;
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/login', (route) => false);
               },
               textColor: Colors.red.shade900,
               iconColor: Colors.red.shade900,

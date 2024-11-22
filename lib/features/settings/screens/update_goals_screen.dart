@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:bites/core/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:bites/core/models/user_profile_model.dart';
 
@@ -16,8 +17,10 @@ class UpdateGoalsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => SettingsController()..loadUserData(),
+    return ChangeNotifierProvider<SettingsController>(
+      create: (context) => SettingsController(
+        Provider.of<AuthService>(context, listen: false),
+      )..loadUserData(),
       child: const UpdateGoalsScreenContent(),
     );
   }
@@ -38,9 +41,7 @@ class _UpdateGoalsScreenState extends State<UpdateGoalsScreenContent> {
   void initState() {
     super.initState();
     _profile = UserProfile();
-    _weightController = FixedExtentScrollController(
-      initialItem: _profile.targetWeight.toInt() - 30,
-    );
+    _weightController = FixedExtentScrollController(initialItem: 0);
   }
 
   @override
@@ -64,7 +65,8 @@ class _UpdateGoalsScreenState extends State<UpdateGoalsScreenContent> {
         // Initialize values from userData only once
         if (_profile.isEmpty()) {
           _profile = UserProfile.fromMap(userData);
-          _weightController.jumpToItem(_profile.targetWeight.toInt() - 30);
+          _weightController = FixedExtentScrollController(
+              initialItem: _profile.targetWeight.toInt());
         }
 
         return Scaffold(
@@ -118,15 +120,14 @@ class _UpdateGoalsScreenState extends State<UpdateGoalsScreenContent> {
                   itemExtent: 50,
                   onSelectedItemChanged: (value) {
                     setState(() {
-                      _profile.targetWeight = (value + 30).toDouble();
+                      _profile.targetWeight = value.toDouble();
                     });
                   },
                   childDelegate: ListWheelChildBuilderDelegate(
                     builder: (context, index) {
-                      final value = index + 30;
                       return Center(
                         child: Text(
-                          '$value kg',
+                          '$index kg',
                           style: AppTypography.bodyLarge,
                         ),
                       );

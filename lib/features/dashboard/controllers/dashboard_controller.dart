@@ -5,9 +5,6 @@ import 'dart:async';
 import 'package:bites/core/models/weight_log_model.dart';
 import 'package:flutter/material.dart';
 
-// Package imports:
-import 'package:firebase_auth/firebase_auth.dart';
-
 // Project imports:
 import 'package:bites/core/models/food_model.dart';
 import 'package:bites/core/services/auth_service.dart';
@@ -17,7 +14,7 @@ import 'package:bites/core/models/user_profile_model.dart';
 class DashboardController extends ChangeNotifier {
   // Services
   final FirebaseService _firebaseService = FirebaseService();
-  final AuthService _authService = AuthService();
+  final AuthService _authService;
 
   // Variables
   StreamSubscription? _mealLogsSubscription;
@@ -38,8 +35,9 @@ class DashboardController extends ChangeNotifier {
   UserProfile? get userProfile => _userProfile;
 
   // Constructor
-  DashboardController() {
-    userId = FirebaseAuth.instance.currentUser!.uid;
+  DashboardController(this._authService) {
+    print('DashboardController constructor called');
+    userId = _authService.currentUser!.uid;
     loadDashboardData();
   }
 
@@ -57,7 +55,9 @@ class DashboardController extends ChangeNotifier {
   }
 
   Future<void> loadDashboardData() async {
+    print('loadDashboardData called');
     try {
+      print('loadDashboardData try block');
       notifyListeners();
 
       // Load nutrition plan
@@ -77,6 +77,7 @@ class DashboardController extends ChangeNotifier {
           notifyListeners();
         },
         onError: (e) {
+          print('loadDashboardData onError: $e');
           notifyListeners();
         },
       );
@@ -123,6 +124,9 @@ class DashboardController extends ChangeNotifier {
   Future<void> loadWeightLogs() async {
     _firebaseService.getWeightLogs(userId).listen((logs) {
       _weightLogs = logs;
+      notifyListeners();
+    }, onError: (e) {
+      print('loadWeightLogs onError: $e');
       notifyListeners();
     });
   }

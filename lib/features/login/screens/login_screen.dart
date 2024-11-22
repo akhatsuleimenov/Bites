@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/services/auth_service.dart';
 import 'package:bites/core/widgets/buttons.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,8 +15,16 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _authService = AuthService();
+  late final AuthService _authService;
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    print('LoginScreen initState called');
+    super.initState();
+    _authService = Provider.of<AuthService>(context, listen: false);
+    print('LoginScreen initState after Provider.of');
+  }
 
   Future<void> _handleGoogleSignIn() async {
     print('LoginScreen _handleGoogleSignIn called');
@@ -83,10 +92,6 @@ class _LoginScreenState extends State<LoginScreen> {
               else
                 PrimaryButton(
                   onPressed: _handleGoogleSignIn,
-                  // leading: Image.asset(
-                  //   'assets/images/google_logo.png',
-                  //   height: 24,
-                  // ),
                   text: 'Sign in with Google',
                 ),
             ],

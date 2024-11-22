@@ -8,29 +8,51 @@ import 'package:intl/intl.dart';
 import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/services/auth_service.dart';
 import 'package:bites/core/services/firebase_service.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final userId = AuthService().currentUser?.uid;
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final userId = authService.currentUser?.uid;
     final firebaseService = FirebaseService();
+
+    if (userId == null) {
+      return const SizedBox.shrink();
+    }
+    print('ProfileScreen userId: $userId');
+    print('ProfileScreen firebaseService: ${firebaseService.toString()}');
+    print('ProfileScreen authService: ${authService.toString()}');
 
     return Scaffold(
       body: SafeArea(
         child: StreamBuilder<Map<String, dynamic>>(
-          stream: firebaseService.getUserDataStream(userId!),
+          stream: firebaseService.getUserDataStream(userId),
           builder: (context, snapshot) {
-            print(
-                'ProfileScreen stream builder called. HasError: ${snapshot.hasError}');
-            if (snapshot.hasError) {
-              print('ProfileScreen stream error: ${snapshot.error}');
-              return Center(child: Text('Error: ${snapshot.error}'));
+            print('ProfileScreen stream builder called ${snapshot.toString()}');
+            if (snapshot.connectionState == ConnectionState.none) {
+              print('ProfileScreen stream connection state is none');
+              return const SizedBox.shrink();
             }
 
             if (!snapshot.hasData) {
+              print('ProfileScreen stream has no data');
               return const Center(child: CircularProgressIndicator());
+            }
+
+            if (snapshot.hasData && snapshot.data!.isEmpty) {
+              print('ProfileScreen stream data is empty');
+              return const SizedBox.shrink();
+            }
+
+            if (snapshot.hasError) {
+              print('ProfileScreen stream error: ${snapshot.error}');
+              if (snapshot.error.toString().contains('permission-denied')) {
+                return const SizedBox.shrink();
+              }
+              return Center(child: Text('Error: ${snapshot.error}'));
             }
 
             final userData = snapshot.data!;

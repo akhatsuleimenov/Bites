@@ -19,6 +19,7 @@ class AuthService {
   Future<UserCredential> signInWithGoogle() async {
     try {
       // Trigger the Google Sign In process
+      print('Signing in with Google in AuthService');
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
       if (googleUser == null) {

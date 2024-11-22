@@ -7,7 +7,9 @@ import 'package:bites/core/services/firebase_service.dart';
 
 class SettingsController extends ChangeNotifier {
   final FirebaseService _firebaseService = FirebaseService();
-  final AuthService _authService = AuthService();
+  final AuthService _authService;
+
+  SettingsController(this._authService);
 
   bool _isLoading = false;
   Map<String, dynamic>? _userData;

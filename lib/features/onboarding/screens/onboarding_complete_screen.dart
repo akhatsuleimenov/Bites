@@ -8,6 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/services/auth_service.dart';
 import 'package:bites/core/widgets/buttons.dart';
+import 'package:provider/provider.dart';
 
 class OnboardingCompleteScreen extends StatelessWidget {
   final Map<String, dynamic> userData;
@@ -33,7 +34,8 @@ class OnboardingCompleteScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userId = AuthService().currentUser!.uid;
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final userId = authService.currentUser!.uid;
 
     return Scaffold(
       body: SafeArea(

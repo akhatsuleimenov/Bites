@@ -81,7 +81,10 @@ class FirebaseService {
         .where('dateTime', isGreaterThanOrEqualTo: startOfDay)
         .where('dateTime', isLessThan: endOfDay)
         .snapshots()
-        .map((snapshot) =>
+        .handleError((error) {
+      print('getMealLogsStream error: $error');
+      // throw error;
+    }).map((snapshot) =>
             snapshot.docs.map((doc) => MealLog.fromFirestore(doc)).toList());
   }
 
@@ -139,13 +142,23 @@ class FirebaseService {
   }
 
   Stream<Map<String, dynamic>> getUserDataStream(String userId) {
-    print('Starting getUserDataStream for userId: $userId');
-    return _firestore.collection('users').doc(userId).snapshots().map(
-      (doc) {
-        print('Received user data stream update');
-        return doc.data()!;
-      },
-    );
+    return _firestore
+        .collection('users')
+        .doc(userId)
+        .snapshots()
+        .handleError((error) {
+      // Silently handle permission errors
+      print('getUserDataStream error: $error');
+      if (error.toString().contains('permission-denied')) {
+        print('getUserDataStream permission-denied');
+        return <String, dynamic>{};
+      }
+      // throw error;
+    }).map((doc) {
+      print('getUserDataStream doc: ${doc.toString()}');
+      if (!doc.exists) return <String, dynamic>{};
+      return doc.data()!;
+    });
   }
 
   Future<List<MealLog>> getWeeklyMealLogs(
@@ -191,7 +204,10 @@ class FirebaseService {
         .collection('weight_logs')
         .orderBy('date', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
+        .handleError((error) {
+      print('getWeightLogs error: $error');
+      // throw error;
+    }).map((snapshot) => snapshot.docs
             .map((doc) => WeightLog.fromJson(doc.data()))
             .toList());
   }

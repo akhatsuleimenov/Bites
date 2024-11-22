@@ -14,73 +14,63 @@ import 'package:bites/features/login/screens/login_screen.dart';
 import 'package:bites/features/onboarding/screens/screens.dart';
 
 class AuthWrapper extends StatelessWidget {
-  AuthWrapper({super.key});
-  final FirebaseService _firebaseService = FirebaseService();
+  const AuthWrapper({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final firebaseService = FirebaseService();
+
     return StreamBuilder<User?>(
-      stream: AuthService().authStateChanges,
+      stream: authService.authStateChanges,
       builder: (context, snapshot) {
-        print('AuthWrapper stream update. HasData: ${snapshot.hasData}');
+        print('AuthWrapper: snapshot: ${snapshot.connectionState}');
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
+          print('AuthWrapper: LoadingScreen');
+          return const LoadingScreen();
         }
 
         if (!snapshot.hasData) {
+          print('AuthWrapper: LoginScreen');
           return const LoginScreen();
         }
 
-        return FutureBuilder<bool>(
-          future: _checkOnboardingStatus(snapshot.data!.uid),
-          builder: (context, onboardingSnapshot) {
-            if (onboardingSnapshot.connectionState == ConnectionState.waiting) {
-              return const Scaffold(
-                body: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              );
+        return FutureBuilder<Map<String, dynamic>>(
+          future: firebaseService.getUserData(snapshot.data!.uid),
+          builder: (context, userDataSnapshot) {
+            print(
+                'AuthWrapper: userDataSnapshot: ${userDataSnapshot.connectionState}');
+            if (userDataSnapshot.connectionState == ConnectionState.waiting) {
+              print('AuthWrapper inside FutureBuilder: LoadingScreen');
+              return const LoadingScreen();
             }
 
-            if (!onboardingSnapshot.data!) {
+            final userData = userDataSnapshot.data;
+            if (userData == null || userData['onboardingCompleted'] != true) {
+              print('AuthWrapper inside FutureBuilder: WelcomeScreen');
               return const WelcomeScreen();
             }
 
-            return FutureBuilder<Map<String, dynamic>>(
-              future: _firebaseService.getUserData(snapshot.data!.uid),
-              builder: (context, userDataSnapshot) {
-                if (userDataSnapshot.connectionState ==
-                    ConnectionState.waiting) {
-                  return const Scaffold(
-                    body: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                }
-                if (!userDataSnapshot.hasData) {
-                  return const WelcomeScreen();
-                }
-                Provider.of<DashboardController>(context, listen: false)
-                    .fetchNutritionPlan();
-                return const AppScaffold(initialIndex: 0);
-              },
-            );
+            Provider.of<DashboardController>(context, listen: false)
+                .fetchNutritionPlan();
+            return const AppScaffold(initialIndex: 0);
           },
         );
       },
     );
   }
+}
 
-  Future<bool> _checkOnboardingStatus(String userId) async {
-    try {
-      final doc = await _firebaseService.getUserData(userId);
-      return doc['onboardingCompleted'] == true;
-    } catch (e) {
-      return false;
-    }
+// Create this simple widget to avoid repetition
+class LoadingScreen extends StatelessWidget {
+  const LoadingScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
   }
 }

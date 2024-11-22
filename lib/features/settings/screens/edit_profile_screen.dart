@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:bites/core/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -16,7 +17,9 @@ class EditProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<SettingsController>(
-      create: (_) => SettingsController()..loadUserData(),
+      create: (context) => SettingsController(
+        Provider.of<AuthService>(context, listen: false),
+      )..loadUserData(),
       child: const EditProfileScreenContent(),
     );
   }
@@ -76,6 +79,8 @@ class _EditProfileScreenContentState extends State<EditProfileScreenContent> {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             _heightController.jumpToItem(heightIndex);
             _weightController.jumpToItem(weightIndex);
+            print('heightController: ${_heightController.initialItem}');
+            print('weightController: ${_weightController.initialItem}');
           });
         }
 
