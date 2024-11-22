@@ -52,7 +52,7 @@ class AuthWrapper extends StatelessWidget {
             }
 
             Provider.of<DashboardController>(context, listen: false)
-                .fetchNutritionPlan();
+                .initializeData();
             return const AppScaffold(initialIndex: 0);
           },
         );

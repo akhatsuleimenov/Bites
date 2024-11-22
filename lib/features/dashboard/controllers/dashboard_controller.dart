@@ -36,55 +36,52 @@ class DashboardController extends ChangeNotifier {
 
   // Constructor
   DashboardController(this._authService) {
-    print('DashboardController constructor called');
     userId = _authService.currentUser!.uid;
-    loadDashboardData();
   }
 
-  // Methods
-  Future<void> fetchNutritionPlan() async {
-    try {
-      final userId = _authService.currentUser?.uid;
-      if (userId == null) return;
-
-      _nutritionPlan = await _firebaseService.getUserNutritionPlan(userId);
-      notifyListeners();
-    } catch (e) {
-      rethrow;
-    }
+  // New method for initialization
+  Future<void> initializeData() async {
+    if (_userProfile != null) return; // Already initialized
+    await loadDashboardData();
   }
 
+  // Clean up loadDashboardData
   Future<void> loadDashboardData() async {
-    print('loadDashboardData called');
     try {
-      print('loadDashboardData try block');
-      notifyListeners();
+      final futures = await Future.wait([
+        _firebaseService.getUserNutritionPlan(userId),
+        _firebaseService.getUserData(userId),
+      ]);
 
-      // Load nutrition plan
-      _nutritionPlan = await _firebaseService.getUserNutritionPlan(userId);
-      // Load user profile
-      final userData = await _firebaseService.getUserData(userId);
-      _userProfile = UserProfile.fromMap(userData);
-      // Subscribe to today's meal logs
-      _mealLogsSubscription?.cancel();
-      _mealLogsSubscription = _firebaseService
-          .getMealLogsStream(userId: userId, date: DateTime.now())
-          .listen(
-        (mealLogs) {
-          _todaysMealLogs = mealLogs
-            ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
-          _updateWeeklyLogs();
-          notifyListeners();
-        },
-        onError: (e) {
-          print('loadDashboardData onError: $e');
-          notifyListeners();
-        },
-      );
+      _nutritionPlan = futures[0] as NutritionData;
+      _userProfile = UserProfile.fromMap(futures[1] as Map<String, dynamic>);
+
+      _setupMealLogsSubscription();
       await loadWeightLogs();
+
+      notifyListeners();
     } catch (e) {
+      print('Error loading dashboard data: $e');
       notifyListeners();
     }
+  }
+
+  void _setupMealLogsSubscription() {
+    _mealLogsSubscription?.cancel();
+    _mealLogsSubscription = _firebaseService
+        .getMealLogsStream(userId: userId, date: DateTime.now())
+        .listen(
+      (mealLogs) {
+        _todaysMealLogs = mealLogs
+          ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
+        _updateWeeklyLogs();
+        notifyListeners();
+      },
+      onError: (e) {
+        print('Meal logs subscription error: $e');
+        notifyListeners();
+      },
+    );
   }
 
   void _updateWeeklyLogs() async {
