@@ -1,5 +1,4 @@
 // Flutter imports:
-import 'package:bites/core/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -7,11 +6,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
+import 'package:bites/core/controllers/app_controller.dart';
 import 'package:bites/core/navigation/app_scaffold.dart';
 import 'package:bites/core/services/auth_service.dart';
-import 'package:bites/features/dashboard/controllers/dashboard_controller.dart';
-import 'package:bites/features/login/screens/login_screen.dart';
-import 'package:bites/features/onboarding/screens/screens.dart';
+import 'package:bites/core/services/firebase_service.dart';
+import 'package:bites/screens/login/screens/login_screen.dart';
+import 'package:bites/screens/onboarding/screens/screens.dart';
 
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
@@ -51,8 +51,7 @@ class AuthWrapper extends StatelessWidget {
               return const WelcomeScreen();
             }
 
-            Provider.of<DashboardController>(context, listen: false)
-                .initializeData();
+            Provider.of<AppController>(context, listen: false).loadAppData();
             return const AppScaffold(initialIndex: 0);
           },
         );
