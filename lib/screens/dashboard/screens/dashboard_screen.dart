@@ -181,11 +181,12 @@ class DashboardScreen extends StatelessWidget {
                       );
 
                       if (result == true && weightController.text.isNotEmpty) {
-                        final weight = double.tryParse(weightController.text);
-                        if (weight != null) {
-                          await appController.logWeight(weight);
-                          await appController.loadAppData();
-                        }
+                        final weight = MeasurementHelper.standardizeWeight(
+                          double.tryParse(weightController.text)!,
+                          appController.userProfile.isMetric,
+                        );
+                        await appController.logWeight(weight);
+                        await appController.loadAppData();
                       }
                     },
                   ),

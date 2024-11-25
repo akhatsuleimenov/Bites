@@ -45,8 +45,6 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	<key>NSUserNotificationUsageDescription</key>
-	<string>We need to send you notifications for daily reminders and updates about your progress</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We need access to your photo library to select images.</string>
 	<key>GIDClientID</key>
@@ -65,5 +63,7 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSNotificationUsageDescription</key>
+	<string>We need to send you notifications for daily reminders and updates about your progress</string>
 </dict>
 </plist>

@@ -134,13 +134,17 @@ class ProfileScreen extends StatelessWidget {
           radius: 50,
           backgroundColor: Colors.grey[200],
           child: Text(
-            userData['name'] != null ? userData['name'][0].toUpperCase() : 'U',
+            userData['name'] != null && userData['name'].isNotEmpty
+                ? userData['name'][0].toUpperCase()
+                : 'U',
             style: AppTypography.headlineLarge,
           ),
         ),
         const SizedBox(height: 16),
         Text(
-          userData['name'] ?? 'User',
+          userData['name'] != null && userData['name'].isNotEmpty
+              ? userData['name']
+              : 'User',
           style: AppTypography.headlineMedium,
         ),
         Text(

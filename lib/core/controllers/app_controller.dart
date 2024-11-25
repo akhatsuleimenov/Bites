@@ -46,9 +46,11 @@ class AppController extends ChangeNotifier {
   }
 
   Future<void> loadAppData() async {
+    print('APP CONTROLLER loadAppData');
     if (_isLoading) return;
 
     try {
+      print('APP CONTROLLER loadAppData try');
       _isLoading = true;
       // Only notify if not during initialization
       if (_userProfile != null) notifyListeners();
@@ -76,11 +78,13 @@ class AppController extends ChangeNotifier {
     try {
       _isLoading = true;
       notifyListeners();
-
       await _firebaseService.updateUserData(userId, updates);
-      await loadAppData();
+    } catch (e) {
+      print('APP CONTROLLER Error updating profile: $e');
+      rethrow;
     } finally {
       _isLoading = false;
+      await loadAppData();
       notifyListeners();
     }
   }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:permission_handler/permission_handler.dart';
+// import 'package:app_settings/app_settings.dart';
 
 // Project imports:
 import 'package:bites/core/constants/app_typography.dart';
@@ -17,16 +18,19 @@ class NotificationPermissionScreen extends StatelessWidget {
   });
 
   Future<void> _requestNotificationPermission(BuildContext context) async {
-    if (await Permission.notification.shouldShowRequestRationale) {
-      print('shouldShowRequestRationale');
-      // Show custom dialog explaining why we need permissions
+    final status = await Permission.notification.status;
+    print('status: $status');
+
+    // If permanently denied, open settings
+    if (status.isPermanentlyDenied || status.isDenied) {
+      print('permanently denied');
       if (!context.mounted) return;
-      final shouldRequest = await showDialog<bool>(
+      final shouldOpenSettings = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Enable Notifications'),
+          title: const Center(child: Text('Notifications Disabled')),
           content: const Text(
-            'We need notification permissions to send you daily reminders and progress updates.',
+            'Please enable notifications in your device settings to receive updates.',
           ),
           actions: [
             TextButton(
@@ -35,21 +39,33 @@ class NotificationPermissionScreen extends StatelessWidget {
             ),
             TextButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('Continue'),
+              child: const Text('Open Settings'),
             ),
           ],
         ),
       );
-      print(shouldRequest);
-      if (shouldRequest != true) {
-        if (!context.mounted) return;
-        _proceedToNextScreen(context, false);
-        return;
+
+      if (shouldOpenSettings == true) {
+        await openAppSettings();
       }
+      if (!context.mounted) return;
+      _proceedToNextScreen(context, false);
+      return;
     }
 
+    // Check if already denied
+    if (status.isDenied) {
+      print('denied');
+      final result = await Permission.notification.request();
+      print('result: $result');
+      if (!context.mounted) return;
+      print('proceeding to next screen');
+      _proceedToNextScreen(context, result.isGranted);
+      return;
+    }
+
+    // Handle other cases
     final result = await Permission.notification.request();
-    print("result: $result");
     if (!context.mounted) return;
     _proceedToNextScreen(context, result.isGranted);
   }
