@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:bites/core/utils/measurement_utils.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -12,11 +13,13 @@ import 'package:bites/core/widgets/cards.dart';
 class WeightProgressCard extends StatelessWidget {
   final List<WeightLog> weightLogs;
   final double? latestWeight;
+  final bool isMetric;
 
   const WeightProgressCard({
     super.key,
     required this.weightLogs,
     this.latestWeight,
+    required this.isMetric,
   });
 
   List<FlSpot> _getSpots() {
@@ -24,8 +27,16 @@ class WeightProgressCard extends StatelessWidget {
         ? weightLogs.sublist(weightLogs.length - 10)
         : weightLogs;
 
+    // Convert weight to appropriate unit
+    final convertedWeightLogs = logsToShow.map((log) {
+      return WeightLog(
+        date: log.date,
+        weight: MeasurementHelper.convertWeight(log.weight, isMetric),
+      );
+    }).toList();
+
     // Reverse the logs so newest is on the right
-    final reversedLogs = logsToShow.reversed.toList();
+    final reversedLogs = convertedWeightLogs.reversed.toList();
 
     return List.generate(reversedLogs.length, (index) {
       final log = reversedLogs[index];
@@ -62,7 +73,7 @@ class WeightProgressCard extends StatelessWidget {
                 ),
                 if (latestWeight != null)
                   Text(
-                    '${latestWeight!.toStringAsFixed(1)} kg',
+                    MeasurementHelper.formatWeight(latestWeight!, isMetric),
                     style: AppTypography.headlineSmall.copyWith(
                       fontWeight: FontWeight.bold,
                     ),

@@ -1,8 +1,6 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
 
-// Package imports:
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
@@ -13,46 +11,47 @@ import 'package:bites/core/services/firebase_service.dart';
 import 'package:bites/screens/login/screens/login_screen.dart';
 import 'package:bites/screens/onboarding/screens/screens.dart';
 
-class AuthWrapper extends StatelessWidget {
+class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
 
   @override
+  State<AuthWrapper> createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends State<AuthWrapper> {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize after build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final appController = Provider.of<AppController>(context, listen: false);
+      appController.loadAppData();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final authService = Provider.of<AuthService>(context, listen: false);
-    final firebaseService = FirebaseService();
-
-    return StreamBuilder<User?>(
-      stream: authService.authStateChanges,
-      builder: (context, snapshot) {
-        print('AuthWrapper: snapshot: ${snapshot.connectionState}');
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          print('AuthWrapper: LoadingScreen');
-          return const LoadingScreen();
-        }
-
-        if (!snapshot.hasData) {
-          print('AuthWrapper: LoginScreen');
-          return const LoginScreen();
-        }
-
+    return Consumer<AuthService>(
+      builder: (context, authService, _) {
         return FutureBuilder<Map<String, dynamic>>(
-          future: firebaseService.getUserData(snapshot.data!.uid),
-          builder: (context, userDataSnapshot) {
-            print(
-                'AuthWrapper: userDataSnapshot: ${userDataSnapshot.connectionState}');
-            if (userDataSnapshot.connectionState == ConnectionState.waiting) {
-              print('AuthWrapper inside FutureBuilder: LoadingScreen');
+          future: FirebaseService().getUserData(authService.currentUser!.uid),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
               return const LoadingScreen();
             }
 
-            final userData = userDataSnapshot.data;
-            if (userData == null || userData['onboardingCompleted'] != true) {
-              print('AuthWrapper inside FutureBuilder: WelcomeScreen');
+            final userData = snapshot.data;
+            if (userData == null) {
+              return const LoginScreen();
+            }
+
+            final onboardingCompleted =
+                userData['onboardingCompleted'] ?? false;
+            if (!onboardingCompleted) {
               return const WelcomeScreen();
             }
 
-            Provider.of<AppController>(context, listen: false).loadAppData();
-            return const AppScaffold(initialIndex: 0);
+            return const AppScaffold();
           },
         );
       },

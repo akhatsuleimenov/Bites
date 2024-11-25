@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:bites/core/utils/measurement_utils.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -62,6 +63,7 @@ class DashboardScreen extends StatelessWidget {
                           child: WeightProgressCard(
                             weightLogs: appController.weightLogs,
                             latestWeight: appController.latestWeight,
+                            isMetric: appController.userProfile.isMetric,
                           ),
                         ),
 
@@ -160,9 +162,9 @@ class DashboardScreen extends StatelessWidget {
                           content: TextField(
                             controller: weightController,
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              labelText: 'Weight (kg)',
-                              suffixText: 'kg',
+                            decoration: InputDecoration(
+                              labelText:
+                                  'Weight (${MeasurementHelper.getWeightLabel(appController.userProfile.isMetric)})',
                             ),
                           ),
                           actions: [

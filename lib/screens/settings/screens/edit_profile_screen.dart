@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:bites/core/utils/measurement_utils.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -56,28 +57,18 @@ class _EditProfileScreenContentState extends State<EditProfileScreenContent> {
   Widget build(BuildContext context) {
     return Consumer<AppController>(
       builder: (context, controller, _) {
-        final userData = controller.userProfile;
-
-        if (userData == null) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-
         // Initialize values from userData only once
         if (_profile.isEmpty()) {
-          _profile = userData;
+          _profile = controller.userProfile;
           _nameController.text = _profile.name;
-          final heightIndex = _profile.height - (_profile.isMetric ? 100 : 4);
-          final weightIndex =
-              (_profile.weight - (_profile.isMetric ? 30 : 66)).toInt();
-
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            _heightController.jumpToItem(heightIndex);
-            _weightController.jumpToItem(weightIndex);
-            print('heightController: ${_heightController.initialItem}');
-            print('weightController: ${_weightController.initialItem}');
-          });
+          _heightController = FixedExtentScrollController(
+              initialItem: MeasurementHelper.convertHeight(
+                      _profile.height, _profile.isMetric)
+                  .toInt());
+          _weightController = FixedExtentScrollController(
+              initialItem: MeasurementHelper.convertWeight(
+                      _profile.weight, _profile.isMetric)
+                  .toInt());
         }
 
         return Scaffold(
@@ -101,7 +92,7 @@ class _EditProfileScreenContentState extends State<EditProfileScreenContent> {
                       children: [
                         Center(
                           child: Text(
-                            'Height (${_profile.isMetric ? 'cm' : 'ft'})',
+                            'Height (${MeasurementHelper.getHeightLabel(_profile.isMetric)})',
                             style: AppTypography.bodyMedium.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -113,22 +104,22 @@ class _EditProfileScreenContentState extends State<EditProfileScreenContent> {
                             itemExtent: 50,
                             onSelectedItemChanged: (value) {
                               setState(() {
-                                _profile.height =
-                                    value + (_profile.isMetric ? 100 : 4);
+                                _profile.height = value;
                               });
                             },
                             childDelegate: ListWheelChildBuilderDelegate(
                               builder: (context, index) {
-                                final value =
-                                    _profile.isMetric ? index + 100 : index + 4;
                                 return Center(
                                   child: Text(
-                                    '$value ${_profile.isMetric ? 'cm' : 'ft'}',
+                                    MeasurementHelper.formatHeight(
+                                        index, _profile.isMetric),
                                     style: AppTypography.bodyLarge,
                                   ),
                                 );
                               },
-                              childCount: _profile.isMetric ? 141 : 5,
+                              childCount:
+                                  MeasurementHelper.childCountHeightPicker(
+                                      _profile.isMetric)[0],
                             ),
                             controller: _heightController,
                             physics: const FixedExtentScrollPhysics(),
@@ -146,7 +137,7 @@ class _EditProfileScreenContentState extends State<EditProfileScreenContent> {
                       children: [
                         Center(
                           child: Text(
-                            'Weight (${_profile.isMetric ? 'kg' : 'lb'})',
+                            'Weight (${MeasurementHelper.getWeightLabel(_profile.isMetric)})',
                             style: AppTypography.bodyMedium.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -158,22 +149,22 @@ class _EditProfileScreenContentState extends State<EditProfileScreenContent> {
                             itemExtent: 50,
                             onSelectedItemChanged: (value) {
                               setState(() {
-                                _profile.weight =
-                                    value + (_profile.isMetric ? 30 : 66);
+                                _profile.weight = value.toDouble();
                               });
                             },
                             childDelegate: ListWheelChildBuilderDelegate(
                               builder: (context, index) {
-                                final value =
-                                    _profile.isMetric ? index + 30 : index + 66;
                                 return Center(
                                   child: Text(
-                                    '$value ${_profile.isMetric ? 'kg' : 'lb'}',
+                                    MeasurementHelper.formatWeight(
+                                        index.toDouble(), _profile.isMetric),
                                     style: AppTypography.bodyLarge,
                                   ),
                                 );
                               },
-                              childCount: _profile.isMetric ? 171 : 335,
+                              childCount:
+                                  MeasurementHelper.childCountWeightPicker(
+                                      _profile.isMetric),
                             ),
                             controller: _weightController,
                             physics: const FixedExtentScrollPhysics(),

@@ -46,7 +46,7 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>NSUserNotificationUsageDescription</key>
-	<string>We need to send you notifications for daily reminders and updates about your nutrition goals.</string>
+	<string>We need to send you notifications for daily reminders and updates about your progress</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We need access to your photo library to select images.</string>
 	<key>GIDClientID</key>

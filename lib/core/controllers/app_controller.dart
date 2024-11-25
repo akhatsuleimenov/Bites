@@ -31,7 +31,7 @@ class AppController extends ChangeNotifier {
   List<MealLog> get todaysMealLogs => _todaysMealLogs;
   List<MealLog> get weeklyMealLogs => _weeklyMealLogs;
   List<WeightLog> get weightLogs => _weightLogs;
-  UserProfile? get userProfile => _userProfile;
+  UserProfile get userProfile => _userProfile!;
   double? get latestWeight =>
       _weightLogs.isNotEmpty ? _weightLogs.first.weight : null;
 
@@ -46,9 +46,12 @@ class AppController extends ChangeNotifier {
   }
 
   Future<void> loadAppData() async {
+    if (_isLoading) return;
+
     try {
       _isLoading = true;
-      notifyListeners();
+      // Only notify if not during initialization
+      if (_userProfile != null) notifyListeners();
 
       final futures = await Future.wait([
         _firebaseService.getUserNutritionPlan(userId),
@@ -64,7 +67,8 @@ class AppController extends ChangeNotifier {
       print('Error loading app data: $e');
     } finally {
       _isLoading = false;
-      notifyListeners();
+      // Only notify if not during initialization
+      if (_userProfile != null) notifyListeners();
     }
   }
 

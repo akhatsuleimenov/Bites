@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:bites/core/utils/measurement_utils.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -50,19 +51,13 @@ class _UpdateGoalsScreenState extends State<UpdateGoalsScreenContent> {
   Widget build(BuildContext context) {
     return Consumer<AppController>(
       builder: (context, controller, _) {
-        final userData = controller.userProfile;
-
-        if (userData == null) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-
         // Initialize values from userData only once
         if (_profile.isEmpty()) {
-          _profile = userData;
+          _profile = controller.userProfile;
           _weightController = FixedExtentScrollController(
-              initialItem: _profile.targetWeight.toInt());
+              initialItem: MeasurementHelper.convertWeight(
+                      _profile.targetWeight, _profile.isMetric)
+                  .toInt());
         }
 
         return Scaffold(
@@ -108,7 +103,9 @@ class _UpdateGoalsScreenState extends State<UpdateGoalsScreenContent> {
                 );
               }),
               const SizedBox(height: 24),
-              Text('Target Weight (kg)', style: AppTypography.headlineSmall),
+              Text(
+                  'Target Weight (${MeasurementHelper.getWeightLabel(_profile.isMetric)})',
+                  style: AppTypography.headlineSmall),
               const SizedBox(height: 16),
               SizedBox(
                 height: 150,
@@ -116,19 +113,23 @@ class _UpdateGoalsScreenState extends State<UpdateGoalsScreenContent> {
                   itemExtent: 50,
                   onSelectedItemChanged: (value) {
                     setState(() {
-                      _profile.targetWeight = value.toDouble();
+                      _profile.targetWeight =
+                          MeasurementHelper.standardizeWeight(
+                              value.toDouble(), _profile.isMetric);
                     });
                   },
                   childDelegate: ListWheelChildBuilderDelegate(
                     builder: (context, index) {
                       return Center(
                         child: Text(
-                          '$index kg',
+                          MeasurementHelper.formatWeight(
+                              index.toDouble(), _profile.isMetric),
                           style: AppTypography.bodyLarge,
                         ),
                       );
                     },
-                    childCount: 171,
+                    childCount: MeasurementHelper.childCountWeightPicker(
+                        _profile.isMetric),
                   ),
                   controller: _weightController,
                   physics: const FixedExtentScrollPhysics(),

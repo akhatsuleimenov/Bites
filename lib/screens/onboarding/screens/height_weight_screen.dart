@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:bites/core/utils/measurement_utils.dart';
 import 'package:flutter/material.dart';
 
 // Project imports:
@@ -22,15 +23,18 @@ class _HeightWeightScreenState extends State<HeightWeightScreen> {
 
   // Height controllers
   late FixedExtentScrollController _cmController;
-  late FixedExtentScrollController _feetController;
-  late FixedExtentScrollController _inchesController;
 
   // Weight controller
-  late FixedExtentScrollController _weightController;
+  late FixedExtentScrollController _kgController;
 
   // Selected values
-  int _selectedHeight = 170; // Default height in cm
-  int _selectedWeight = 70; // Default weight in kg
+  int _selectedHeight = MeasurementHelper.initialItemHeightPicker();
+  double _selectedWeight = MeasurementHelper.initialItemWeightPicker();
+
+  // Add imperial controllers
+  late FixedExtentScrollController _feetController;
+  late FixedExtentScrollController _inchesController;
+  late FixedExtentScrollController _lbController;
 
   @override
   void initState() {
@@ -39,44 +43,33 @@ class _HeightWeightScreenState extends State<HeightWeightScreen> {
   }
 
   void _initializeControllers() {
-    // Initialize height controllers
-    _cmController = FixedExtentScrollController(
-      initialItem: 170 - 100, // Default 170cm
-    );
-    _feetController = FixedExtentScrollController(
-      initialItem: 5, // Default 5ft
-    );
-    _inchesController = FixedExtentScrollController(
-      initialItem: 7, // Default 7in
-    );
-
-    // Initialize weight controller
-    _weightController = FixedExtentScrollController(
-      initialItem: (_isMetric ? 70 : 154) -
-          (_isMetric ? 30 : 66), // Default 70kg or 154lbs
-    );
-  }
-
-  void _updateHeight() {
     if (_isMetric) {
-      _selectedHeight = _cmController.selectedItem + 100;
+      _cmController = FixedExtentScrollController(
+        initialItem:
+            _selectedHeight - MeasurementHelper.offsetHeightPicker(true),
+      );
+      _kgController = FixedExtentScrollController(
+        initialItem:
+            (_selectedWeight - MeasurementHelper.offsetWeightPicker(true))
+                .toInt(),
+      );
     } else {
-      final feet = _feetController.selectedItem + 4;
-      final inches = _inchesController.selectedItem;
-      _selectedHeight =
-          ((feet * 30.48) + (inches * 2.54)).round(); // Convert to cm
-    }
-    setState(() {});
-  }
+      final imperialHeight =
+          MeasurementHelper.convertHeight(_selectedHeight, false) as List<int>;
+      final imperialWeight =
+          MeasurementHelper.convertWeight(_selectedWeight, false);
 
-  void _updateWeight() {
-    if (_isMetric) {
-      _selectedWeight = _weightController.selectedItem + 30;
-    } else {
-      _selectedWeight = ((_weightController.selectedItem + 66) * 0.453592)
-          .round(); // Convert lbs to kg
+      _feetController = FixedExtentScrollController(
+          initialItem:
+              imperialHeight[0] - MeasurementHelper.offsetHeightPicker(false));
+      _inchesController =
+          FixedExtentScrollController(initialItem: imperialHeight[1]);
+      _lbController = FixedExtentScrollController(
+        initialItem:
+            (imperialWeight - MeasurementHelper.offsetWeightPicker(false))
+                .toInt(),
+      );
     }
-    setState(() {});
   }
 
   @override
@@ -119,8 +112,8 @@ class _HeightWeightScreenState extends State<HeightWeightScreen> {
                         isSelected: _isMetric,
                         onTap: () {
                           setState(() {
-                            _isMetric = true;
                             _disposeControllers();
+                            _isMetric = true;
                             _initializeControllers();
                           });
                         },
@@ -130,8 +123,8 @@ class _HeightWeightScreenState extends State<HeightWeightScreen> {
                         isSelected: !_isMetric,
                         onTap: () {
                           setState(() {
-                            _isMetric = false;
                             _disposeControllers();
+                            _isMetric = false;
                             _initializeControllers();
                           });
                         },
@@ -187,43 +180,9 @@ class _HeightWeightScreenState extends State<HeightWeightScreen> {
                         const SizedBox(height: 16),
                         SizedBox(
                           height: 200,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: ListWheelScrollView.useDelegate(
-                                  controller: _weightController,
-                                  itemExtent: 40,
-                                  perspective: 0.005,
-                                  diameterRatio: 1.2,
-                                  physics: const FixedExtentScrollPhysics(),
-                                  onSelectedItemChanged: (_) => _updateWeight(),
-                                  childDelegate: ListWheelChildBuilderDelegate(
-                                    childCount: _isMetric
-                                        ? 221
-                                        : 485, // 30-250kg or 66-550lbs
-                                    builder: (context, index) {
-                                      final value = _isMetric
-                                          ? (index + 30).toString()
-                                          : (index + 66).toString();
-                                      return Center(
-                                        child: Text(
-                                          '$value ${_isMetric ? 'kg' : 'lbs'}',
-                                          style:
-                                              AppTypography.bodyLarge.copyWith(
-                                            color: _weightController
-                                                        .selectedItem ==
-                                                    index
-                                                ? Theme.of(context).primaryColor
-                                                : Colors.grey,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                          child: _isMetric
+                              ? _buildMetricWeightPicker()
+                              : _buildImperialWeightPicker(),
                         ),
                       ],
                     ),
@@ -239,10 +198,9 @@ class _HeightWeightScreenState extends State<HeightWeightScreen> {
                   final updatedUserData = {
                     ...widget.userData,
                     'height': _selectedHeight,
-                    'weight': _selectedWeight.toDouble(),
+                    'weight': double.parse(_selectedWeight.toStringAsFixed(2)),
                     'isMetric': _isMetric,
                   };
-
                   Navigator.pushNamed(
                     context,
                     '/onboarding/desired-weight',
@@ -257,38 +215,80 @@ class _HeightWeightScreenState extends State<HeightWeightScreen> {
     );
   }
 
+  Widget _buildMetricWeightPicker() {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildWheelScrollView(
+            _kgController,
+            MeasurementHelper.childCountWeightPicker(_isMetric),
+            (value) {
+              setState(() {
+                _selectedWeight =
+                    value + MeasurementHelper.offsetWeightPicker(true);
+              });
+            },
+            MeasurementHelper.offsetWeightPicker(true).toInt(),
+            'kg',
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildMetricHeightPicker() {
     return Row(
       children: [
         const Spacer(),
         Expanded(
           flex: 2,
-          child: ListWheelScrollView.useDelegate(
-            controller: _cmController,
-            itemExtent: 40,
-            perspective: 0.005,
-            diameterRatio: 1.2,
-            physics: const FixedExtentScrollPhysics(),
-            onSelectedItemChanged: (_) => _updateHeight(),
-            childDelegate: ListWheelChildBuilderDelegate(
-              childCount: 141, // 100-241cm
-              builder: (context, index) {
-                return Center(
-                  child: Text(
-                    '${index + 100} cm',
-                    style: AppTypography.bodyLarge.copyWith(
-                      color: _cmController.selectedItem == index
-                          ? Theme.of(context).primaryColor
-                          : Colors.grey,
-                    ),
-                  ),
-                );
-              },
-            ),
+          child: _buildWheelScrollView(
+            _cmController,
+            MeasurementHelper.childCountHeightPicker(true)[0],
+            (value) {
+              setState(() {
+                _selectedHeight =
+                    value + MeasurementHelper.offsetHeightPicker(true);
+              });
+            },
+            MeasurementHelper.offsetHeightPicker(true),
+            'cm',
           ),
         ),
         const Spacer(),
       ],
+    );
+  }
+
+  Widget _buildWheelScrollView(
+    FixedExtentScrollController controller,
+    int childCount,
+    Function(int) onSelectedItemChanged,
+    int offset,
+    String unit,
+  ) {
+    return ListWheelScrollView.useDelegate(
+      controller: controller,
+      itemExtent: 40,
+      perspective: 0.005,
+      diameterRatio: 1.2,
+      physics: const FixedExtentScrollPhysics(),
+      onSelectedItemChanged: onSelectedItemChanged,
+      childDelegate: ListWheelChildBuilderDelegate(
+        childCount: childCount,
+        builder: (context, index) {
+          return Center(
+            child: Text(
+              '${index + offset} $unit',
+              style: AppTypography.bodyLarge.copyWith(
+                color: controller.selectedItem == index
+                    ? Theme.of(context).primaryColor
+                    : Colors.grey,
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -296,56 +296,44 @@ class _HeightWeightScreenState extends State<HeightWeightScreen> {
     return Row(
       children: [
         const Spacer(),
-        // Feet picker
         Expanded(
-          child: ListWheelScrollView.useDelegate(
-            controller: _feetController,
-            itemExtent: 40,
-            perspective: 0.005,
-            diameterRatio: 1.2,
-            physics: const FixedExtentScrollPhysics(),
-            onSelectedItemChanged: (_) => _updateHeight(),
-            childDelegate: ListWheelChildBuilderDelegate(
-              childCount: 4, // 4-7 feet
-              builder: (context, index) {
-                return Center(
-                  child: Text(
-                    '${index + 4}\'',
-                    style: AppTypography.bodyLarge.copyWith(
-                      color: _feetController.selectedItem == index
-                          ? Theme.of(context).primaryColor
-                          : Colors.grey,
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
-        // Inches picker
-        Expanded(
-          child: ListWheelScrollView.useDelegate(
-            controller: _inchesController,
-            itemExtent: 40,
-            perspective: 0.005,
-            diameterRatio: 1.2,
-            physics: const FixedExtentScrollPhysics(),
-            onSelectedItemChanged: (_) => _updateHeight(),
-            childDelegate: ListWheelChildBuilderDelegate(
-              childCount: 12, // 0-11 inches
-              builder: (context, index) {
-                return Center(
-                  child: Text(
-                    '$index"',
-                    style: AppTypography.bodyLarge.copyWith(
-                      color: _inchesController.selectedItem == index
-                          ? Theme.of(context).primaryColor
-                          : Colors.grey,
-                    ),
-                  ),
-                );
-              },
-            ),
+          flex: 2,
+          child: Row(
+            children: [
+              Expanded(
+                child: _buildWheelScrollView(
+                  _feetController,
+                  MeasurementHelper.childCountHeightPicker(false)[0],
+                  (value) {
+                    setState(() {
+                      final feet =
+                          value + MeasurementHelper.offsetHeightPicker(false);
+                      final inches = _inchesController.selectedItem;
+                      _selectedHeight =
+                          MeasurementHelper.parseImperialHeight([feet, inches]);
+                    });
+                  },
+                  MeasurementHelper.offsetHeightPicker(false),
+                  'ft',
+                ),
+              ),
+              Expanded(
+                child: _buildWheelScrollView(
+                  _inchesController,
+                  MeasurementHelper.childCountHeightPicker(false)[1],
+                  (value) {
+                    setState(() {
+                      final feet = _feetController.selectedItem +
+                          MeasurementHelper.offsetHeightPicker(false);
+                      _selectedHeight =
+                          MeasurementHelper.parseImperialHeight([feet, value]);
+                    });
+                  },
+                  0,
+                  'in',
+                ),
+              ),
+            ],
           ),
         ),
         const Spacer(),
@@ -353,11 +341,36 @@ class _HeightWeightScreenState extends State<HeightWeightScreen> {
     );
   }
 
+  Widget _buildImperialWeightPicker() {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildWheelScrollView(
+            _lbController,
+            MeasurementHelper.childCountWeightPicker(false),
+            (value) {
+              setState(() {
+                final lbs = value + MeasurementHelper.offsetWeightPicker(false);
+                _selectedWeight = lbs * MeasurementHelper.lbToKg;
+              });
+            },
+            MeasurementHelper.offsetWeightPicker(false).toInt(),
+            'lb',
+          ),
+        ),
+      ],
+    );
+  }
+
   void _disposeControllers() {
-    _cmController.dispose();
-    _feetController.dispose();
-    _inchesController.dispose();
-    _weightController.dispose();
+    if (_isMetric) {
+      _cmController.dispose();
+      _kgController.dispose();
+    } else {
+      _feetController.dispose();
+      _inchesController.dispose();
+      _lbController.dispose();
+    }
   }
 
   @override

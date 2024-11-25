@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:bites/core/utils/measurement_utils.dart';
 import 'package:flutter/material.dart';
 
 // Project imports:
@@ -26,33 +27,17 @@ class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
   @override
   void initState() {
     super.initState();
-    _isMetric = widget.userData['isMetric'] as bool;
-    _currentWeight = widget.userData['weight'] as double;
-
-    // Convert current weight to imperial if needed
-    if (!_isMetric) {
-      _currentWeight = _currentWeight * 2.20462; // Convert kg to lbs
-    }
+    _isMetric = widget.userData['isMetric'];
+    _currentWeight = widget.userData['weight'];
     _selectedWeight = _currentWeight;
-
-    // Initialize scroll controller based on the unit system
-    final minWeight = _isMetric ? 30 : 66;
-    final initialItem = (_currentWeight - minWeight).round();
-    _scrollController = FixedExtentScrollController(
-      initialItem: initialItem,
-    );
+    _scrollController =
+        FixedExtentScrollController(initialItem: _currentWeight.toInt());
   }
 
   String get _weightDifferenceText {
     final difference = _selectedWeight - _currentWeight;
     if (difference.abs() < 0.5) return 'Maintain Weight';
     return difference > 0 ? 'Gain Weight' : 'Lose Weight';
-  }
-
-  String _formatWeight(int index) {
-    final minWeight = _isMetric ? 30 : 66;
-    final weight = index + minWeight;
-    return '${weight.toStringAsFixed(1)} ${_isMetric ? 'kg' : 'lbs'}';
   }
 
   @override
@@ -73,7 +58,7 @@ class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Current weight: ${_currentWeight.toStringAsFixed(1)} ${_isMetric ? 'kg' : 'lbs'}',
+                'Current weight: ${MeasurementHelper.formatWeight(_currentWeight, _isMetric)}',
                 style: AppTypography.bodyLarge.copyWith(
                   color: Colors.grey[600],
                 ),
@@ -116,17 +101,18 @@ class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
                         physics: const FixedExtentScrollPhysics(),
                         onSelectedItemChanged: (index) {
                           setState(() {
-                            final minWeight = _isMetric ? 30 : 66;
-                            _selectedWeight = index.toDouble() + minWeight;
+                            _selectedWeight = index.toDouble();
+                            print(_selectedWeight);
                           });
                         },
                         childDelegate: ListWheelChildBuilderDelegate(
-                          childCount:
-                              _isMetric ? 221 : 485, // 30-250kg or 66-550lbs
+                          childCount: MeasurementHelper.childCountWeightPicker(
+                              _isMetric),
                           builder: (context, index) {
                             return Center(
                               child: Text(
-                                _formatWeight(index),
+                                MeasurementHelper.formatWeight(
+                                    index.toDouble(), _isMetric),
                                 style: AppTypography.headlineMedium.copyWith(
                                   color: _scrollController.selectedItem == index
                                       ? Theme.of(context).primaryColor
@@ -148,20 +134,11 @@ class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
               PrimaryButton(
                 text: 'Continue',
                 onPressed: () {
-                  double targetWeightKg = _selectedWeight;
-
-                  if (!_isMetric) {
-                    // Convert target weight from lbs to kg for storage
-                    targetWeightKg = _selectedWeight / 2.20462;
-                  }
-
                   final updatedUserData = {
                     ...widget.userData,
-                    'targetWeight': targetWeightKg, // Always store in kg
-                    'displayUnit': _isMetric
-                        ? 'metric'
-                        : 'imperial', // Store user's preference
+                    'targetWeight': _selectedWeight,
                   };
+                  print(updatedUserData);
 
                   Navigator.pushNamed(
                     context,

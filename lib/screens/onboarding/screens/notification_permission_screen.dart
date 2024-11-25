@@ -17,57 +17,41 @@ class NotificationPermissionScreen extends StatelessWidget {
   });
 
   Future<void> _requestNotificationPermission(BuildContext context) async {
-    // First check if we already have permission
-    final status = await Permission.notification.status;
-
-    if (status.isGranted) {
-      // Already have permission
+    if (await Permission.notification.shouldShowRequestRationale) {
+      print('shouldShowRequestRationale');
+      // Show custom dialog explaining why we need permissions
       if (!context.mounted) return;
-      _proceedToNextScreen(context, true);
-      return;
-    }
-
-    // Show system permission dialog
-    if (status.isDenied) {
-      final result = await Permission.notification.request();
-
-      if (!context.mounted) return;
-      _proceedToNextScreen(context, result.isGranted);
-      return;
-    }
-
-    // If permission is permanently denied, open app settings
-    if (status.isPermanentlyDenied) {
-      if (!context.mounted) return;
-
-      final shouldOpenSettings = await showDialog<bool>(
+      final shouldRequest = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Notifications Permission'),
+          title: const Text('Enable Notifications'),
           content: const Text(
-            'Notifications permission is permanently denied. '
-            'Please enable it from app settings.',
+            'We need notification permissions to send you daily reminders and progress updates.',
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
+              child: const Text('Not Now'),
             ),
             TextButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('Open Settings'),
+              child: const Text('Continue'),
             ),
           ],
         ),
       );
-
-      if (shouldOpenSettings == true) {
-        await openAppSettings();
+      print(shouldRequest);
+      if (shouldRequest != true) {
+        if (!context.mounted) return;
+        _proceedToNextScreen(context, false);
+        return;
       }
-
-      if (!context.mounted) return;
-      _proceedToNextScreen(context, false);
     }
+
+    final result = await Permission.notification.request();
+    print("result: $result");
+    if (!context.mounted) return;
+    _proceedToNextScreen(context, result.isGranted);
   }
 
   void _proceedToNextScreen(BuildContext context, bool isGranted) {

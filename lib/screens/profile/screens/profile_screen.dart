@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:bites/core/utils/measurement_utils.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -133,7 +134,7 @@ class ProfileScreen extends StatelessWidget {
           radius: 50,
           backgroundColor: Colors.grey[200],
           child: Text(
-            userData['name'] != '' ? userData['name'][0].toUpperCase() : 'U',
+            userData['name'] != null ? userData['name'][0].toUpperCase() : 'U',
             style: AppTypography.headlineLarge,
           ),
         ),
@@ -246,7 +247,8 @@ class ProfileScreen extends StatelessWidget {
             const Divider(height: 24),
             _buildInfoRow(
               'Target Weight',
-              '${userData['targetWeight']?.round() ?? 0} kg',
+              MeasurementHelper.formatWeight(
+                  userData['targetWeight'], userData['isMetric']),
               Icons.track_changes_outlined,
             ),
           ],
@@ -293,13 +295,15 @@ class ProfileScreen extends StatelessWidget {
           children: [
             _buildInfoRow(
               'Height',
-              '${userData['height']} cm',
+              MeasurementHelper.formatHeight(
+                  userData['height'], userData['isMetric']),
               Icons.height_outlined,
             ),
             const Divider(height: 24),
             _buildInfoRow(
               'Weight',
-              '${userData['weight']} kg',
+              MeasurementHelper.formatWeight(
+                  userData['weight'], userData['isMetric']),
               Icons.monitor_weight_outlined,
             ),
             const Divider(height: 24),
