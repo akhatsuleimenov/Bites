@@ -1,5 +1,4 @@
 // Flutter imports:
-import 'package:bites/core/utils/measurement_utils.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -9,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/controllers/app_controller.dart';
 import 'package:bites/core/models/user_profile_model.dart';
+import 'package:bites/core/utils/measurement_utils.dart';
 import 'package:bites/core/widgets/buttons.dart';
 
 class EditProfileScreen extends StatelessWidget {

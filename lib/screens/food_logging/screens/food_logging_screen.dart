@@ -52,13 +52,11 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen> {
   }
 
   Future<bool> _requestCameraPermission() async {
-    
     final status = await Permission.camera.request();
-    
+
     if (status.isDenied || status.isPermanentlyDenied) {
-      
       if (!mounted) return false;
-      
+
       final shouldOpenSettings = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
@@ -81,23 +79,20 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen> {
       );
 
       if (shouldOpenSettings == true) {
-        
         await openAppSettings();
       }
       return false;
     }
-    
+
     return true;
   }
 
   Future<void> _takePicture() async {
     try {
-      
       final hasPermission = await _requestCameraPermission();
-      
+
       if (!hasPermission) return;
 
-      
       final XFile? photo = await _picker.pickImage(
         source: ImageSource.camera,
         preferredCameraDevice: CameraDevice.rear,
@@ -105,11 +100,9 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen> {
       );
 
       if (photo != null) {
-        
         await _analyzeImage(photo);
       }
     } catch (e) {
-      }');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

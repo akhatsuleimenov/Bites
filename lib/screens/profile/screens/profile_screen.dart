@@ -1,5 +1,4 @@
 // Flutter imports:
-import 'package:bites/core/utils/measurement_utils.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -10,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/services/auth_service.dart';
 import 'package:bites/core/services/firebase_service.dart';
+import 'package:bites/core/utils/measurement_utils.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -23,33 +23,25 @@ class ProfileScreen extends StatelessWidget {
     if (userId == null) {
       return const SizedBox.shrink();
     }
-    
-    }');
-    }');
 
     return Scaffold(
       body: SafeArea(
         child: StreamBuilder<Map<String, dynamic>>(
           stream: firebaseService.getUserDataStream(userId),
           builder: (context, snapshot) {
-            }');
             if (snapshot.connectionState == ConnectionState.none) {
-              
               return const SizedBox.shrink();
             }
 
             if (!snapshot.hasData) {
-              
               return const Center(child: CircularProgressIndicator());
             }
 
             if (snapshot.hasData && snapshot.data!.isEmpty) {
-              
               return const SizedBox.shrink();
             }
 
             if (snapshot.hasError) {
-              
               if (snapshot.error.toString().contains('permission-denied')) {
                 return const SizedBox.shrink();
               }

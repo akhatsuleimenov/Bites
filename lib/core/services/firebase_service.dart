@@ -82,7 +82,6 @@ class FirebaseService {
         .where('dateTime', isLessThan: endOfDay)
         .snapshots()
         .handleError((error) {
-      
       // throw error;
     }).map((snapshot) =>
             snapshot.docs.map((doc) => MealLog.fromFirestore(doc)).toList());
@@ -148,14 +147,12 @@ class FirebaseService {
         .snapshots()
         .handleError((error) {
       // Silently handle permission errors
-      
+
       if (error.toString().contains('permission-denied')) {
-        
         return <String, dynamic>{};
       }
       // throw error;
     }).map((doc) {
-      }');
       if (!doc.exists) return <String, dynamic>{};
       return doc.data()!;
     });
@@ -205,7 +202,6 @@ class FirebaseService {
         .orderBy('date', descending: true)
         .snapshots()
         .handleError((error) {
-      
       // throw error;
     }).map((snapshot) => snapshot.docs
             .map((doc) => WeightLog.fromJson(doc.data()))

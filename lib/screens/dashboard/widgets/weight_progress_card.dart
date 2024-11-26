@@ -1,5 +1,4 @@
 // Flutter imports:
-import 'package:bites/core/utils/measurement_utils.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -8,6 +7,7 @@ import 'package:fl_chart/fl_chart.dart';
 // Project imports:
 import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/models/weight_log_model.dart';
+import 'package:bites/core/utils/measurement_utils.dart';
 import 'package:bites/core/widgets/cards.dart';
 
 class WeightProgressCard extends StatelessWidget {
