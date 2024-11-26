@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -34,25 +35,40 @@ class _AuthWrapperState extends State<AuthWrapper> {
   Widget build(BuildContext context) {
     return Consumer<AuthService>(
       builder: (context, authService, _) {
-        return FutureBuilder<Map<String, dynamic>>(
-          future: FirebaseService().getUserData(authService.currentUser!.uid),
+        return StreamBuilder<User?>(
+          stream: authService.authStateChanges,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const LoadingScreen();
             }
 
-            final userData = snapshot.data;
-            if (userData == null) {
+            final user = snapshot.data;
+            print('AuthWrapper user: $user');
+            if (user == null) {
               return const LoginScreen();
             }
 
-            final onboardingCompleted =
-                userData['onboardingCompleted'] ?? false;
-            if (!onboardingCompleted) {
-              return const WelcomeScreen();
-            }
+            return FutureBuilder<Map<String, dynamic>>(
+              future: FirebaseService().getUserData(user.uid),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const LoadingScreen();
+                }
 
-            return const AppScaffold();
+                final userData = snapshot.data;
+                if (userData == null) {
+                  return const LoginScreen();
+                }
+
+                final onboardingCompleted =
+                    userData['onboardingCompleted'] ?? false;
+                if (!onboardingCompleted) {
+                  return const WelcomeScreen();
+                }
+
+                return const AppScaffold();
+              },
+            );
           },
         );
       },

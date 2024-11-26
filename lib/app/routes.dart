@@ -10,6 +10,7 @@ import 'package:bites/screens/settings/screens/screens.dart';
 
 class AppRoutes {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
+    print('AppRoutes onGenerateRoute called with route: ${settings.name}');
     final args = settings.arguments as Map<String, dynamic>?;
 
     // Group routes by feature

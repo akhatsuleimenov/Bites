@@ -111,6 +111,7 @@ class FirebaseService {
 
   // Get User Data
   Future<Map<String, dynamic>> getUserData(String userId) async {
+    print('getUserData called with userId: $userId');
     final userDoc = await _firestore.collection('users').doc(userId).get();
     return userDoc.data() ?? {};
   }

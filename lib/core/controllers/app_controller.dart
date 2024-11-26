@@ -18,7 +18,8 @@ class AppController extends ChangeNotifier {
   // State variables
   bool _isLoading = false;
   StreamSubscription? _mealLogsSubscription;
-  late final String userId;
+  StreamSubscription? _authStateSubscription;
+  late String userId;
   NutritionData _nutritionPlan = NutritionData.empty();
   List<MealLog> _todaysMealLogs = [];
   List<MealLog> _weeklyMealLogs = [];
@@ -36,8 +37,36 @@ class AppController extends ChangeNotifier {
       _weightLogs.isNotEmpty ? _weightLogs.first.weight : null;
 
   AppController(this._authService) {
-    userId = _authService.currentUser!.uid;
-    initializeData();
+    _setupAuthListener();
+  }
+
+  void _setupAuthListener() {
+    _authStateSubscription = _authService.authStateChanges.listen((user) {
+      if (user != null) {
+        userId = user.uid;
+        initializeData();
+      } else {
+        // Handle signed out state
+        _clearData();
+      }
+    });
+  }
+
+  void _clearData() {
+    _mealLogsSubscription?.cancel();
+    _todaysMealLogs = [];
+    _weeklyMealLogs = [];
+    _weightLogs = [];
+    _nutritionPlan = NutritionData.empty();
+    _userProfile = null;
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _mealLogsSubscription?.cancel();
+    _authStateSubscription?.cancel();
+    super.dispose();
   }
 
   Future<void> initializeData() async {
@@ -175,18 +204,5 @@ class AppController extends ChangeNotifier {
         (5 * _userProfile!.age);
     bmr += _userProfile!.gender == 'male' ? 5 : -161;
     return bmr;
-  }
-
-  @override
-  void dispose() {
-    _mealLogsSubscription?.cancel();
-
-    _todaysMealLogs = [];
-    _weeklyMealLogs = [];
-    _weightLogs = [];
-    _nutritionPlan = NutritionData.empty();
-    _userProfile = null;
-
-    super.dispose();
   }
 }
