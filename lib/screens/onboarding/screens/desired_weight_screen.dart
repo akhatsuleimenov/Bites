@@ -102,7 +102,6 @@ class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
                         onSelectedItemChanged: (index) {
                           setState(() {
                             _selectedWeight = index.toDouble();
-                            print(_selectedWeight);
                           });
                         },
                         childDelegate: ListWheelChildBuilderDelegate(
@@ -138,7 +137,6 @@ class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
                     ...widget.userData,
                     'targetWeight': _selectedWeight,
                   };
-                  print(updatedUserData);
 
                   Navigator.pushNamed(
                     context,

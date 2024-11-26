@@ -81,8 +81,6 @@ coverage/
 .mason/
 mason-lock.json
 
-
-*.json
 .cursorignore
 
 # Firebase

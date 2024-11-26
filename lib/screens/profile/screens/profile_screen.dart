@@ -23,33 +23,33 @@ class ProfileScreen extends StatelessWidget {
     if (userId == null) {
       return const SizedBox.shrink();
     }
-    print('ProfileScreen userId: $userId');
-    print('ProfileScreen firebaseService: ${firebaseService.toString()}');
-    print('ProfileScreen authService: ${authService.toString()}');
+    
+    }');
+    }');
 
     return Scaffold(
       body: SafeArea(
         child: StreamBuilder<Map<String, dynamic>>(
           stream: firebaseService.getUserDataStream(userId),
           builder: (context, snapshot) {
-            print('ProfileScreen stream builder called ${snapshot.toString()}');
+            }');
             if (snapshot.connectionState == ConnectionState.none) {
-              print('ProfileScreen stream connection state is none');
+              
               return const SizedBox.shrink();
             }
 
             if (!snapshot.hasData) {
-              print('ProfileScreen stream has no data');
+              
               return const Center(child: CircularProgressIndicator());
             }
 
             if (snapshot.hasData && snapshot.data!.isEmpty) {
-              print('ProfileScreen stream data is empty');
+              
               return const SizedBox.shrink();
             }
 
             if (snapshot.hasError) {
-              print('ProfileScreen stream error: ${snapshot.error}');
+              
               if (snapshot.error.toString().contains('permission-denied')) {
                 return const SizedBox.shrink();
               }

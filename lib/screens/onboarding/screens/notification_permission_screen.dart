@@ -19,11 +19,9 @@ class NotificationPermissionScreen extends StatelessWidget {
 
   Future<void> _requestNotificationPermission(BuildContext context) async {
     final status = await Permission.notification.status;
-    print('status: $status');
 
     // If permanently denied, open settings
     if (status.isPermanentlyDenied || status.isDenied) {
-      print('permanently denied');
       if (!context.mounted) return;
       final shouldOpenSettings = await showDialog<bool>(
         context: context,
@@ -55,11 +53,10 @@ class NotificationPermissionScreen extends StatelessWidget {
 
     // Check if already denied
     if (status.isDenied) {
-      print('denied');
       final result = await Permission.notification.request();
-      print('result: $result');
+
       if (!context.mounted) return;
-      print('proceeding to next screen');
+
       _proceedToNextScreen(context, result.isGranted);
       return;
     }

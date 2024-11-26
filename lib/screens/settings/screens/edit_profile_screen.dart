@@ -49,7 +49,6 @@ class _EditProfileScreenContentState extends State<EditProfileScreenContent> {
 
   @override
   void initState() {
-    print('initState');
     super.initState();
     _profile = UserProfile();
     _nameController = TextEditingController();
@@ -57,7 +56,6 @@ class _EditProfileScreenContentState extends State<EditProfileScreenContent> {
   }
 
   void _initializeControllers() {
-    print("initializing metric controllers");
     _cmController = FixedExtentScrollController(
       initialItem: _profile.height - MeasurementHelper.offsetHeightPicker(true),
     );
@@ -66,7 +64,7 @@ class _EditProfileScreenContentState extends State<EditProfileScreenContent> {
           (_profile.weight - MeasurementHelper.offsetWeightPicker(true))
               .toInt(),
     );
-    print("initializing imperial controllers");
+
     final imperialHeight =
         MeasurementHelper.convertHeight(_profile.height, false) as List<int>;
     final imperialWeight =
@@ -109,7 +107,6 @@ class _EditProfileScreenContentState extends State<EditProfileScreenContent> {
 
         // Only set the name once when the screen loads
         if (!_isNameInitialized) {
-          print("setting name: ${_profile.name}");
           _nameController.text = _profile.name;
           _isNameInitialized = true;
         }
@@ -188,7 +185,7 @@ class _EditProfileScreenContentState extends State<EditProfileScreenContent> {
                 onChanged: (value) {
                   setState(() {
                     _disposeControllers();
-                    print('value: $value');
+
                     _profile.isMetric = value;
                     _initializeControllers();
                   });
@@ -212,9 +209,6 @@ class _EditProfileScreenContentState extends State<EditProfileScreenContent> {
       final tdee = bmr * _profile.activityMultiplier;
       final dailyCalories = (tdee + _profile.calorieAdjustment).round();
 
-      print("height: ${_profile.height}");
-      print("weight: ${_profile.weight}");
-      print("isMetric: ${_profile.isMetric}");
       await context.read<AppController>().updateProfile(
         {
           'name': _nameController.text,
@@ -232,9 +226,7 @@ class _EditProfileScreenContentState extends State<EditProfileScreenContent> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Profile updated successfully')),
       );
-      print('Profile updated successfully');
     } catch (e) {
-      print('Error updating profile: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error updating profile: $e')),
       );

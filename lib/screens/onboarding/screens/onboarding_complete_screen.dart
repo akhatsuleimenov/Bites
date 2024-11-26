@@ -20,14 +20,11 @@ class OnboardingCompleteScreen extends StatelessWidget {
 
   Future<void> _saveUserData(String userId) async {
     try {
-      print('Saving user data for user: $userId');
       await FirebaseFirestore.instance.collection('users').doc(userId).set({
         'onboardingCompleted': true,
         ...userData, // Spread the user data to save it
       });
-      print('User data saved successfully');
     } catch (e) {
-      print('Error saving user data: $e');
       rethrow;
     }
   }

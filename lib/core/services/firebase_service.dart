@@ -82,7 +82,7 @@ class FirebaseService {
         .where('dateTime', isLessThan: endOfDay)
         .snapshots()
         .handleError((error) {
-      print('getMealLogsStream error: $error');
+      
       // throw error;
     }).map((snapshot) =>
             snapshot.docs.map((doc) => MealLog.fromFirestore(doc)).toList());
@@ -148,14 +148,14 @@ class FirebaseService {
         .snapshots()
         .handleError((error) {
       // Silently handle permission errors
-      print('getUserDataStream error: $error');
+      
       if (error.toString().contains('permission-denied')) {
-        print('getUserDataStream permission-denied');
+        
         return <String, dynamic>{};
       }
       // throw error;
     }).map((doc) {
-      print('getUserDataStream doc: ${doc.toString()}');
+      }');
       if (!doc.exists) return <String, dynamic>{};
       return doc.data()!;
     });
@@ -205,7 +205,7 @@ class FirebaseService {
         .orderBy('date', descending: true)
         .snapshots()
         .handleError((error) {
-      print('getWeightLogs error: $error');
+      
       // throw error;
     }).map((snapshot) => snapshot.docs
             .map((doc) => WeightLog.fromJson(doc.data()))

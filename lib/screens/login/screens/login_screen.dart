@@ -22,25 +22,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void initState() {
-    print('LoginScreen initState called');
     super.initState();
     _authService = Provider.of<AuthService>(context, listen: false);
-    print('LoginScreen initState after Provider.of');
   }
 
   Future<void> _handleGoogleSignIn() async {
-    print('LoginScreen _handleGoogleSignIn called');
     setState(() => _isLoading = true);
 
     try {
-      print('Attempting to sign in with Google');
       await _authService.signInWithGoogle();
-      print('Sign in with Google completed');
+
       if (mounted) {
         Navigator.pushReplacementNamed(context, '/dashboard');
       }
     } catch (e) {
-      print('Sign in with Google error: $e');
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(

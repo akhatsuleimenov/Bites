@@ -46,11 +46,9 @@ class AppController extends ChangeNotifier {
   }
 
   Future<void> loadAppData() async {
-    print('APP CONTROLLER loadAppData');
     if (_isLoading) return;
 
     try {
-      print('APP CONTROLLER loadAppData try');
       _isLoading = true;
       // Only notify if not during initialization
       if (_userProfile != null) notifyListeners();
@@ -66,7 +64,6 @@ class AppController extends ChangeNotifier {
       _setupMealLogsSubscription();
       await loadWeightLogs();
     } catch (e) {
-      print('Error loading app data: $e');
     } finally {
       _isLoading = false;
       // Only notify if not during initialization
@@ -80,7 +77,6 @@ class AppController extends ChangeNotifier {
       notifyListeners();
       await _firebaseService.updateUserData(userId, updates);
     } catch (e) {
-      print('APP CONTROLLER Error updating profile: $e');
       rethrow;
     } finally {
       _isLoading = false;
@@ -101,7 +97,6 @@ class AppController extends ChangeNotifier {
         notifyListeners();
       },
       onError: (e) {
-        print('Meal logs subscription error: $e');
         notifyListeners();
       },
     );
@@ -146,7 +141,6 @@ class AppController extends ChangeNotifier {
       _weightLogs = logs;
       notifyListeners();
     }, onError: (e) {
-      print('loadWeightLogs onError: $e');
       notifyListeners();
     });
   }
@@ -185,15 +179,14 @@ class AppController extends ChangeNotifier {
 
   @override
   void dispose() {
-    print('AppController dispose called');
     _mealLogsSubscription?.cancel();
-    print('Meal logs subscription cancelled');
+
     _todaysMealLogs = [];
     _weeklyMealLogs = [];
     _weightLogs = [];
     _nutritionPlan = NutritionData.empty();
     _userProfile = null;
-    print('AppController dispose completed');
+
     super.dispose();
   }
 }
