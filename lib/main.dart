@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:bites/app/routes.dart';
 import 'package:bites/core/auth/auth_wrapper.dart';
 import 'package:bites/core/controllers/app_controller.dart';
+import 'package:bites/core/controllers/subscription_controller.dart';
 import 'package:bites/core/services/auth_service.dart';
 import 'package:bites/core/themes/app_theme.dart';
 import 'firebase_options.dart';
@@ -26,6 +27,7 @@ void main() async {
       providers: [
         Provider<AuthService>.value(value: authService),
         ChangeNotifierProvider(create: (context) => AppController(authService)),
+        ChangeNotifierProvider(create: (context) => SubscriptionController()),
       ],
       child: const BitesApp(),
     ),

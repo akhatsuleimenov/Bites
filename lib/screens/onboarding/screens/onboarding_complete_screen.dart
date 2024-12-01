@@ -72,10 +72,9 @@ class OnboardingCompleteScreen extends StatelessWidget {
                 onPressed: () async {
                   await _saveUserData(userId);
                   if (context.mounted) {
-                    Navigator.pushNamedAndRemoveUntil(
+                    Navigator.pushNamed(
                       context,
-                      '/dashboard',
-                      (route) => false,
+                      '/onboarding/personalized-goals',
                     );
                   }
                 },

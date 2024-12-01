@@ -9,10 +9,12 @@ import 'package:bites/core/widgets/cards.dart';
 class CalorieCard extends StatelessWidget {
   final double targetCalories;
   final double remainingCalories;
+  final bool isOnboarding;
   const CalorieCard({
     super.key,
     required this.targetCalories,
     required this.remainingCalories,
+    this.isOnboarding = false,
   });
   @override
   Widget build(BuildContext context) {
@@ -29,36 +31,54 @@ class CalorieCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Calories Consumed',
-                    style: AppTypography.bodyLarge.copyWith(
-                      color: Colors.grey[600],
+                  if (!isOnboarding) ...[
+                    Text(
+                      'Calories Consumed',
+                      style: AppTypography.bodyLarge.copyWith(
+                        color: Colors.grey[600],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    (targetCalories - remainingCalories).toString(),
-                    style: AppTypography.headlineLarge,
-                  ),
+                    const SizedBox(height: 4),
+                    Text(
+                      (targetCalories - remainingCalories).toStringAsFixed(0),
+                      style: AppTypography.headlineLarge,
+                    ),
+                  ] else ...[
+                    Text(
+                      'Calories',
+                      style: AppTypography.bodyLarge.copyWith(
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ]
                 ],
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    'Goal',
-                    style: AppTypography.bodyMedium.copyWith(
-                      color: Colors.grey[600],
+              if (!isOnboarding) ...[
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Goal',
+                      style: AppTypography.bodyMedium.copyWith(
+                        color: Colors.grey[600],
+                      ),
                     ),
-                  ),
-                  Text(
-                    targetCalories.toString(),
-                    style: AppTypography.bodyLarge.copyWith(
-                      fontWeight: FontWeight.bold,
+                    Text(
+                      targetCalories.toStringAsFixed(0),
+                      style: AppTypography.bodyLarge.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
+                  ],
+                ),
+              ] else ...[
+                Text(
+                  targetCalories.toStringAsFixed(0),
+                  style: AppTypography.bodyLarge.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
-                ],
-              ),
+                ),
+              ]
             ],
           ),
           const SizedBox(height: 20),
@@ -79,10 +99,12 @@ class CalorieCard extends StatelessWidget {
 class NutritionGrid extends StatelessWidget {
   final NutritionData targetNutrition;
   final NutritionData remainingNutrition;
+  final bool isOnboarding;
   const NutritionGrid({
     super.key,
     required this.targetNutrition,
     required this.remainingNutrition,
+    this.isOnboarding = false,
   });
   @override
   Widget build(BuildContext context) {
@@ -101,6 +123,7 @@ class NutritionGrid extends StatelessWidget {
           target: targetNutrition.protein.toInt(),
           unit: 'g',
           color: Colors.red[400]!,
+          isOnboarding: isOnboarding,
         ),
         _MacroCard(
           title: 'Carbs',
@@ -108,6 +131,7 @@ class NutritionGrid extends StatelessWidget {
           target: targetNutrition.carbs.toInt(),
           unit: 'g',
           color: Colors.blue[400]!,
+          isOnboarding: isOnboarding,
         ),
         _MacroCard(
           title: 'Fat',
@@ -115,6 +139,7 @@ class NutritionGrid extends StatelessWidget {
           target: targetNutrition.fats.toInt(),
           unit: 'g',
           color: Colors.orange[400]!,
+          isOnboarding: isOnboarding,
         ),
       ],
     );
@@ -127,12 +152,15 @@ class _MacroCard extends StatelessWidget {
   final int target;
   final String unit;
   final Color color;
+  final bool isOnboarding;
+
   const _MacroCard({
     required this.title,
     required this.consumed,
     required this.target,
     required this.unit,
     required this.color,
+    required this.isOnboarding,
   });
   @override
   Widget build(BuildContext context) {
@@ -176,7 +204,7 @@ class _MacroCard extends StatelessWidget {
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
-                  '$consumed/$target$unit',
+                  !isOnboarding ? '$consumed/$target$unit' : '$target$unit',
                   style: AppTypography.bodyMedium.copyWith(
                     fontWeight: FontWeight.bold,
                   ),

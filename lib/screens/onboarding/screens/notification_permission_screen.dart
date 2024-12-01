@@ -10,7 +10,6 @@ import 'package:bites/core/widgets/buttons.dart';
 
 // import 'package:app_settings/app_settings.dart';
 
-
 class NotificationPermissionScreen extends StatelessWidget {
   final Map<String, dynamic> userData;
 
@@ -136,14 +135,7 @@ class NotificationPermissionScreen extends StatelessWidget {
               const SizedBox(height: 16),
               TextButton(
                 onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    '/onboarding/complete',
-                    arguments: {
-                      ...userData,
-                      'notificationsEnabled': false,
-                    },
-                  );
+                  _proceedToNextScreen(context, false);
                 },
                 child: Text(
                   'Maybe Later',

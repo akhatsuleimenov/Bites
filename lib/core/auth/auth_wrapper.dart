@@ -24,7 +24,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
   @override
   void initState() {
     super.initState();
-    // Initialize after build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final appController = Provider.of<AppController>(context, listen: false);
       appController.loadAppData();
@@ -56,14 +55,22 @@ class _AuthWrapperState extends State<AuthWrapper> {
                 }
 
                 final userData = snapshot.data;
+                print('AuthWrapper userData: $userData');
                 if (userData == null) {
+                  print('AuthWrapper userData is null');
                   return const LoginScreen();
                 }
 
                 final onboardingCompleted =
                     userData['onboardingCompleted'] ?? false;
+                final hasSubscription = userData['subscriptionActive'] ?? false;
+
                 if (!onboardingCompleted) {
                   return const WelcomeScreen();
+                }
+
+                if (!hasSubscription) {
+                  return const SubscriptionScreen();
                 }
 
                 return const AppScaffold();

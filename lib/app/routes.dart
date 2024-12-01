@@ -89,6 +89,14 @@ class AppRoutes {
         return MaterialPageRoute(
           builder: (_) => NotificationPermissionScreen(userData: args!),
         );
+      case '/onboarding/personalized-goals':
+        return MaterialPageRoute(
+          builder: (_) => PersonalizedGoalsScreen(),
+        );
+      case '/onboarding/subscription':
+        return MaterialPageRoute(
+          builder: (_) => SubscriptionScreen(),
+        );
       case '/onboarding/complete':
         return MaterialPageRoute(
           builder: (_) => OnboardingCompleteScreen(userData: args!),
