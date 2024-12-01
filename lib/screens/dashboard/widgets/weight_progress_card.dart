@@ -73,7 +73,10 @@ class WeightProgressCard extends StatelessWidget {
                 ),
                 if (latestWeight != null)
                   Text(
-                    MeasurementHelper.formatWeight(latestWeight!, isMetric),
+                    MeasurementHelper.formatWeight(
+                      latestWeight!,
+                      isMetric,
+                    ),
                     style: AppTypography.headlineSmall.copyWith(
                       fontWeight: FontWeight.bold,
                     ),

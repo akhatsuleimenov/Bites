@@ -52,7 +52,7 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
     final foodItem = widget.analysisResults['items'][0]['food'][0];
     final foodInfo = foodItem['food_info'];
     final nutrition = foodInfo['nutrition'];
-    final quantity = foodInfo['quantity'] as double;
+    final quantity = foodItem['quantity'] as double;
 
     // Create ingredients list
     final ingredients =

@@ -60,7 +60,7 @@ class MealLogCard extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          '${mealLog.foodInfo.nutritionalInfo.nutritionData.calories} cal',
+                          '${mealLog.foodInfo.nutritionalInfo.nutritionData.calories.toStringAsFixed(0)} cal',
                           style: TextStyle(
                             color: Colors.grey[600],
                           ),

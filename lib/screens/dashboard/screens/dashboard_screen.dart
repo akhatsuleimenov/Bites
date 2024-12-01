@@ -152,8 +152,11 @@ class DashboardScreen extends StatelessWidget {
                       Navigator.pop(context);
                       final TextEditingController weightController =
                           TextEditingController(
-                              text:
-                                  appController.latestWeight?.toString() ?? '');
+                        text: MeasurementHelper.convertWeight(
+                          appController.latestWeight ?? 0,
+                          appController.userProfile.isMetric,
+                        ).toStringAsFixed(0),
+                      );
 
                       final result = await showDialog<bool>(
                         context: context,

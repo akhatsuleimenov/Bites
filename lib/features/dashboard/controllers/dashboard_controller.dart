@@ -2,21 +2,21 @@
 import 'dart:async';
 
 // Flutter imports:
+import 'package:bites/core/models/weight_log_model.dart';
 import 'package:flutter/material.dart';
 
 // Project imports:
 import 'package:bites/core/models/food_model.dart';
-import 'package:bites/core/models/user_profile_model.dart';
-import 'package:bites/core/models/weight_log_model.dart';
 import 'package:bites/core/services/auth_service.dart';
 import 'package:bites/core/services/firebase_service.dart';
+import 'package:bites/core/models/user_profile_model.dart';
 
-class AppController extends ChangeNotifier {
+class DashboardController extends ChangeNotifier {
+  // Services
   final FirebaseService _firebaseService = FirebaseService();
   final AuthService _authService;
 
-  // State variables
-  bool _isLoading = false;
+  // Variables
   StreamSubscription? _mealLogsSubscription;
   late final String userId;
   NutritionData _nutritionPlan = NutritionData.empty();
@@ -26,33 +26,28 @@ class AppController extends ChangeNotifier {
   UserProfile? _userProfile;
 
   // Getters
-  bool get isLoading => _isLoading;
   NutritionData get nutritionPlan => _nutritionPlan;
   List<MealLog> get todaysMealLogs => _todaysMealLogs;
   List<MealLog> get weeklyMealLogs => _weeklyMealLogs;
   List<WeightLog> get weightLogs => _weightLogs;
-  UserProfile get userProfile => _userProfile!;
   double? get latestWeight =>
       _weightLogs.isNotEmpty ? _weightLogs.first.weight : null;
+  UserProfile? get userProfile => _userProfile;
 
-  AppController(this._authService) {
+  // Constructor
+  DashboardController(this._authService) {
     userId = _authService.currentUser!.uid;
-    initializeData();
   }
 
+  // New method for initialization
   Future<void> initializeData() async {
-    if (_userProfile != null) return;
-    await loadAppData();
+    if (_userProfile != null) return; // Already initialized
+    await loadDashboardData();
   }
 
-  Future<void> loadAppData() async {
-    if (_isLoading) return;
-
+  // Clean up loadDashboardData
+  Future<void> loadDashboardData() async {
     try {
-      _isLoading = true;
-      // Only notify if not during initialization
-      if (_userProfile != null) notifyListeners();
-
       final futures = await Future.wait([
         _firebaseService.getUserNutritionPlan(userId),
         _firebaseService.getUserData(userId),
@@ -63,24 +58,9 @@ class AppController extends ChangeNotifier {
 
       _setupMealLogsSubscription();
       await loadWeightLogs();
-    } catch (e) {
-    } finally {
-      _isLoading = false;
-      // Only notify if not during initialization
-      if (_userProfile != null) notifyListeners();
-    }
-  }
 
-  Future<void> updateProfile(Map<String, dynamic> updates) async {
-    try {
-      _isLoading = true;
       notifyListeners();
-      await _firebaseService.updateUserData(userId, updates);
     } catch (e) {
-      rethrow;
-    } finally {
-      _isLoading = false;
-      await loadAppData();
       notifyListeners();
     }
   }
@@ -103,10 +83,11 @@ class AppController extends ChangeNotifier {
   }
 
   void _updateWeeklyLogs() async {
-    final currentDay = DateTime.now();
+    final now = DateTime.now();
+    final weekStart = now.subtract(Duration(days: now.weekday - 1));
 
     _weeklyMealLogs =
-        await _firebaseService.getWeeklyMealLogs(userId, currentDay);
+        await _firebaseService.getWeeklyMealLogs(userId, weekStart);
     notifyListeners();
   }
 
@@ -132,16 +113,19 @@ class AppController extends ChangeNotifier {
   }
 
   Future<void> refreshData() async {
-    await loadAppData();
+    await loadDashboardData();
   }
 
   Future<void> loadWeightLogs() async {
-    _firebaseService.getWeightLogs(userId).listen((logs) {
-      _weightLogs = logs;
-      notifyListeners();
-    }, onError: (e) {
-      notifyListeners();
-    });
+    _firebaseService.getWeightLogs(userId).listen(
+      (logs) {
+        _weightLogs = logs;
+        notifyListeners();
+      },
+      onError: (e) {
+        notifyListeners();
+      },
+    );
   }
 
   Future<void> logWeight(double weight) async {
@@ -179,13 +163,11 @@ class AppController extends ChangeNotifier {
   @override
   void dispose() {
     _mealLogsSubscription?.cancel();
-
     _todaysMealLogs = [];
     _weeklyMealLogs = [];
     _weightLogs = [];
     _nutritionPlan = NutritionData.empty();
     _userProfile = null;
-
     super.dispose();
   }
 }
