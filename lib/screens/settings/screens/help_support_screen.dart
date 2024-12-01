@@ -60,13 +60,13 @@ class HelpSupportScreen extends StatelessWidget {
             subtitle: 'support@bites.com',
             onTap: () => _launchEmail('support@bites.com'),
           ),
-          const SizedBox(height: 12),
-          _buildContactCard(
-            icon: Icons.chat_bubble_outline,
-            title: 'Live Chat',
-            subtitle: 'Available 24/7',
-            onTap: () => _launchChat(),
-          ),
+          // const SizedBox(height: 12),
+          // _buildContactCard(
+          //   icon: Icons.chat_bubble_outline,
+          //   title: 'Live Chat',
+          //   subtitle: 'Available 24/7',
+          //   onTap: () => _launchChat(),
+          // ),
 
           const SizedBox(height: 32),
 
@@ -176,5 +176,5 @@ class HelpSupportScreen extends StatelessWidget {
     }
   }
 
-  void _launchChat() {}
+  // void _launchChat() {}
 }

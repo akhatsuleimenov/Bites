@@ -30,7 +30,6 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen> {
 
     try {
       final results = await _foodvisorService.analyzeImage(File(image.path));
-
       if (!mounted) return;
 
       Navigator.pushNamed(

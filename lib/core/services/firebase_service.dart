@@ -159,14 +159,14 @@ class FirebaseService {
   }
 
   Future<List<MealLog>> getWeeklyMealLogs(
-      String userId, DateTime weekStart) async {
-    final weekEnd = weekStart.add(const Duration(days: 7));
+      String userId, DateTime currentDay) async {
+    final pastWeek = currentDay.subtract(Duration(days: 7));
 
     final snapshot = await _firestore
         .collection('meal_logs')
         .where('userId', isEqualTo: userId)
-        .where('dateTime', isGreaterThanOrEqualTo: weekStart)
-        .where('dateTime', isLessThan: weekEnd)
+        .where('dateTime', isGreaterThanOrEqualTo: pastWeek)
+        .where('dateTime', isLessThan: currentDay)
         .get();
 
     return snapshot.docs.map((doc) => MealLog.fromFirestore(doc)).toList();

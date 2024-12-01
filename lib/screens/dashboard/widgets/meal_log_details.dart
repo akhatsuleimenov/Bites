@@ -53,7 +53,7 @@ class MealLogDetails extends StatelessWidget {
                             label: 'Calories',
                             value: mealLog
                                 .foodInfo.nutritionalInfo.nutritionData.calories
-                                .toString(),
+                                .toStringAsFixed(0),
                             unit: 'kcal',
                           ),
                           _NutrientInfo(
@@ -126,7 +126,7 @@ class _ItemCard extends StatelessWidget {
               children: [
                 _NutrientInfo(
                   label: 'Calories',
-                  value: item.nutritionData.calories.toString(),
+                  value: item.nutritionData.calories.toStringAsFixed(0),
                   unit: 'kcal',
                 ),
                 _NutrientInfo(
