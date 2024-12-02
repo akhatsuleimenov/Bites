@@ -34,6 +34,11 @@ class _AuthWrapperState extends State<AuthWrapper> {
   Widget build(BuildContext context) {
     return Consumer<AuthService>(
       builder: (context, authService, _) {
+        // Check if user is null first
+        if (authService.currentUser == null) {
+          return const LoginScreen();
+        }
+
         return FutureBuilder<Map<String, dynamic>>(
           future: FirebaseService().getUserData(authService.currentUser!.uid),
           builder: (context, snapshot) {
