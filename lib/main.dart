@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:bites/store_config.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -16,6 +17,10 @@ import 'package:bites/core/themes/app_theme.dart';
 import 'firebase_options.dart';
 
 void main() async {
+  StoreConfig(
+    store: Store.appleStore,
+    apiKey: dotenv.env['APPLE_API_KEY']!,
+  );
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
   await Firebase.initializeApp(
