@@ -18,18 +18,17 @@ class SubscriptionScreen extends StatefulWidget {
 class _SubscriptionScreenState extends State<SubscriptionScreen> {
   bool _isLoading = false;
   String? _errorMessage;
+  late final SubscriptionController _subscriptionController;
 
   @override
   void initState() {
     super.initState();
-    final subscriptionController = context.read<SubscriptionController>();
-    // Listen for subscription status changes
-    subscriptionController.addListener(_onSubscriptionUpdate);
+    _subscriptionController = context.read<SubscriptionController>();
+    _subscriptionController.addListener(_onSubscriptionUpdate);
   }
 
   void _onSubscriptionUpdate() {
-    final subscriptionController = context.read<SubscriptionController>();
-    if (subscriptionController.hasActiveSubscription) {
+    if (_subscriptionController.hasActiveSubscription) {
       _handleSuccessfulSubscription();
     }
   }
@@ -57,11 +56,15 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     });
 
     try {
-      print('purchase');
-      final subscriptionController = context.read<SubscriptionController>();
-      print('purchase2');
-      await subscriptionController.purchaseYearlySubscription();
-      // Don't navigate here - wait for purchase stream update
+      final success = await _subscriptionController.purchaseSubscription();
+
+      if (success) {
+        await _handleSuccessfulSubscription();
+      } else {
+        setState(() {
+          _errorMessage = 'Subscription purchase failed';
+        });
+      }
     } catch (e) {
       setState(() {
         _errorMessage = 'Failed to process subscription: $e';
@@ -78,8 +81,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     final userId = authService.currentUser!.uid;
     final subscriptionController = context.watch<SubscriptionController>();
 
-    final bool isProcessing =
-        _isLoading || subscriptionController.isPurchasePending;
+    final bool isProcessing = _isLoading || subscriptionController.isLoading;
 
     return Scaffold(
       body: SafeArea(
@@ -122,8 +124,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
   @override
   void dispose() {
-    final subscriptionController = context.read<SubscriptionController>();
-    subscriptionController.removeListener(_onSubscriptionUpdate);
+    _subscriptionController.removeListener(_onSubscriptionUpdate);
     super.dispose();
   }
 }

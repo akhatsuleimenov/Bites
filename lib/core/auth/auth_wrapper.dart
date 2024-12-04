@@ -1,5 +1,4 @@
 // Flutter imports:
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -58,10 +57,18 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
             final onboardingCompleted =
                 userData['onboardingCompleted'] ?? false;
+
             print('onboarding completed: $onboardingCompleted');
             if (!onboardingCompleted) {
               print('onboarding not completed, redirecting to onboarding');
               return const WelcomeScreen();
+            }
+
+            final isSubscribed = userData['subscription'] ?? false;
+            print('is subscribed: $isSubscribed');
+            if (!isSubscribed) {
+              print('user is not subscribed, redirecting to subscription');
+              return const SubscriptionScreen();
             }
 
             print('onboarding completed, redirecting to app');

@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:bites/core/services/revenue_cat_service.dart';
 import 'package:bites/store_config.dart';
 import 'package:flutter/material.dart';
 
@@ -17,15 +18,16 @@ import 'package:bites/core/themes/app_theme.dart';
 import 'firebase_options.dart';
 
 void main() async {
+  await dotenv.load();
+  WidgetsFlutterBinding.ensureInitialized();
   StoreConfig(
     store: Store.appleStore,
     apiKey: dotenv.env['APPLE_API_KEY']!,
   );
-  WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await RevenueCatService.init();
 
   final authService = AuthService();
 

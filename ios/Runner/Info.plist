@@ -69,5 +69,12 @@
 	</array>
 	<key>SKPaymentTransactionObserverCanMakePayments</key>
 	<true/>
+	<key>StoreKit</key>
+	<array>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>app.revenuecat.com</string>
+		</dict>
+	</array>
 </dict>
 </plist>
