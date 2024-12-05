@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:bites/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -17,6 +18,7 @@ class HelpSupportScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Help & Support'),
         leading: const CustomBackButton(),
+        backgroundColor: AppColors.cardBackground,
       ),
       body: ListView(
         padding: const EdgeInsets.all(24),

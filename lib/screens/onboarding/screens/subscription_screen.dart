@@ -38,13 +38,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     await FirebaseFirestore.instance
         .collection('users')
         .doc(authService.currentUser!.uid)
-        .update({'subscriptionActive': true});
+        .update({'isSubscribed': true});
 
     if (mounted) {
-      Navigator.pushNamedAndRemoveUntil(
+      Navigator.pushNamed(
         context,
-        '/dashboard',
-        (route) => false,
+        '/onboarding/payment-success',
       );
     }
   }

@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:bites/screens/onboarding/screens/payment_success_screen.dart';
 import 'package:flutter/material.dart';
 
 // Project imports:
@@ -96,6 +97,10 @@ class AppRoutes {
       case '/onboarding/subscription':
         return MaterialPageRoute(
           builder: (_) => SubscriptionScreen(),
+        );
+      case '/onboarding/payment-success':
+        return MaterialPageRoute(
+          builder: (_) => const PaymentSuccessScreen(),
         );
       case '/onboarding/complete':
         return MaterialPageRoute(

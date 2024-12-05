@@ -48,19 +48,19 @@ class OnboardingCompleteScreen extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               Text(
-                'You\'re all set!',
+                'Onboarding Complete!',
                 style: AppTypography.headlineLarge,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
               Text(
-                'Your personalized nutrition journey begins now.',
+                'Next, we\'ll explore your personalized goals.',
                 style: AppTypography.headlineSmall,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
               Text(
-                'Remember: Every small step counts.\nYou\'ve got this! 💪',
+                'Every step counts towards your goals.\nLet\'s get started! 💪',
                 style: AppTypography.bodyLarge.copyWith(
                   color: Colors.grey[600],
                 ),
@@ -68,7 +68,7 @@ class OnboardingCompleteScreen extends StatelessWidget {
               ),
               const SizedBox(height: 48),
               PrimaryButton(
-                text: 'Let\'s Begin!',
+                text: 'Let\'s See!',
                 onPressed: () async {
                   await _saveUserData(userId);
                   if (context.mounted) {

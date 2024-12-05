@@ -19,17 +19,22 @@ import 'firebase_options.dart';
 
 void main() async {
   await dotenv.load();
+  print("dotenv: ${dotenv.env}");
   WidgetsFlutterBinding.ensureInitialized();
+  print("WidgetsFlutterBinding.ensureInitialized");
   StoreConfig(
     store: Store.appleStore,
     apiKey: dotenv.env['APPLE_API_KEY']!,
   );
+  print("StoreConfig");
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  print("Firebase.initializeApp");
   await RevenueCatService.init();
-
+  print("RevenueCatService.init");
   final authService = AuthService();
+  print("AuthService $authService");
 
   runApp(
     MultiProvider(
@@ -48,6 +53,7 @@ class BitesApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("BitesApp build");
     return MaterialApp(
       title: 'bites.',
       theme: AppTheme.lightTheme,

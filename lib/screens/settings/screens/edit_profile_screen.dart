@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:bites/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -115,13 +116,25 @@ class _EditProfileScreenContentState extends State<EditProfileScreenContent> {
           appBar: AppBar(
             title: const Text('Edit Profile'),
             leading: const CustomBackButton(),
+            backgroundColor: AppColors.cardBackground,
           ),
           body: ListView(
             padding: const EdgeInsets.all(16),
             children: [
               TextField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
+                decoration: InputDecoration(
+                  labelText: 'Name',
+                  labelStyle: const TextStyle(color: AppColors.textPrimary),
+                  enabledBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.textPrimary),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide:
+                        BorderSide(color: Theme.of(context).primaryColor),
+                  ),
+                ),
+                style: const TextStyle(color: AppColors.textPrimary),
               ),
               const SizedBox(height: 24),
               Row(

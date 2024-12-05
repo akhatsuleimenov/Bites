@@ -2,6 +2,7 @@
 import 'dart:io';
 
 // Flutter imports:
+import 'package:bites/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -156,6 +157,7 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Log Meal'),
+        backgroundColor: AppColors.cardBackground,
       ),
       body: Stack(
         children: [
@@ -195,6 +197,12 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: AppColors.cardBackground,
+                          side: BorderSide(
+                            color: AppColors.primary,
+                          ),
+                        ),
                         onPressed: _pickFromGallery,
                         child: const Padding(
                           padding: EdgeInsets.all(16.0),

@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:bites/core/widgets/cards.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -230,25 +231,22 @@ class ProfileScreen extends StatelessWidget {
         .map((word) => word[0].toUpperCase() + word.substring(1))
         .join(' ');
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            _buildInfoRow(
-              'Current Goal',
-              goalText,
-              Icons.flag_outlined,
-            ),
-            const Divider(height: 24),
-            _buildInfoRow(
-              'Target Weight',
-              MeasurementHelper.formatWeight(
-                  userData['targetWeight'], userData['isMetric']),
-              Icons.track_changes_outlined,
-            ),
-          ],
-        ),
+    return BaseCard(
+      child: Column(
+        children: [
+          _buildInfoRow(
+            'Current Goal',
+            goalText,
+            Icons.flag_outlined,
+          ),
+          const Divider(height: 24),
+          _buildInfoRow(
+            'Target Weight',
+            MeasurementHelper.formatWeight(
+                userData['targetWeight'], userData['isMetric']),
+            Icons.track_changes_outlined,
+          ),
+        ],
       ),
     );
   }
@@ -261,79 +259,70 @@ class ProfileScreen extends StatelessWidget {
         .map((word) => word[0].toUpperCase() + word.substring(1))
         .join(' ');
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            _buildInfoRow(
-              'Workout Frequency',
-              frequencyText,
-              Icons.fitness_center_outlined,
-            ),
-            const Divider(height: 24),
-            _buildInfoRow(
-              'Activity Multiplier',
-              'x${userData['activityMultiplier']?.toStringAsFixed(2) ?? '1.0'}',
-              Icons.speed_outlined,
-            ),
-          ],
-        ),
+    return BaseCard(
+      child: Column(
+        children: [
+          _buildInfoRow(
+            'Workout Frequency',
+            frequencyText,
+            Icons.fitness_center_outlined,
+          ),
+          const Divider(height: 24),
+          _buildInfoRow(
+            'Activity Multiplier',
+            'x${userData['activityMultiplier']?.toStringAsFixed(2) ?? '1.0'}',
+            Icons.speed_outlined,
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildBodyMetricsCard(Map<String, dynamic> userData) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            _buildInfoRow(
-              'Height',
-              MeasurementHelper.formatHeight(
-                  userData['height'], userData['isMetric']),
-              Icons.height_outlined,
-            ),
-            const Divider(height: 24),
-            _buildInfoRow(
-              'Weight',
-              MeasurementHelper.formatWeight(
-                  userData['weight'], userData['isMetric']),
-              Icons.monitor_weight_outlined,
-            ),
-            const Divider(height: 24),
-            _buildInfoRow(
-              'Birth Date',
-              DateFormat('MMM d, y')
-                  .format((userData['birthDate'] as dynamic).toDate()),
-              Icons.cake_outlined,
-            ),
-          ],
-        ),
+    return BaseCard(
+      child: Column(
+        children: [
+          _buildInfoRow(
+            'Height',
+            MeasurementHelper.formatHeight(
+                userData['height'], userData['isMetric']),
+            Icons.height_outlined,
+          ),
+          const Divider(height: 24),
+          _buildInfoRow(
+            'Weight',
+            MeasurementHelper.formatWeight(
+                userData['weight'], userData['isMetric']),
+            Icons.monitor_weight_outlined,
+          ),
+          const Divider(height: 24),
+          _buildInfoRow(
+            'Birth Date',
+            DateFormat('MMM d, y')
+                .format((userData['birthDate'] as dynamic).toDate()),
+            Icons.cake_outlined,
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildPreferencesCard(Map<String, dynamic> userData) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            _buildInfoRow(
-              'Unit System',
-              userData['isMetric'] ? 'Metric' : 'Imperial',
-              Icons.straighten_outlined,
-            ),
-            const Divider(height: 24),
-            _buildInfoRow(
-              'Notifications',
-              userData['notificationsEnabled'] ? 'Enabled' : 'Disabled',
-              Icons.notifications_outlined,
-            ),
-          ],
-        ),
+    return BaseCard(
+      child: Column(
+        children: [
+          _buildInfoRow(
+            'Unit System',
+            userData['isMetric'] ? 'Metric' : 'Imperial',
+            Icons.straighten_outlined,
+          ),
+          const Divider(height: 24),
+          _buildInfoRow(
+            'Notifications',
+            userData['notificationsEnabled'] ? 'Enabled' : 'Disabled',
+            Icons.notifications_outlined,
+          ),
+        ],
       ),
     );
   }

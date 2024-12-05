@@ -12,20 +12,26 @@ class AuthService {
   Future<UserCredential> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      print("Google Sign In Result: $googleUser");
+
       if (googleUser == null) {
         throw const AuthException('Sign in aborted by user');
       }
 
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
+      print("Google Auth Result: ${googleAuth.accessToken != null}");
 
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      return await _auth.signInWithCredential(credential);
+      final result = await _auth.signInWithCredential(credential);
+      print("Firebase Auth Result: ${result.user?.uid}");
+      return result;
     } catch (e) {
+      print("Sign In Error: $e");
       throw AuthException('Failed to sign in with Google: $e');
     }
   }

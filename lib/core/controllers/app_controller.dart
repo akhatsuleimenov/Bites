@@ -42,10 +42,13 @@ class AppController extends ChangeNotifier {
 
   void _setupAuthListener() {
     _authStateSubscription = _authService.authStateChanges.listen((user) {
+      print("Auth State Changed: $user");
       if (user != null) {
+        print("User is not null");
         userId = user.uid;
         initializeData();
       } else {
+        print("User is null");
         // Handle signed out state
         _clearData();
       }

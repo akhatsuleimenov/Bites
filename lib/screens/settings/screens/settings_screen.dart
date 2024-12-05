@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:bites/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -20,6 +21,7 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Settings'),
         leading: const CustomBackButton(),
+        backgroundColor: AppColors.cardBackground,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

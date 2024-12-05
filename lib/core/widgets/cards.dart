@@ -118,7 +118,8 @@ class SettingsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return BaseCard(
+      padding: const EdgeInsets.all(1),
       child: ListTile(
         leading: isTrailingIcon == true ? Icon(icon) : null,
         title: isTrailingIcon == false

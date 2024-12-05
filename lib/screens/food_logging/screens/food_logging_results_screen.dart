@@ -2,6 +2,8 @@
 import 'dart:io';
 
 // Flutter imports:
+import 'package:bites/core/constants/app_colors.dart';
+import 'package:bites/core/widgets/cards.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -237,6 +239,7 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Analysis Results'),
+        backgroundColor: AppColors.cardBackground,
       ),
       body: Column(
         children: [
@@ -256,6 +259,12 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: AppColors.cardBackground,
+                      side: BorderSide(
+                        color: AppColors.primary,
+                      ),
+                    ),
                     onPressed: _selectDate,
                     icon: const Icon(Icons.calendar_today),
                     label: Text(
@@ -266,6 +275,12 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: AppColors.cardBackground,
+                      side: BorderSide(
+                        color: AppColors.primary,
+                      ),
+                    ),
                     onPressed: _selectTime,
                     icon: const Icon(Icons.access_time),
                     label: Text(
@@ -284,6 +299,10 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
               label: Text(_selectedMealType),
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size.fromHeight(48),
+                backgroundColor: AppColors.cardBackground,
+                side: BorderSide(
+                  color: AppColors.primary,
+                ),
               ),
             ),
           ),
@@ -375,57 +394,51 @@ class _FoodItemCardState extends State<_FoodItemCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    widget.showIngredients
-                        ? widget.item.nutritionalInfo.name
-                        : widget.item.name,
-                    style: AppTypography.headlineSmall,
-                  ),
+    return BaseCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  widget.showIngredients
+                      ? widget.item.nutritionalInfo.name
+                      : widget.item.name,
+                  style: AppTypography.headlineSmall,
                 ),
-                _buildEditableField('quantity', 'g'),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                _buildEditableField('calories', 'kcal', label: 'Calories'),
-                _buildEditableField('protein', 'g', label: 'Protein'),
-                _buildEditableField('carbs', 'g', label: 'Carbs'),
-                _buildEditableField('fat', 'g', label: 'Fat'),
-              ],
-            ),
-            if (widget.showIngredients && widget.item is FoodInfo) ...[
-              ExpansionTile(
-                title: Text(
-                  'Ingredients',
-                  style: AppTypography.headlineSmall
-                      .copyWith(color: Colors.grey[700]),
-                ),
-                children: widget.item.ingredients
-                    .asMap()
-                    .entries
-                    .map<Widget>((entry) {
-                  return _FoodItemCard(
-                    item: entry.value,
-                    onValueChanged: (field, value) => widget.onIngredientChanged
-                        ?.call(entry.key, field, value),
-                    showIngredients: false,
-                  );
-                }).toList(),
               ),
+              _buildEditableField('quantity', 'g'),
             ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              _buildEditableField('calories', 'kcal', label: 'Calories'),
+              _buildEditableField('protein', 'g', label: 'Protein'),
+              _buildEditableField('carbs', 'g', label: 'Carbs'),
+              _buildEditableField('fat', 'g', label: 'Fat'),
+            ],
+          ),
+          if (widget.showIngredients && widget.item is FoodInfo) ...[
+            ExpansionTile(
+              title: Text(
+                'Ingredients',
+                style: AppTypography.headlineSmall
+                    .copyWith(color: Colors.grey[700]),
+              ),
+              children:
+                  widget.item.ingredients.asMap().entries.map<Widget>((entry) {
+                return _FoodItemCard(
+                  item: entry.value,
+                  onValueChanged: (field, value) =>
+                      widget.onIngredientChanged?.call(entry.key, field, value),
+                  showIngredients: false,
+                );
+              }).toList(),
+            ),
           ],
-        ),
+        ],
       ),
     );
   }
@@ -450,6 +463,13 @@ class _FoodItemCardState extends State<_FoodItemCard> {
               suffixText: unit,
               isDense: true,
               border: InputBorder.none,
+              labelStyle: const TextStyle(color: AppColors.textPrimary),
+              enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: AppColors.textPrimary),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Theme.of(context).primaryColor),
+              ),
             ),
             onChanged: (value) {
               final newValue = double.tryParse(value);

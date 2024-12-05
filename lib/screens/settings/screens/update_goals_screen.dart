@@ -1,5 +1,9 @@
 // Flutter imports:
+import 'package:bites/core/constants/app_colors.dart';
+import 'package:bites/core/controllers/app_controller.dart';
+import 'package:bites/core/utils/measurement_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:bites/core/models/user_profile_model.dart';
 
 // Package imports:
 import 'package:provider/provider.dart';
@@ -7,9 +11,6 @@ import 'package:provider/provider.dart';
 // Project imports:
 import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/constants/fitness_goals_data.dart';
-import 'package:bites/core/controllers/app_controller.dart';
-import 'package:bites/core/models/user_profile_model.dart';
-import 'package:bites/core/utils/measurement_utils.dart';
 import 'package:bites/core/widgets/buttons.dart';
 
 class UpdateGoalsScreen extends StatelessWidget {
@@ -32,18 +33,38 @@ class UpdateGoalsScreenContent extends StatefulWidget {
 
 class _UpdateGoalsScreenState extends State<UpdateGoalsScreenContent> {
   late UserProfile _profile;
-  late FixedExtentScrollController _weightController;
+  late FixedExtentScrollController _kgController;
+  late FixedExtentScrollController _lbController;
 
   @override
   void initState() {
+    print("initState");
     super.initState();
     _profile = UserProfile();
-    _weightController = FixedExtentScrollController(initialItem: 0);
+    _initializeControllers();
+  }
+
+  void _initializeControllers() {
+    _kgController = FixedExtentScrollController(
+      initialItem:
+          (_profile.weight - MeasurementHelper.offsetWeightPicker(true))
+              .toInt(),
+    );
+
+    final imperialWeight =
+        MeasurementHelper.convertWeight(_profile.weight, false);
+
+    _lbController = FixedExtentScrollController(
+      initialItem:
+          (imperialWeight - MeasurementHelper.offsetWeightPicker(false))
+              .toInt(),
+    );
   }
 
   @override
   void dispose() {
-    _weightController.dispose();
+    _kgController.dispose();
+    _lbController.dispose();
     super.dispose();
   }
 
@@ -51,19 +72,13 @@ class _UpdateGoalsScreenState extends State<UpdateGoalsScreenContent> {
   Widget build(BuildContext context) {
     return Consumer<AppController>(
       builder: (context, controller, _) {
-        // Initialize values from userData only once
-        if (_profile.isEmpty()) {
-          _profile = controller.userProfile;
-          _weightController = FixedExtentScrollController(
-              initialItem: MeasurementHelper.convertWeight(
-                      _profile.targetWeight, _profile.isMetric)
-                  .toInt());
-        }
+        _profile = controller.userProfile;
 
         return Scaffold(
           appBar: AppBar(
             title: const Text('Update Goals'),
             leading: const CustomBackButton(),
+            backgroundColor: AppColors.cardBackground,
           ),
           body: ListView(
             padding: const EdgeInsets.all(24),
@@ -103,39 +118,13 @@ class _UpdateGoalsScreenState extends State<UpdateGoalsScreenContent> {
                 );
               }),
               const SizedBox(height: 24),
-              Text(
-                  'Target Weight (${MeasurementHelper.getWeightLabel(_profile.isMetric)})',
-                  style: AppTypography.headlineSmall),
+              Text('Target Weight (kg)', style: AppTypography.headlineSmall),
               const SizedBox(height: 16),
               SizedBox(
                 height: 150,
-                child: ListWheelScrollView.useDelegate(
-                  itemExtent: 50,
-                  onSelectedItemChanged: (value) {
-                    setState(() {
-                      _profile.targetWeight =
-                          MeasurementHelper.standardizeWeight(
-                              value.toDouble(), _profile.isMetric);
-                    });
-                  },
-                  childDelegate: ListWheelChildBuilderDelegate(
-                    builder: (context, index) {
-                      return Center(
-                        child: Text(
-                          MeasurementHelper.formatWeight(
-                              index.toDouble(), _profile.isMetric),
-                          style: AppTypography.bodyLarge,
-                        ),
-                      );
-                    },
-                    childCount: MeasurementHelper.childCountWeightPicker(
-                        _profile.isMetric),
-                  ),
-                  controller: _weightController,
-                  physics: const FixedExtentScrollPhysics(),
-                  perspective: 0.005,
-                  diameterRatio: 1.2,
-                ),
+                child: _profile.isMetric
+                    ? _buildMetricWeightPicker()
+                    : _buildImperialWeightPicker(),
               ),
               const SizedBox(height: 32),
               PrimaryButton(
@@ -149,8 +138,86 @@ class _UpdateGoalsScreenState extends State<UpdateGoalsScreenContent> {
     );
   }
 
+  Widget _buildMetricWeightPicker() {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildWheelScrollView(
+            _kgController,
+            MeasurementHelper.childCountWeightPicker(true),
+            (value) {
+              setState(() {
+                _profile.targetWeight =
+                    value + MeasurementHelper.offsetWeightPicker(true);
+              });
+            },
+            MeasurementHelper.offsetWeightPicker(true).toInt(),
+            'kg',
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildImperialWeightPicker() {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildWheelScrollView(
+            _lbController,
+            MeasurementHelper.childCountWeightPicker(false),
+            (value) {
+              setState(() {
+                print("value: $value");
+                final lbs = value + MeasurementHelper.offsetWeightPicker(false);
+                print("lbs: $lbs");
+                _profile.targetWeight = lbs * MeasurementHelper.lbToKg;
+              });
+            },
+            MeasurementHelper.offsetWeightPicker(false).toInt(),
+            'lb',
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWheelScrollView(
+    FixedExtentScrollController controller,
+    int childCount,
+    Function(int) onSelectedItemChanged,
+    int offset,
+    String unit,
+  ) {
+    return ListWheelScrollView.useDelegate(
+      controller: controller,
+      itemExtent: 40,
+      perspective: 0.005,
+      diameterRatio: 1.2,
+      physics: const FixedExtentScrollPhysics(),
+      onSelectedItemChanged: onSelectedItemChanged,
+      childDelegate: ListWheelChildBuilderDelegate(
+        childCount: childCount,
+        builder: (context, index) {
+          return Center(
+            child: Text(
+              '${index + offset} $unit',
+              style: AppTypography.bodyLarge.copyWith(
+                color: controller.selectedItem == index
+                    ? Theme.of(context).primaryColor
+                    : Colors.grey,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   Future<void> _saveChanges() async {
     try {
+      print("saving changes");
+      print("targetWeight: ${_profile.targetWeight}");
       await context.read<AppController>().updateProfile({
         'goal': _profile.goal,
         'targetWeight': _profile.targetWeight,
@@ -203,6 +270,9 @@ class _GoalCard extends StatelessWidget {
         trailing: Checkbox(
           value: isSelected,
           onChanged: (_) => onTap(),
+          fillColor: WidgetStateProperty.resolveWith((states) {
+            return Theme.of(context).colorScheme.primary;
+          }),
         ),
       ),
     );
@@ -238,6 +308,9 @@ class _FrequencyCard extends StatelessWidget {
         trailing: Checkbox(
           value: isSelected,
           onChanged: (_) => onTap(),
+          fillColor: WidgetStateProperty.resolveWith((states) {
+            return Theme.of(context).colorScheme.primary;
+          }),
         ),
       ),
     );

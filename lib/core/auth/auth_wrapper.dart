@@ -23,55 +23,69 @@ class _AuthWrapperState extends State<AuthWrapper> {
   @override
   void initState() {
     super.initState();
+    print("AuthWrapper initState");
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final appController = Provider.of<AppController>(context, listen: false);
+      print("AuthWrapper loadAppData");
       appController.loadAppData();
+      print("AuthWrapper loadAppData done");
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    print("AuthWrapper build");
     return Consumer<AuthService>(
       builder: (context, authService, _) {
-        if (authService.currentUser == null) {
-          print('user is null, redirecting to login');
-          return const LoginScreen();
-        }
-
-        return FutureBuilder<Map<String, dynamic>>(
-          future: FirebaseService().getUserData(authService.currentUser!.uid),
+        print("AuthWrapper FutureBuilder");
+        return FutureBuilder<Map<String, dynamic>?>(
+          future: authService.currentUser != null
+              ? FirebaseService().getUserData(authService.currentUser!.uid)
+              : Future.value(null),
           builder: (context, snapshot) {
-            print('future builder snapshot: $snapshot');
+            print("AuthWrapper FutureBuilder builder");
+            print("authService.currentUser: ${authService.currentUser}");
+            if (snapshot.hasError) {
+              print("Error fetching user data: ${snapshot.error}");
+              return const LoginScreen();
+            }
+
             if (snapshot.connectionState == ConnectionState.waiting) {
-              print('waiting, showing loading screen');
               return const LoadingScreen();
             }
-            print('snapshot has data, getting user data');
+
+            print("authService.currentUser: ${authService.currentUser}");
+            // Handle authentication state first
+            if (authService.currentUser == null) {
+              print("login screen");
+              return const LoginScreen();
+            }
+
             final userData = snapshot.data;
-            print('user data: $userData');
+            print("userData: $userData");
+            print("userData?.isEmpty: ${userData?.isEmpty}");
+            print("userData == null: ${userData == null}");
             if (userData == null || userData.isEmpty) {
-              // User is new, redirect to onboarding
-              print('user data is null or empty, redirecting to onboarding');
+              print("welcome screen");
               return const WelcomeScreen();
             }
 
             final onboardingCompleted =
                 userData['onboardingCompleted'] ?? false;
-
-            print('onboarding completed: $onboardingCompleted');
+            print("onboardingCompleted: $onboardingCompleted");
             if (!onboardingCompleted) {
-              print('onboarding not completed, redirecting to onboarding');
+              print("welcome screen");
               return const WelcomeScreen();
             }
 
-            final isSubscribed = userData['subscription'] ?? false;
-            print('is subscribed: $isSubscribed');
+            final isSubscribed = userData['isSubscribed'] ?? false;
+            print("isSubscribed: $isSubscribed");
             if (!isSubscribed) {
-              print('user is not subscribed, redirecting to subscription');
+              print("subscription screen");
               return const SubscriptionScreen();
             }
 
-            print('onboarding completed, redirecting to app');
+            print("app scaffold");
             return const AppScaffold();
           },
         );

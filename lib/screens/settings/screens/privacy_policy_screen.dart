@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:bites/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
 // Project imports:
@@ -14,6 +15,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Privacy Policy'),
         leading: const CustomBackButton(),
+        backgroundColor: AppColors.cardBackground,
       ),
       body: ListView(
         padding: const EdgeInsets.all(24),

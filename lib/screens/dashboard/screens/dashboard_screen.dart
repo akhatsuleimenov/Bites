@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:bites/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -168,6 +169,16 @@ class DashboardScreen extends StatelessWidget {
                             decoration: InputDecoration(
                               labelText:
                                   'Weight (${MeasurementHelper.getWeightLabel(appController.userProfile.isMetric)})',
+                              labelStyle:
+                                  const TextStyle(color: AppColors.textPrimary),
+                              enabledBorder: const UnderlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: AppColors.textPrimary),
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Theme.of(context).primaryColor),
+                              ),
                             ),
                           ),
                           actions: [

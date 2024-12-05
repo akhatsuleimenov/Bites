@@ -31,10 +31,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       await _authService.signInWithGoogle();
-
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, '/dashboard');
-      }
     } catch (e) {
       if (!mounted) return;
 

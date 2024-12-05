@@ -56,13 +56,6 @@ class _AppScaffoldState extends State<AppScaffold> {
           ),
         ],
       ),
-      // floatingActionButton: _selectedIndex == 0
-      //     ? FloatingActionButton(
-      //         heroTag: 'appScaffoldFAB',
-      //         onPressed: () => Navigator.pushNamed(context, '/add-log'),
-      //         child: const Icon(Icons.add_a_photo),
-      //       )
-      //     : null,
     );
   }
 }

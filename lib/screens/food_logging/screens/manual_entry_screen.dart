@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:bites/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -75,6 +76,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
       appBar: AppBar(
         title: const Text('Manual Entry'),
         leading: const CustomBackButton(),
+        backgroundColor: AppColors.cardBackground,
       ),
       body: Form(
         key: _formKey,
@@ -101,6 +103,14 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
+                      labelStyle: const TextStyle(color: AppColors.textPrimary),
+                      enabledBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: AppColors.textPrimary),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Theme.of(context).primaryColor),
+                      ),
                     ),
                     validator: (value) {
                       if (value?.isEmpty ?? true) {
@@ -118,6 +128,10 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                       minimumSize: const Size.fromHeight(48),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
+                      ),
+                      backgroundColor: AppColors.cardBackground,
+                      side: BorderSide(
+                        color: AppColors.primary,
                       ),
                     ),
                   ),
@@ -151,6 +165,16 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                             prefixIcon: const Icon(Icons.scale),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
+                            ),
+                            labelStyle:
+                                const TextStyle(color: AppColors.textPrimary),
+                            enabledBorder: const UnderlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: AppColors.textPrimary),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).primaryColor),
                             ),
                           ),
                           validator: (value) => _validateNumber(value),
@@ -277,6 +301,13 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),
+        labelStyle: const TextStyle(color: AppColors.textPrimary),
+        enabledBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: AppColors.textPrimary),
+        ),
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: Theme.of(context).primaryColor),
+        ),
       ),
       validator: (value) => _validateNumber(value),
     );
@@ -307,7 +338,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
       final protein = double.parse(_proteinController.text);
       final carbs = double.parse(_carbsController.text);
       final fat = double.parse(_fatController.text);
-
+      print("userid: $userId");
       final foodInfo = FoodInfo(
         nutritionalInfo: NutritionalInfo(
           grade: 'N/A', // Manual entries don't have grades
@@ -322,6 +353,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
         ),
         ingredients: [], // Manual entries don't have ingredients
       );
+      print("Food info $foodInfo");
 
       final mealLog = MealLog(
         userId: userId,
@@ -331,8 +363,10 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
         analysisId: 'manual_entry_${DateTime.now().millisecondsSinceEpoch}',
         foodInfo: foodInfo,
       );
+      print("$mealLog");
 
       await FirebaseService().saveMealLog(mealLog, userId);
+      print("Saved");
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Meal saved successfully')),

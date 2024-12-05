@@ -11,10 +11,12 @@ class SubscriptionController extends ChangeNotifier {
   Package? get selectedPackage => _selectedPackage;
 
   SubscriptionController() {
+    print("SubscriptionController");
     _initSubscription();
   }
 
   Future<void> _initSubscription() async {
+    print("initSubscription");
     await _checkSubscriptionStatus();
     await _loadOfferings();
   }
