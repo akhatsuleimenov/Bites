@@ -1,38 +1,59 @@
 // Package imports:
+import 'package:bites/core/services/firebase_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-class AuthService {
+class AuthService extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  Stream<User?> get authStateChanges => _auth.authStateChanges();
-  User? get currentUser => _auth.currentUser;
+  User? _currentUser;
+  Map<String, dynamic>? _userData;
+  bool _isLoading = false;
 
-  Future<UserCredential> signInWithGoogle() async {
+  User? get currentUser => _currentUser;
+  Map<String, dynamic>? get userData => _userData;
+  bool get isLoading => _isLoading;
+
+  Stream<User?> get authStateChanges => _auth.authStateChanges();
+
+  AuthService() {
+    _auth.authStateChanges().listen(_onAuthStateChanged);
+  }
+
+  Future<void> _onAuthStateChanged(User? user) async {
+    _isLoading = true;
+    notifyListeners();
+
+    _currentUser = user;
+    print("AuthService _onAuthStateChanged: $user and ${user?.uid}");
+    if (user != null) {
+      _userData = await FirebaseService().getUserData(user.uid);
+    } else {
+      _userData = null;
+    }
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      print("Google Sign In Result: $googleUser");
+      if (googleUser == null) throw const AuthException('Sign in aborted');
 
-      if (googleUser == null) {
-        throw const AuthException('Sign in aborted by user');
-      }
-
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-      print("Google Auth Result: ${googleAuth.accessToken != null}");
-
+      final googleAuth = await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      final result = await _auth.signInWithCredential(credential);
-      print("Firebase Auth Result: ${result.user?.uid}");
-      return result;
+      await _auth.signInWithCredential(credential);
+      await Future.delayed(const Duration(milliseconds: 500));
+      // No need for delays - auth state listener will handle the rest
     } catch (e) {
-      print("Sign In Error: $e");
-      throw AuthException('Failed to sign in with Google: $e');
+      throw AuthException('Failed to sign in: $e');
     }
   }
 

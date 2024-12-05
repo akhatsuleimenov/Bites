@@ -39,7 +39,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        Provider<AuthService>.value(value: authService),
+        ChangeNotifierProvider(create: (_) => authService),
         ChangeNotifierProvider(create: (context) => AppController(authService)),
         ChangeNotifierProvider(create: (context) => SubscriptionController()),
       ],

@@ -31,7 +31,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       await _authService.signInWithGoogle();
+      if (!mounted) return;
+
+      // Force rebuild of AuthWrapper
+      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
     } catch (e) {
+      print("LoginScreen _handleGoogleSignIn error: $e");
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(

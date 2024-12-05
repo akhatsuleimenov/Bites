@@ -143,7 +143,7 @@ enum MealType {
   dinner,
   snack;
 
-  String get displayName {
+  String get name {
     switch (this) {
       case MealType.breakfast:
         return 'Breakfast';

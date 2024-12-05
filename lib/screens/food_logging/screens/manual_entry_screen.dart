@@ -28,7 +28,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
   final _fatController = TextEditingController();
 
   MealType _selectedMealType = MealType.lunch;
-
+  bool _isSaving = false;
   // Add the dialog method
   void _showMealTypeDialog() {
     showDialog(
@@ -260,6 +260,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
             PrimaryButton(
               text: 'Save to Log',
               onPressed: _saveEntry,
+              loading: _isSaving,
             ),
           ],
         ),
@@ -331,6 +332,10 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
   Future<void> _saveEntry() async {
     if (!_formKey.currentState!.validate()) return;
 
+    if (_isSaving) return; // Prevent double-taps
+
+    setState(() => _isSaving = true);
+
     try {
       final userId = FirebaseAuth.instance.currentUser!.uid;
       final quantity = double.parse(_portionController.text);
@@ -371,12 +376,14 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Meal saved successfully')),
       );
-      Navigator.pop(context);
+      Navigator.popUntil(context, (route) => route.isFirst);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to save meal: $e')),
       );
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
     }
   }
 

@@ -32,7 +32,7 @@ class AppController extends ChangeNotifier {
   List<MealLog> get todaysMealLogs => _todaysMealLogs;
   List<MealLog> get weeklyMealLogs => _weeklyMealLogs;
   List<WeightLog> get weightLogs => _weightLogs;
-  UserProfile get userProfile => _userProfile!;
+  UserProfile get userProfile => _userProfile ?? UserProfile();
   double? get latestWeight =>
       _weightLogs.isNotEmpty ? _weightLogs.first.weight : null;
 

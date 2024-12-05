@@ -20,8 +20,14 @@ class FoodvisorService {
         final responseData = await response.stream.bytesToString();
         return json.decode(responseData);
       } else {
-        throw FoodvisorException(
-            'Failed to analyze image: ${response.statusCode}');
+        final responseData = await response.stream.bytesToString();
+        final decodedData = json.decode(responseData);
+        if (decodedData.containsKey('detail')) {
+          throw FoodvisorException(
+              'Failed to analyze image: ${decodedData['detail']}');
+        } else {
+          throw FoodvisorException('Failed to analyze image');
+        }
       }
     } catch (e) {
       rethrow;

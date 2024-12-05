@@ -34,18 +34,9 @@ class FoodLoggingResultsScreen extends StatefulWidget {
 class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
-  String _selectedMealType = 'Lunch';
+  MealType _selectedMealType = MealType.lunch;
   late MealLog _mealLog;
   bool _isSaving = false;
-
-  final List<String> _mealTypes = [
-    'Breakfast',
-    'Morning Snack',
-    'Lunch',
-    'Afternoon Snack',
-    'Dinner',
-    'Evening Snack',
-  ];
 
   @override
   void initState() {
@@ -94,7 +85,7 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
     _mealLog = MealLog(
       userId: FirebaseAuth.instance.currentUser!.uid,
       dateTime: DateTime.now(),
-      mealType: _selectedMealType,
+      mealType: _selectedMealType.name,
       imagePath: widget.imagePath,
       analysisId: widget.analysisResults['analysis_id'],
       foodInfo: foodInfoObj,
@@ -167,17 +158,17 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
               ),
               const SizedBox(height: 16),
               ...List.generate(
-                _mealTypes.length,
+                MealType.values.length,
                 (index) => ListTile(
-                  title: Text(_mealTypes[index]),
-                  trailing: _selectedMealType == _mealTypes[index]
+                  title: Text(MealType.values[index].name),
+                  trailing: _selectedMealType == MealType.values[index]
                       ? Icon(
                           Icons.check_circle,
                           color: Theme.of(context).primaryColor,
                         )
                       : null,
                   onTap: () {
-                    setState(() => _selectedMealType = _mealTypes[index]);
+                    setState(() => _selectedMealType = MealType.values[index]);
                     Navigator.pop(context);
                   },
                 ),
@@ -204,7 +195,7 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
       );
 
       _mealLog.dateTime = combinedDateTime;
-      _mealLog.mealType = _selectedMealType;
+      _mealLog.mealType = _selectedMealType.name;
 
       await FirebaseService().saveMealLog(_mealLog, _mealLog.userId);
 
@@ -296,7 +287,7 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
             child: OutlinedButton.icon(
               onPressed: _showMealTypeDialog,
               icon: const Icon(Icons.restaurant),
-              label: Text(_selectedMealType),
+              label: Text(_selectedMealType.name),
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size.fromHeight(48),
                 backgroundColor: AppColors.cardBackground,
