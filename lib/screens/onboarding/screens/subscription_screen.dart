@@ -6,6 +6,8 @@ import 'package:provider/provider.dart';
 import 'package:bites/core/controllers/subscription_controller.dart';
 import 'package:bites/core/widgets/buttons.dart';
 
+import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
+
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({
     super.key,
@@ -25,6 +27,16 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     super.initState();
     _subscriptionController = context.read<SubscriptionController>();
     _subscriptionController.addListener(_onSubscriptionUpdate);
+  }
+
+  // TODO: handle paywall result
+  void presentPaywall() async {
+    final paywallResult = await RevenueCatUI.presentPaywall();
+    if (paywallResult == PaywallResult.purchased) {
+      _handleSuccessfulSubscription();
+    } else {
+      print('Paywall result: $paywallResult');
+    }
   }
 
   void _onSubscriptionUpdate() {
