@@ -62,7 +62,7 @@ dependencies:
   # Data & Calculations
   json_annotation: ^4.8.1
   freezed_annotation: ^2.4.1
-  intl: ^0.19.0
+  intl: ^0.20.1
 
   # Permission Handler
   permission_handler: ^11.0.1

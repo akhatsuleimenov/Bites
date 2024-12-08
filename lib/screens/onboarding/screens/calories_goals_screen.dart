@@ -1,3 +1,4 @@
+import 'package:bites/core/widgets/buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/utils/measurement_utils.dart';
@@ -6,11 +7,9 @@ import 'package:bites/core/models/food_model.dart';
 
 class CaloriesGoalsScreen extends StatelessWidget {
   final Map<String, dynamic> userData;
-  final String userId;
   const CaloriesGoalsScreen({
     super.key,
     required this.userData,
-    required this.userId,
   });
 
   @override
@@ -37,7 +36,7 @@ class CaloriesGoalsScreen extends StatelessWidget {
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -223,36 +222,19 @@ class CaloriesGoalsScreen extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: SizedBox(
-                width: double.infinity,
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.pushNamed(
-                      context,
-                      '/onboarding/macros-goals',
-                      arguments: {
-                        'dailyMacros': dailyMacros,
-                        'userId': userId,
-                      },
-                    );
-                  },
-                  style: TextButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(32),
-                    ),
-                  ),
-                  child: Text(
-                    "Let's get started!",
-                    style: AppTypography.bodyLarge.copyWith(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
+              padding: const EdgeInsets.all(16.0),
+              child: PrimaryButton(
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    '/onboarding/macros-goals',
+                    arguments: {
+                      'dailyMacros': dailyMacros,
+                      ...userData,
+                    },
+                  );
+                },
+                text: "Let's get started!",
               ),
             ),
           ],

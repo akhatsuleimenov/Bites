@@ -58,7 +58,7 @@ class _OnboardingCompleteScreenState extends State<OnboardingCompleteScreen>
     await _progressController.forward();
     await _saveUserData(userId);
     if (mounted) {
-      Navigator.pushNamed(context, '/onboarding/calories-goals', arguments: {
+      Navigator.pushNamed(context, '/onboarding/comparison', arguments: {
         ...widget.userData,
         'userId': userId,
       });

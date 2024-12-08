@@ -1,16 +1,14 @@
 import 'package:bites/core/constants/app_typography.dart';
-import 'package:bites/core/models/food_model.dart';
+import 'package:bites/core/widgets/buttons.dart';
 import 'package:bites/screens/dashboard/widgets/macros_card.dart';
 import 'package:flutter/material.dart';
 
 class MacrosGoalsScreen extends StatelessWidget {
-  final NutritionData dailyMacros;
-  final String userId;
+  final Map<String, dynamic> userData;
 
   const MacrosGoalsScreen({
     super.key,
-    required this.dailyMacros,
-    required this.userId,
+    required this.userData,
   });
 
   @override
@@ -41,8 +39,8 @@ class MacrosGoalsScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 24),
                           NutritionGrid(
-                            targetNutrition: dailyMacros,
-                            remainingNutrition: dailyMacros,
+                            targetNutrition: userData['dailyMacros'],
+                            remainingNutrition: userData['dailyMacros'],
                             isOnboarding: true,
                           ),
                           const SizedBox(height: 24),
@@ -67,33 +65,17 @@ class MacrosGoalsScreen extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: SizedBox(
-                width: double.infinity,
-                child: TextButton(
-                  onPressed: () => Navigator.pushNamed(
+              padding: const EdgeInsets.all(16.0),
+              child: PrimaryButton(
+                onPressed: () {
+                  print('LAST FULL WIDGET DATA: $userData');
+                  Navigator.pushNamed(
                     context,
                     '/onboarding/paywall',
-                    arguments: {
-                      'userId': userId,
-                    },
-                  ),
-                  style: TextButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(32),
-                    ),
-                  ),
-                  child: Text(
-                    'Continue',
-                    style: AppTypography.bodyLarge.copyWith(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
+                    arguments: {'userId': userData['userId']},
+                  );
+                },
+                text: "Let's Begin!",
               ),
             ),
           ],
