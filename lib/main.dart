@@ -57,7 +57,7 @@ class BitesApp extends StatelessWidget {
     return MaterialApp(
       title: 'bites.',
       theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      // darkTheme: AppTheme.darkTheme,
       debugShowCheckedModeBanner: false,
       home: const AuthWrapper(),
       onGenerateRoute: AppRoutes.onGenerateRoute,

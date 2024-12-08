@@ -75,6 +75,7 @@ class NotificationPermissionScreen extends StatelessWidget {
       arguments: {
         ...userData,
         'notificationsEnabled': isGranted,
+        'onboardingCompleted': true,
       },
     );
   }

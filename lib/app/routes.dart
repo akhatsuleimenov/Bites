@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:bites/core/models/food_model.dart';
 import 'package:bites/screens/onboarding/screens/payment_success_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -90,13 +91,23 @@ class AppRoutes {
         return MaterialPageRoute(
           builder: (_) => NotificationPermissionScreen(userData: args!),
         );
-      case '/onboarding/personalized-goals':
+      case '/onboarding/calories-goals':
         return MaterialPageRoute(
-          builder: (_) => PersonalizedGoalsScreen(),
+          builder: (_) => CaloriesGoalsScreen(
+            userData: args!,
+            userId: args['userId'] as String,
+          ),
         );
-      case '/onboarding/subscription':
+      case '/onboarding/macros-goals':
         return MaterialPageRoute(
-          builder: (_) => SubscriptionScreen(),
+          builder: (_) => MacrosGoalsScreen(
+            dailyMacros: args!['dailyMacros'] as NutritionData,
+            userId: args['userId'] as String,
+          ),
+        );
+      case '/onboarding/paywall':
+        return MaterialPageRoute(
+          builder: (_) => PaywallScreen(userId: args!['userId'] as String),
         );
       case '/onboarding/payment-success':
         return MaterialPageRoute(
