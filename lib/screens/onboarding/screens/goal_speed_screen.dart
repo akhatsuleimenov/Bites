@@ -1,3 +1,4 @@
+import 'package:bites/core/utils/measurement_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/widgets/buttons.dart';
@@ -12,13 +13,24 @@ class GoalSpeedScreen extends StatefulWidget {
 }
 
 class _GoalSpeedScreenState extends State<GoalSpeedScreen> {
-  double _selectedSpeed = 1.5;
+  double _selectedSpeed = 0.0;
   String _speedLabel = 'Recommended';
 
+  @override
+  void initState() {
+    super.initState();
+    _selectedSpeed =
+        MeasurementHelper.standardizeWeight(0.7, widget.userData['isMetric']);
+  }
+
   void _updateSpeedLabel(double value) {
-    if (value <= 0.5) {
+    if (value <=
+        MeasurementHelper.standardizeWeight(
+            0.23, widget.userData['isMetric'])) {
       _speedLabel = 'Slow and Steady';
-    } else if (value <= 2.0) {
+    } else if (value <=
+        MeasurementHelper.standardizeWeight(
+            0.91, widget.userData['isMetric'])) {
       _speedLabel = 'Recommended';
     } else {
       _speedLabel = 'You may develop loose skin';
@@ -52,7 +64,7 @@ class _GoalSpeedScreenState extends State<GoalSpeedScreen> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      '${_selectedSpeed.toStringAsFixed(1)} lbs',
+                      '${_selectedSpeed.toStringAsFixed(1)} ${MeasurementHelper.getWeightLabel(widget.userData['isMetric'])}',
                       style: AppTypography.headlineLarge.copyWith(
                         fontSize: 48,
                         fontWeight: FontWeight.w600,
@@ -68,12 +80,19 @@ class _GoalSpeedScreenState extends State<GoalSpeedScreen> {
                   _buildSpeedIcon(Icons.directions_walk, Colors.grey[400]!),
                   _buildSpeedIcon(
                       Icons.directions_run,
-                      _selectedSpeed > 0.5 && _selectedSpeed <= 2.0
+                      MeasurementHelper.standardizeWeight(
+                                      0.23, widget.userData['isMetric']) <=
+                                  _selectedSpeed &&
+                              _selectedSpeed <=
+                                  MeasurementHelper.standardizeWeight(
+                                      0.91, widget.userData['isMetric'])
                           ? Theme.of(context).primaryColor
                           : Colors.grey[400]!),
                   _buildSpeedIcon(
                       Icons.sports_score,
-                      _selectedSpeed > 2.0
+                      MeasurementHelper.standardizeWeight(
+                                  0.91, widget.userData['isMetric']) <=
+                              _selectedSpeed
                           ? Theme.of(context).primaryColor
                           : Colors.grey[400]!),
                 ],
@@ -97,8 +116,10 @@ class _GoalSpeedScreenState extends State<GoalSpeedScreen> {
                 ),
                 child: Slider(
                   value: _selectedSpeed,
-                  min: 0.2,
-                  max: 3.0,
+                  min: MeasurementHelper.convertWeight(
+                      0.01, widget.userData['isMetric']),
+                  max: MeasurementHelper.convertWeight(
+                      1.3, widget.userData['isMetric']),
                   divisions: 28,
                   onChanged: (value) {
                     setState(() {
@@ -113,16 +134,16 @@ class _GoalSpeedScreenState extends State<GoalSpeedScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '0.2 lbs',
-                    style: AppTypography.bodyMedium.copyWith(
-                      color: Colors.grey[600],
-                    ),
+                    MeasurementHelper.formatWeight(
+                        0.01, widget.userData['isMetric'],
+                        decimalPlaces: 1),
+                    style: AppTypography.bodyMedium,
                   ),
                   Text(
-                    '3.0 lbs',
-                    style: AppTypography.bodyMedium.copyWith(
-                      color: Colors.grey[600],
-                    ),
+                    MeasurementHelper.formatWeight(
+                        1.3, widget.userData['isMetric'],
+                        decimalPlaces: 1),
+                    style: AppTypography.bodyMedium,
                   ),
                 ],
               ),

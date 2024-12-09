@@ -73,11 +73,13 @@ class AppController extends ChangeNotifier {
   }
 
   Future<void> initializeData() async {
+    print('Initializing Data');
     if (_userProfile != null) return;
     await loadAppData();
   }
 
   Future<void> loadAppData() async {
+    print('Loading App Data');
     if (_isLoading) return;
 
     try {

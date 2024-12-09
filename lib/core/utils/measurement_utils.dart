@@ -36,9 +36,10 @@ class MeasurementHelper {
     return '${result[0]} ft ${result[1]} in';
   }
 
-  static String formatWeight(double weightKg, bool isMetric) {
+  static String formatWeight(double weightKg, bool isMetric,
+      {int decimalPlaces = 0}) {
     final weight = convertWeight(weightKg, isMetric);
-    return '${weight.toStringAsFixed(0)} ${getWeightLabel(isMetric)}';
+    return '${weight.toStringAsFixed(decimalPlaces)} ${getWeightLabel(isMetric)}';
   }
 
   static int parseImperialHeight(List<int> feetInches) {

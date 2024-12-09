@@ -56,7 +56,8 @@ class _OnboardingCompleteScreenState extends State<OnboardingCompleteScreen>
     final userId = authService.currentUser!.uid;
     await Future.delayed(const Duration(milliseconds: 500));
     await _progressController.forward();
-    await _saveUserData(userId);
+    await _saveUserData(userId, authService.currentUser!.displayName!,
+        authService.currentUser!.email!);
     if (mounted) {
       Navigator.pushNamed(context, '/onboarding/comparison', arguments: {
         ...widget.userData,
@@ -65,10 +66,12 @@ class _OnboardingCompleteScreenState extends State<OnboardingCompleteScreen>
     }
   }
 
-  Future<void> _saveUserData(String userId) async {
+  Future<void> _saveUserData(String userId, String name, String email) async {
     try {
       await FirebaseFirestore.instance.collection('users').doc(userId).set({
         ...widget.userData,
+        'name': name,
+        'email': email,
       });
     } catch (e) {
       rethrow;

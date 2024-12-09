@@ -6,9 +6,6 @@ import 'package:permission_handler/permission_handler.dart';
 
 // Project imports:
 import 'package:bites/core/constants/app_typography.dart';
-import 'package:bites/core/widgets/buttons.dart';
-
-// import 'package:app_settings/app_settings.dart';
 
 class NotificationPermissionScreen extends StatelessWidget {
   final Map<String, dynamic> userData;
@@ -20,16 +17,16 @@ class NotificationPermissionScreen extends StatelessWidget {
 
   Future<void> _requestNotificationPermission(BuildContext context) async {
     final status = await Permission.notification.status;
+    print("NotificationPermissionScreen status: $status");
 
-    // If permanently denied, open settings
-    if (status.isPermanentlyDenied || status.isDenied) {
+    if (status.isPermanentlyDenied) {
       if (!context.mounted) return;
       final shouldOpenSettings = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Center(child: Text('Notifications Disabled')),
+          title: const Text('Enable Notifications'),
           content: const Text(
-            'Please enable notifications in your device settings to receive updates.',
+            'To get the most out of Bites, please enable notifications in your device settings.',
           ),
           actions: [
             TextButton(
@@ -52,18 +49,8 @@ class NotificationPermissionScreen extends StatelessWidget {
       return;
     }
 
-    // Check if already denied
-    if (status.isDenied) {
-      final result = await Permission.notification.request();
-
-      if (!context.mounted) return;
-
-      _proceedToNextScreen(context, result.isGranted);
-      return;
-    }
-
-    // Handle other cases
     final result = await Permission.notification.request();
+    print("NotificationPermissionScreen result: $result");
     if (!context.mounted) return;
     _proceedToNextScreen(context, result.isGranted);
   }
@@ -85,70 +72,168 @@ class NotificationPermissionScreen extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 48),
-              const Icon(
-                Icons.notifications_active,
-                size: 80,
-                color: Colors.amber,
+              const Spacer(flex: 1),
+              Text(
+                'Reach your goals with notifications',
+                style: AppTypography.headlineLarge.copyWith(
+                  fontSize: 36,
+                  height: 1.2,
+                ),
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
-              Text(
-                'One last thing...',
-                style: AppTypography.headlineLarge,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Would you like to receive notifications?',
-                style: AppTypography.headlineMedium,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              Text(
-                'Don\'t worry, we\'ll only notify you about the important stuff!\n\n'
-                '• Daily reminders (if you want them)\n'
-                '• Weekly progress updates\n'
-                '• Achievement celebrations 🎉',
-                style: AppTypography.bodyLarge.copyWith(
-                  color: Colors.grey[600],
-                  height: 1.5,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Promise we won\'t spam you with "We miss you!" messages 😉',
-                style: AppTypography.bodyMedium.copyWith(
-                  color: Colors.grey[600],
-                  fontStyle: FontStyle.italic,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const Spacer(),
-              PrimaryButton(
-                text: 'Enable Notifications',
-                onPressed: () => _requestNotificationPermission(context),
-              ),
-              const SizedBox(height: 16),
-              TextButton(
-                onPressed: () {
-                  _proceedToNextScreen(context, false);
-                },
-                child: Text(
-                  'Maybe Later',
-                  style: AppTypography.bodyLarge.copyWith(
-                    color: Colors.grey[600],
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.black,
+                      Colors.black.withOpacity(0.8),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: Column(
+                  children: [
+                    _buildFeatureItem(
+                      icon: Icons.notifications_active,
+                      title: 'Smart Reminders',
+                      subtitle: 'Get gentle nudges at the right time',
+                    ),
+                    const SizedBox(height: 24),
+                    _buildFeatureItem(
+                      icon: Icons.celebration,
+                      title: 'Milestone Celebrations',
+                      subtitle: 'Celebrate your achievements with us',
+                    ),
+                    const SizedBox(height: 24),
+                    _buildFeatureItem(
+                      icon: Icons.insights,
+                      title: 'Progress Updates',
+                      subtitle: 'Track your journey to success',
+                    ),
+                  ],
+                ),
+              ),
+              const Spacer(flex: 1),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      'bites would like to send you Notifications',
+                      style: AppTypography.bodyLarge.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () =>
+                                _proceedToNextScreen(context, false),
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Text(
+                              "Don't Allow",
+                              style: AppTypography.bodyLarge.copyWith(
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () =>
+                                _requestNotificationPermission(context),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.black,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Text(
+                              'Allow',
+                              style: AppTypography.bodyLarge.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 32),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFeatureItem({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+  }) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            icon,
+            color: Colors.white,
+            size: 24,
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: AppTypography.bodyLarge.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                subtitle,
+                style: AppTypography.bodyMedium.copyWith(
+                  color: Colors.white.withOpacity(0.8),
                 ),
               ),
             ],
           ),
         ),
-      ),
+      ],
     );
   }
 }

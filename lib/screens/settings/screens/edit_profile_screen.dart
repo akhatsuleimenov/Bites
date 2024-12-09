@@ -54,6 +54,11 @@ class _EditProfileScreenContentState extends State<EditProfileScreenContent> {
     _profile = UserProfile();
     _nameController = TextEditingController();
     _initializeControllers();
+
+    // Load app data here instead of in build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AppController>().loadAppData();
+    });
   }
 
   void _initializeControllers() {
@@ -106,8 +111,8 @@ class _EditProfileScreenContentState extends State<EditProfileScreenContent> {
         // Update profile data whenever it changes
         _profile = controller.userProfile;
 
-        // Only set the name once when the screen loads
-        if (!_isNameInitialized) {
+        // Only set the name once when the profile is loaded
+        if (!_isNameInitialized && _profile.name.isNotEmpty) {
           _nameController.text = _profile.name;
           _isNameInitialized = true;
         }
