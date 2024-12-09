@@ -1,6 +1,9 @@
-import 'package:purchases_flutter/purchases_flutter.dart';
+// Flutter imports:
 import 'package:flutter/foundation.dart';
+
+// Package imports:
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 
 class SubscriptionController extends ChangeNotifier {
   bool _hasActiveSubscription = false;

@@ -2,7 +2,6 @@
 import 'dart:io';
 
 // Flutter imports:
-import 'package:bites/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -10,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 // Project imports:
+import 'package:bites/core/constants/app_colors.dart';
 import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/services/foodvisor_service.dart';
 import 'package:bites/core/widgets/buttons.dart';

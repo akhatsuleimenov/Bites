@@ -1,11 +1,11 @@
 // Flutter imports:
-import 'package:bites/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:url_launcher/url_launcher.dart';
 
 // Project imports:
+import 'package:bites/core/constants/app_colors.dart';
 import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/widgets/buttons.dart';
 

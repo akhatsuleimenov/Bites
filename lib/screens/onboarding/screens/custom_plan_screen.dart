@@ -1,4 +1,7 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Project imports:
 import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/widgets/buttons.dart';
 

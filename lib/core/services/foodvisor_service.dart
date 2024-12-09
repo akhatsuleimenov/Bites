@@ -2,8 +2,11 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bites/core/utils/env.dart';
+// Package imports:
 import 'package:http/http.dart' as http;
+
+// Project imports:
+import 'package:bites/core/utils/env.dart';
 
 class FoodvisorService {
   Future<Map<String, dynamic>> analyzeImage(File imageFile) async {

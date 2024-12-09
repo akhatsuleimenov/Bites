@@ -1,11 +1,11 @@
 // Flutter imports:
-import 'package:bites/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:provider/provider.dart';
 
 // Project imports:
+import 'package:bites/core/constants/app_colors.dart';
 import 'package:bites/core/services/auth_service.dart';
 import 'package:bites/core/widgets/buttons.dart';
 import 'package:bites/core/widgets/cards.dart';

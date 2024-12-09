@@ -1,5 +1,4 @@
 // Flutter imports:
-import 'package:bites/core/widgets/cards.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -11,6 +10,7 @@ import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/services/auth_service.dart';
 import 'package:bites/core/services/firebase_service.dart';
 import 'package:bites/core/utils/measurement_utils.dart';
+import 'package:bites/core/widgets/cards.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});

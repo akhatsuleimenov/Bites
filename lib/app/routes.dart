@@ -1,11 +1,11 @@
 // Flutter imports:
-import 'package:bites/screens/onboarding/screens/payment_success_screen.dart';
 import 'package:flutter/material.dart';
 
 // Project imports:
 import 'package:bites/core/navigation/app_scaffold.dart';
 import 'package:bites/screens/food_logging/screens/screens.dart';
 import 'package:bites/screens/login/screens/login_screen.dart';
+import 'package:bites/screens/onboarding/screens/payment_success_screen.dart';
 import 'package:bites/screens/onboarding/screens/screens.dart';
 import 'package:bites/screens/settings/screens/screens.dart';
 

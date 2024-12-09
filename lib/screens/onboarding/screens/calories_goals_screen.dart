@@ -1,9 +1,14 @@
-import 'package:bites/core/widgets/buttons.dart';
+// Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:bites/core/constants/app_typography.dart';
-import 'package:bites/core/utils/measurement_utils.dart';
+
+// Package imports:
 import 'package:intl/intl.dart';
+
+// Project imports:
+import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/models/food_model.dart';
+import 'package:bites/core/utils/measurement_utils.dart';
+import 'package:bites/core/widgets/buttons.dart';
 
 class CaloriesGoalsScreen extends StatelessWidget {
   final Map<String, dynamic> userData;

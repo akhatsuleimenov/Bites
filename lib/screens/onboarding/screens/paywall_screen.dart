@@ -1,6 +1,11 @@
-import 'package:bites/core/services/firebase_service.dart';
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
+
+// Project imports:
+import 'package:bites/core/services/firebase_service.dart';
 
 class PaywallScreen extends StatefulWidget {
   final String userId;

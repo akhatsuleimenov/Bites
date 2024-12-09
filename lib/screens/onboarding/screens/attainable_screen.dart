@@ -1,6 +1,9 @@
-import 'package:bites/core/utils/measurement_utils.dart';
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Project imports:
 import 'package:bites/core/constants/app_typography.dart';
+import 'package:bites/core/utils/measurement_utils.dart';
 import 'package:bites/core/widgets/buttons.dart';
 
 class AttainableScreen extends StatelessWidget {

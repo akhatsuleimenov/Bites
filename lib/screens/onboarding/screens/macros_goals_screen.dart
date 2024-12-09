@@ -1,7 +1,10 @@
+// Flutter imports:
+import 'package:flutter/material.dart';
+
+// Project imports:
 import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/widgets/buttons.dart';
 import 'package:bites/screens/dashboard/widgets/macros_card.dart';
-import 'package:flutter/material.dart';
 
 class MacrosGoalsScreen extends StatelessWidget {
   final Map<String, dynamic> userData;

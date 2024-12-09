@@ -1,8 +1,8 @@
 // Flutter imports:
-import 'package:bites/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
 // Project imports:
+import 'package:bites/core/constants/app_colors.dart';
 import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/widgets/buttons.dart';
 
