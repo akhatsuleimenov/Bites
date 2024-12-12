@@ -3,6 +3,7 @@ import 'dart:io';
 
 // Package imports:
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 // Project imports:
@@ -12,6 +13,52 @@ import 'package:bites/core/models/weight_log_model.dart';
 class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
+  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+
+  Future<Map<String, dynamic>> initNotifications(String userId) async {
+    try {
+      NotificationSettings settings = await _messaging.requestPermission();
+      print('Notification settings: ${settings.authorizationStatus}');
+      String? apnsToken;
+      if (Platform.isIOS) {
+        apnsToken = await _messaging.getAPNSToken();
+        print('APNS Token: $apnsToken');
+        // Wait for APNS token if not available
+        if (apnsToken == null) {
+          // Try a few times with delay
+          for (int i = 0; i < 3; i++) {
+            await Future.delayed(const Duration(seconds: 1));
+            apnsToken = await _messaging.getAPNSToken();
+            print('APNS Token after delay $i: $apnsToken');
+            if (apnsToken != null) break;
+          }
+        }
+      }
+
+      String? fcmToken = await _messaging.getToken();
+      if (fcmToken == null) {
+        for (int i = 0; i < 3; i++) {
+          await Future.delayed(const Duration(seconds: 1));
+          fcmToken = await _messaging.getToken();
+          if (fcmToken != null) break;
+        }
+      }
+
+      return {
+        "notificationsEnabled":
+            settings.authorizationStatus == AuthorizationStatus.authorized,
+        "fcmToken": fcmToken,
+        "apnsToken": apnsToken,
+      };
+    } catch (e) {
+      print('Error initializing notifications: $e');
+      return {
+        "notificationsEnabled": false,
+        "fcmToken": null,
+        "apnsToken": null,
+      };
+    }
+  }
 
   // Meal Logs
   Future<void> saveMealLog(MealLog mealLog, String userId) async {

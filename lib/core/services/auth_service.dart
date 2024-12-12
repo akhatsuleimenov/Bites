@@ -31,7 +31,7 @@ class AuthService extends ChangeNotifier {
     notifyListeners();
 
     _currentUser = user;
-    print("AuthService _onAuthStateChanged: $user and ${user?.uid}");
+    print("AuthService _onAuthStateChanged: $user ");
     _userData =
         user != null ? await FirebaseService().getUserData(user.uid) : null;
 

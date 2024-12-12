@@ -64,7 +64,7 @@ class AppRoutes {
     switch (settings.name) {
       case '/onboarding/gender':
         return MaterialPageRoute(
-          builder: (_) => const GenderSelectionScreen(),
+          builder: (_) => GenderSelectionScreen(userData: args!),
         );
       case '/onboarding/height':
         return MaterialPageRoute(
@@ -104,7 +104,7 @@ class AppRoutes {
         );
       case '/onboarding/paywall':
         return MaterialPageRoute(
-          builder: (_) => PaywallScreen(userId: args!['userId'] as String),
+          builder: (_) => PaywallScreen(userData: args!),
         );
       case '/onboarding/payment-success':
         return MaterialPageRoute(

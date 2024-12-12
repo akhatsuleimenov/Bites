@@ -46,6 +46,7 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())),
       );
+      print('FoodvisorException: ${e}');
     } finally {
       setState(() => _isAnalyzing = false);
     }

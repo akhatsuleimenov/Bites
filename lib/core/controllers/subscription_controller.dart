@@ -13,11 +13,13 @@ class SubscriptionController extends ChangeNotifier {
     _initSubscription();
     // Listen to subscription changes
     Purchases.addCustomerInfoUpdateListener((customerInfo) async {
+      print('customerInfo: $customerInfo');
       _hasActiveSubscription = customerInfo.entitlements.active.isNotEmpty;
       notifyListeners();
 
       // Update Firebase when subscription status changes
       final purchaserInfo = await Purchases.getCustomerInfo();
+      print('purchaserInfo: $purchaserInfo');
       await FirebaseFirestore.instance
           .collection('users')
           .doc(purchaserInfo.originalAppUserId)
@@ -27,7 +29,9 @@ class SubscriptionController extends ChangeNotifier {
 
   Future<void> _initSubscription() async {
     try {
+      print('initSubscription');
       final customerInfo = await Purchases.getCustomerInfo();
+      print('customerInfo: $customerInfo');
       _hasActiveSubscription = customerInfo.entitlements.active.isNotEmpty;
       notifyListeners();
     } catch (e) {

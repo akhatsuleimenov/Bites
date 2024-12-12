@@ -1,67 +1,32 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
 
-// Package imports:
-import 'package:permission_handler/permission_handler.dart';
-
 // Project imports:
 import 'package:bites/core/constants/app_typography.dart';
+import 'package:bites/core/services/firebase_service.dart';
 
 class NotificationPermissionScreen extends StatelessWidget {
   final Map<String, dynamic> userData;
+  final FirebaseService _firebaseService = FirebaseService();
 
-  const NotificationPermissionScreen({
+  NotificationPermissionScreen({
     super.key,
     required this.userData,
   });
 
   Future<void> _requestNotificationPermission(BuildContext context) async {
-    final status = await Permission.notification.status;
-    print("NotificationPermissionScreen status: $status");
-
-    if (status.isPermanentlyDenied) {
-      if (!context.mounted) return;
-      final shouldOpenSettings = await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Enable Notifications'),
-          content: const Text(
-            'To get the most out of Bites, please enable notifications in your device settings.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Not Now'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('Open Settings'),
-            ),
-          ],
-        ),
-      );
-
-      if (shouldOpenSettings == true) {
-        await openAppSettings();
-      }
-      if (!context.mounted) return;
-      _proceedToNextScreen(context, false);
-      return;
-    }
-
-    final result = await Permission.notification.request();
-    print("NotificationPermissionScreen result: $result");
-    if (!context.mounted) return;
-    _proceedToNextScreen(context, result.isGranted);
+    Map<String, dynamic> result =
+        await _firebaseService.initNotifications(userData['userId']);
+    _proceedToNextScreen(context, result);
   }
 
-  void _proceedToNextScreen(BuildContext context, bool isGranted) {
+  void _proceedToNextScreen(BuildContext context, Map<String, dynamic> result) {
     Navigator.pushNamed(
       context,
       '/onboarding/complete',
       arguments: {
         ...userData,
-        'notificationsEnabled': isGranted,
+        ...result,
         'onboardingCompleted': true,
       },
     );
@@ -143,8 +108,11 @@ class NotificationPermissionScreen extends StatelessWidget {
                       children: [
                         Expanded(
                           child: TextButton(
-                            onPressed: () =>
-                                _proceedToNextScreen(context, false),
+                            onPressed: () => _proceedToNextScreen(context, {
+                              "notificationsEnabled": false,
+                              "fcmToken": null,
+                              "apnsToken": null,
+                            }),
                             style: TextButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
@@ -162,8 +130,8 @@ class NotificationPermissionScreen extends StatelessWidget {
                         const SizedBox(width: 16),
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: () =>
-                                _requestNotificationPermission(context),
+                            onPressed: () async =>
+                                await _requestNotificationPermission(context),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.black,
                               padding: const EdgeInsets.symmetric(vertical: 16),

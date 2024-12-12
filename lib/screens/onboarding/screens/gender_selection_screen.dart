@@ -6,7 +6,8 @@ import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/widgets/buttons.dart';
 
 class GenderSelectionScreen extends StatefulWidget {
-  const GenderSelectionScreen({super.key});
+  final Map<String, dynamic> userData;
+  const GenderSelectionScreen({super.key, required this.userData});
 
   @override
   State<GenderSelectionScreen> createState() => _GenderSelectionScreenState();
@@ -67,7 +68,10 @@ class _GenderSelectionScreenState extends State<GenderSelectionScreen> {
                 onPressed: () => Navigator.pushNamed(
                   context,
                   '/onboarding/height',
-                  arguments: {'gender': _selectedGender},
+                  arguments: {
+                    ...widget.userData,
+                    'gender': _selectedGender,
+                  },
                 ),
                 enabled: _selectedGender != null,
               ),

@@ -1,8 +1,12 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
 
+// Package imports:
+import 'package:provider/provider.dart';
+
 // Project imports:
 import 'package:bites/core/constants/app_typography.dart';
+import 'package:bites/core/services/auth_service.dart';
 import 'package:bites/core/widgets/buttons.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -73,7 +77,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       curve: Curves.easeInOut,
                     );
                   } else {
-                    Navigator.pushNamed(context, '/onboarding/gender');
+                    final authService =
+                        Provider.of<AuthService>(context, listen: false);
+                    Navigator.pushNamed(context, '/onboarding/gender',
+                        arguments: {
+                          'userId': authService.currentUser!.uid,
+                          'name': authService.currentUser!.displayName!,
+                          'email': authService.currentUser!.email!,
+                        });
                   }
                 },
               ),

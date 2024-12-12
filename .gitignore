@@ -7,10 +7,6 @@ build/
 # If you're building an application, you may want to check-in your pubspec.lock
 pubspec.lock
 
-# Directory created by dartdoc
-# If you don't generate documentation locally you can remove this line.
-doc/api/
-
 # dotenv environment variables file
 .env*
 
@@ -85,3 +81,61 @@ mason-lock.json
 
 # Firebase
 google-services.json
+firebase.json
+
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+*.g.dart
+
+# Web related
+lib/generated_plugin_registrant.dart
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Firebase configuration files
+lib/firebase_options.dart
+google-services.json
+GoogleService-Info.plist
+firebase.json
+ios/Runner/Info.plist
+
+# Keep templates
+!ios/Runner/Info.plist.template
+
+# RevenueCat
+purchases-flutter/

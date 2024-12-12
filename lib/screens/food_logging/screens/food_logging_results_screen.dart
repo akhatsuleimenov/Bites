@@ -41,6 +41,33 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
   @override
   void initState() {
     super.initState();
+
+    if (widget.analysisResults['items']?.isEmpty ?? true) {
+      // Default values when no items are present
+      _mealLog = MealLog(
+        userId: FirebaseAuth.instance.currentUser!.uid,
+        dateTime: DateTime.now(),
+        mealType: _selectedMealType.name,
+        imagePath: widget.imagePath,
+        analysisId: widget.analysisResults['analysis_id'],
+        foodInfo: FoodInfo(
+          nutritionalInfo: NutritionalInfo(
+            grade: 'N/A',
+            name: 'Unknown Food',
+            quantity: 100.0,
+            nutritionData: NutritionData(
+              calories: 0.0,
+              carbs: 0.0,
+              fats: 0.0,
+              protein: 0.0,
+            ),
+          ),
+          ingredients: [],
+        ),
+      );
+      return;
+    }
+
     // Convert analysis results to MealLog immediately
     final foodItem = widget.analysisResults['items'][0]['food'][0];
     final foodInfo = foodItem['food_info'];
@@ -232,104 +259,111 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
         title: const Text('Analysis Results'),
         backgroundColor: AppColors.cardBackground,
       ),
-      body: Column(
-        children: [
-          // Image preview
-          AspectRatio(
-            aspectRatio: 16 / 9,
-            child: Image.file(
-              File(_mealLog.imagePath),
-              fit: BoxFit.cover,
-            ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom + 16,
           ),
-
-          // Date, Time and Meal Type selector
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(
-                      backgroundColor: AppColors.cardBackground,
-                      side: BorderSide(
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    onPressed: _selectDate,
-                    icon: const Icon(Icons.calendar_today),
-                    label: Text(
-                      DateFormat('MMM d, y').format(_selectedDate),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(
-                      backgroundColor: AppColors.cardBackground,
-                      side: BorderSide(
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    onPressed: _selectTime,
-                    icon: const Icon(Icons.access_time),
-                    label: Text(
-                      _selectedTime.format(context),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: OutlinedButton.icon(
-              onPressed: _showMealTypeDialog,
-              icon: const Icon(Icons.restaurant),
-              label: Text(_selectedMealType.name),
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size.fromHeight(48),
-                backgroundColor: AppColors.cardBackground,
-                side: BorderSide(
-                  color: AppColors.primary,
+          child: Column(
+            children: [
+              // Image preview
+              AspectRatio(
+                aspectRatio: 16 / 9,
+                child: Image.file(
+                  File(_mealLog.imagePath),
+                  fit: BoxFit.cover,
                 ),
               ),
-            ),
-          ),
 
-          // Results list
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                // Meal information
-                Text(
-                  'Meal Information',
-                  style: AppTypography.headlineLarge,
+              // Date, Time and Meal Type selector
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: AppColors.cardBackground,
+                          side: BorderSide(
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        onPressed: _selectDate,
+                        icon: const Icon(Icons.calendar_today),
+                        label: Text(
+                          DateFormat('MMM d, y').format(_selectedDate),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: AppColors.cardBackground,
+                          side: BorderSide(
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        onPressed: _selectTime,
+                        icon: const Icon(Icons.access_time),
+                        label: Text(
+                          _selectedTime.format(context),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                _FoodItemCard(
-                  item: _mealLog.foodInfo,
-                  onValueChanged: _updateValue,
-                  onIngredientChanged: (index, field, value) =>
-                      _updateValue(field, value, index),
-                  showIngredients: true,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: OutlinedButton.icon(
+                  onPressed: _showMealTypeDialog,
+                  icon: const Icon(Icons.restaurant),
+                  label: Text(_selectedMealType.name),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(48),
+                    backgroundColor: AppColors.cardBackground,
+                    side: BorderSide(
+                      color: AppColors.primary,
+                    ),
+                  ),
                 ),
-              ],
-            ),
-          ),
+              ),
 
-          // Save button
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: PrimaryButton(
-              onPressed: _saveMealLog,
-              loading: _isSaving,
-              text: 'Save to Log',
-            ),
+              // Results list
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Meal Information',
+                      style: AppTypography.headlineLarge,
+                    ),
+                    const SizedBox(height: 8),
+                    _FoodItemCard(
+                      item: _mealLog.foodInfo,
+                      onValueChanged: _updateValue,
+                      onIngredientChanged: (index, field, value) =>
+                          _updateValue(field, value, index),
+                      showIngredients: true,
+                    ),
+                  ],
+                ),
+              ),
+
+              // Save button
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: PrimaryButton(
+                  onPressed: _saveMealLog,
+                  loading: _isSaving,
+                  text: 'Save to Log',
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

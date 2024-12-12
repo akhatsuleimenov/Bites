@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
 
 // Project imports:
 import 'package:bites/core/constants/app_typography.dart';
-import 'package:bites/core/services/auth_service.dart';
 
 class OnboardingCompleteScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -52,26 +50,23 @@ class _OnboardingCompleteScreenState extends State<OnboardingCompleteScreen>
   }
 
   Future<void> _startAnimation() async {
-    final authService = Provider.of<AuthService>(context, listen: false);
-    final userId = authService.currentUser!.uid;
     await Future.delayed(const Duration(milliseconds: 500));
     await _progressController.forward();
-    await _saveUserData(userId, authService.currentUser!.displayName!,
-        authService.currentUser!.email!);
+    await _saveUserData();
     if (mounted) {
       Navigator.pushNamed(context, '/onboarding/comparison', arguments: {
         ...widget.userData,
-        'userId': userId,
       });
     }
   }
 
-  Future<void> _saveUserData(String userId, String name, String email) async {
+  Future<void> _saveUserData() async {
     try {
-      await FirebaseFirestore.instance.collection('users').doc(userId).set({
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.userData['userId'])
+          .set({
         ...widget.userData,
-        'name': name,
-        'email': email,
       });
     } catch (e) {
       rethrow;
