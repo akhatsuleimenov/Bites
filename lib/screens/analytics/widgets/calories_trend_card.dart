@@ -31,8 +31,8 @@ class CaloriesTrendCard extends StatelessWidget {
     final now = DateTime.now();
     final sortedDates = List.generate(7, (index) {
       return DateTime(now.year, now.month, now.day)
-          .subtract(Duration(days: 6 - index));
-    });
+          .subtract(Duration(days: index));
+    }).reversed.toList();
 
     // Create spots only for dates with data
     final spots = sortedDates.map((date) {
@@ -101,6 +101,7 @@ class CaloriesTrendCard extends StatelessWidget {
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
+                      interval: 1,
                       getTitlesWidget: (value, meta) {
                         if (value.toInt() >= sortedDates.length) {
                           return const Text('');
@@ -110,9 +111,8 @@ class CaloriesTrendCard extends StatelessWidget {
                           padding: const EdgeInsets.only(top: 8.0),
                           child: Text(
                             DateFormat('E').format(date),
-                            style: AppTypography.bodySmall.copyWith(
-                              color: Colors.grey[600],
-                            ),
+                            style: AppTypography.bodySmall,
+                            textAlign: TextAlign.center,
                           ),
                         );
                       },

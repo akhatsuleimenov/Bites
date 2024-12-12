@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 // Project imports:
 import 'package:bites/core/navigation/app_scaffold.dart';
 import 'package:bites/core/services/auth_service.dart';
-import 'package:bites/screens/login/screens/login_screen.dart';
+import 'package:bites/screens/login/screens/landing_screen.dart';
 import 'package:bites/screens/onboarding/screens/screens.dart';
 
 class AuthWrapper extends StatelessWidget {
@@ -26,8 +26,8 @@ class AuthWrapper extends StatelessWidget {
 
         // Not logged in
         if (auth.currentUser == null) {
-          print("AuthWrapper LoginScreen");
-          return const LoginScreen();
+          print("AuthWrapper LandingScreen");
+          return const LandingScreen();
         }
 
         final userData = auth.userData;

@@ -9,26 +9,31 @@ import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/services/auth_service.dart';
 import 'package:bites/core/widgets/buttons.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   late final AuthService _authService;
   bool _isLoading = false;
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -38,24 +43,26 @@ class _LoginScreenState extends State<LoginScreen> {
     _authService = Provider.of<AuthService>(context, listen: false);
   }
 
-  Future<void> _handleEmailSignIn() async {
+  Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
 
     try {
-      await _authService.signInWithEmail(
+      await _authService.signUpWithEmail(
         email: _emailController.text,
         password: _passwordController.text,
+        name: _nameController.text,
       );
 
       if (!mounted) return;
       Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
     } catch (e) {
+      print("RegisterScreen error: $e");
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Login failed. Please check your credentials.'),
+          content: Text('Registration failed. Please try again.'),
           backgroundColor: Colors.red,
         ),
       );
@@ -104,21 +111,39 @@ class _LoginScreenState extends State<LoginScreen> {
               // Welcome text
               Center(
                 child: Text(
-                  'Welcome back!',
+                  'Sign up!',
                   style: AppTypography.headlineLarge,
                 ),
               ),
               const SizedBox(height: 32),
 
-              // Login form
+              // Register form
               Form(
                 key: _formKey,
                 child: Column(
                   children: [
                     TextFormField(
+                      controller: _nameController,
+                      decoration: InputDecoration(
+                        labelText: 'Name',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey[100],
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your name';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
                       controller: _emailController,
                       decoration: InputDecoration(
-                        labelText: 'Enter your email',
+                        labelText: 'Email',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -140,7 +165,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextFormField(
                       controller: _passwordController,
                       decoration: InputDecoration(
-                        labelText: 'Enter your password',
+                        labelText: 'Password',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -162,6 +187,42 @@ class _LoginScreenState extends State<LoginScreen> {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your password';
                         }
+                        if (value.length < 6) {
+                          return 'Password must be at least 6 characters';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _confirmPasswordController,
+                      decoration: InputDecoration(
+                        labelText: 'Confirm password',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey[100],
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureConfirmPassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: Colors.grey,
+                          ),
+                          onPressed: () => setState(() =>
+                              _obscureConfirmPassword =
+                                  !_obscureConfirmPassword),
+                        ),
+                      ),
+                      obscureText: _obscureConfirmPassword,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please confirm your password';
+                        }
+                        if (value != _passwordController.text) {
+                          return 'Passwords do not match';
+                        }
                         return null;
                       },
                     ),
@@ -170,10 +231,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     if (_isLoading)
                       const CircularProgressIndicator()
                     else ...[
-                      // Login button
+                      // Register button
                       PrimaryButton(
-                        onPressed: _handleEmailSignIn,
-                        text: 'Login',
+                        onPressed: _handleRegister,
+                        text: 'Register',
                       ),
                       const SizedBox(height: 24),
 
@@ -184,7 +245,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Text(
-                              'Or Login with',
+                              'Or Register with',
                               style: AppTypography.bodyMedium.copyWith(
                                 color: Colors.grey[600],
                               ),
@@ -210,7 +271,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           children: [
                             Image.asset(
                               'assets/images/google_logo.png',
-                              height: 24,
+                              height: 36,
                             ),
                             const SizedBox(width: 12),
                             const Text(
@@ -223,24 +284,24 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                     const SizedBox(height: 24),
 
-                    // Register link
+                    // Login link
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Don't have an account? ",
+                          'Already have an account? ',
                           style: AppTypography.bodyMedium,
                         ),
                         TextButton(
-                          onPressed: () => Navigator.pushReplacementNamed(
-                              context, '/register'),
+                          onPressed: () =>
+                              Navigator.pushReplacementNamed(context, '/login'),
                           style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,
                             minimumSize: Size.zero,
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
                           child: Text(
-                            'Register Now',
+                            'Login Now',
                             style: AppTypography.bodyMedium.copyWith(
                               color: Theme.of(context).primaryColor,
                               fontWeight: FontWeight.bold,

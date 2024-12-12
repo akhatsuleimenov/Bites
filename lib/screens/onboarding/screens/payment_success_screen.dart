@@ -24,7 +24,7 @@ class PaymentSuccessScreen extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               Text(
-                'Welcome to Bites Premium!',
+                'Welcome to Bites!',
                 style: AppTypography.headlineLarge,
                 textAlign: TextAlign.center,
               ),

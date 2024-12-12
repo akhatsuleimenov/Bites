@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 // Project imports:
 import 'package:bites/core/navigation/app_scaffold.dart';
 import 'package:bites/screens/food_logging/screens/screens.dart';
+import 'package:bites/screens/login/screens/landing_screen.dart';
 import 'package:bites/screens/login/screens/login_screen.dart';
+import 'package:bites/screens/login/screens/register_screen.dart';
 import 'package:bites/screens/onboarding/screens/payment_success_screen.dart';
 import 'package:bites/screens/onboarding/screens/screens.dart';
 import 'package:bites/screens/settings/screens/screens.dart';
@@ -25,8 +27,12 @@ class AppRoutes {
 
     // Handle main routes
     switch (settings.name) {
+      case '/':
+        return MaterialPageRoute(builder: (_) => const LandingScreen());
       case '/login':
         return MaterialPageRoute(builder: (_) => const LoginScreen());
+      case '/register':
+        return MaterialPageRoute(builder: (_) => const RegisterScreen());
       case '/dashboard':
       case '/analytics':
       case '/profile':

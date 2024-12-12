@@ -68,6 +68,53 @@ class AuthService extends ChangeNotifier {
       throw AuthException('Failed to sign out: $e');
     }
   }
+
+  Future<void> signUpWithEmail({
+    required String email,
+    required String password,
+    required String name,
+  }) async {
+    try {
+      final userCredential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // Update display name
+      await userCredential.user?.updateDisplayName(name);
+
+      // Create initial user data
+      if (userCredential.user != null) {
+        await FirebaseService().createUserDocument(userCredential.user!.uid, {
+          'userId': userCredential.user!.uid,
+          'email': email,
+          'name': name,
+          'emailVisible': false, // Following guideline to keep email private
+          'dataCollectionConsent':
+              false, // Following guideline about data collection consent
+          'onboardingCompleted': false,
+          'isSubscribed': false,
+          'createdAt': DateTime.now().toIso8601String(),
+        });
+      }
+    } catch (e) {
+      throw AuthException('Failed to sign up: $e');
+    }
+  }
+
+  Future<void> signInWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } catch (e) {
+      throw AuthException('Failed to sign in: $e');
+    }
+  }
 }
 
 class AuthException implements Exception {

@@ -14,6 +14,18 @@ class AttainableScreen extends StatelessWidget {
     required this.userData,
   });
 
+  String _getEstimatedTime(Map<String, dynamic> userData) {
+    final double currentWeight = userData['weight'] as double;
+    final double targetWeight = userData['targetWeight'] as double;
+    final double weeklyGoal = userData['weeklyGoal'] as double;
+
+    final double weightDifference = (currentWeight - targetWeight).abs();
+    final double weeks = weightDifference / weeklyGoal;
+    final int months = (weeks / 4.33).ceil(); // 4.33 weeks per month on average
+
+    return months == 1 ? '1 month' : '$months months';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,6 +84,7 @@ class AttainableScreen extends StatelessWidget {
                                 MeasurementHelper.formatWeight(
                                   userData['weeklyGoal'],
                                   userData['isMetric'],
+                                  decimalPlaces: 1,
                                 ),
                                 style: AppTypography.headlineSmall.copyWith(
                                   fontWeight: FontWeight.w600,
@@ -110,7 +123,7 @@ class AttainableScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                '12 weeks',
+                                _getEstimatedTime(userData),
                                 style: AppTypography.headlineSmall.copyWith(
                                   fontWeight: FontWeight.w600,
                                 ),

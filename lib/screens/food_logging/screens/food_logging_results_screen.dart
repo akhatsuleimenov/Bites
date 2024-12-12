@@ -86,10 +86,12 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
         name: ingredientInfo['display_name'],
         quantity: ingQuantity,
         nutritionData: NutritionData(
-          calories: ingNutrition['calories_100g'],
-          carbs: ingNutrition['carbs_100g'],
-          fats: ingNutrition['fat_100g'],
-          protein: ingNutrition['proteins_100g'],
+          calories:
+              double.parse(ingNutrition['calories_100g'].toStringAsFixed(1)),
+          carbs: double.parse(ingNutrition['carbs_100g'].toStringAsFixed(1)),
+          fats: double.parse(ingNutrition['fat_100g'].toStringAsFixed(1)),
+          protein:
+              double.parse(ingNutrition['proteins_100g'].toStringAsFixed(1)),
         ),
       );
     }).toList();
@@ -100,10 +102,10 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
         name: foodInfo['display_name'],
         quantity: quantity,
         nutritionData: NutritionData(
-          calories: nutrition['calories_100g'],
-          carbs: nutrition['carbs_100g'],
-          fats: nutrition['fat_100g'],
-          protein: nutrition['proteins_100g'],
+          calories: double.parse(nutrition['calories_100g'].toStringAsFixed(1)),
+          carbs: double.parse(nutrition['carbs_100g'].toStringAsFixed(1)),
+          fats: double.parse(nutrition['fat_100g'].toStringAsFixed(1)),
+          protein: double.parse(nutrition['proteins_100g'].toStringAsFixed(1)),
         ),
       ),
       ingredients: ingredients,

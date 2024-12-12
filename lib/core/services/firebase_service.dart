@@ -178,6 +178,14 @@ class FirebaseService {
     await _firestore.collection('users').doc(userId).update(updates);
   }
 
+  // Create User Document
+  Future<void> createUserDocument(
+    String userId,
+    Map<String, dynamic> userData,
+  ) async {
+    await _firestore.collection('users').doc(userId).set(userData);
+  }
+
   // Update notification settings
   Future<void> updateNotificationSettings({
     required String userId,
