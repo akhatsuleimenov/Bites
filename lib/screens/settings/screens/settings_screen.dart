@@ -69,7 +69,7 @@ class SettingsScreen extends StatelessWidget {
                 await authService.signOut();
                 if (!context.mounted) return;
                 Navigator.pushNamedAndRemoveUntil(
-                    context, '/login', (route) => false);
+                    context, '/', (route) => false);
               },
               textColor: Colors.red.shade900,
               iconColor: Colors.red.shade900,

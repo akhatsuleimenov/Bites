@@ -1,4 +1,6 @@
 // Flutter imports:
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 // Project imports:
@@ -21,7 +23,8 @@ class AttainableScreen extends StatelessWidget {
 
     final double weightDifference = (currentWeight - targetWeight).abs();
     final double weeks = weightDifference / weeklyGoal;
-    final int months = (weeks / 4.33).ceil(); // 4.33 weeks per month on average
+    final int months =
+        min(1, (weeks / 4.33).ceil()); // 4.33 weeks per month on average
 
     return months == 1 ? '1 month' : '$months months';
   }
