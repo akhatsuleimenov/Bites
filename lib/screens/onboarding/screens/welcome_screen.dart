@@ -82,8 +82,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     Navigator.pushNamed(context, '/onboarding/gender',
                         arguments: {
                           'userId': authService.currentUser!.uid,
-                          'name': authService.currentUser!.displayName!,
-                          'email': authService.currentUser!.email!,
+                          'name': authService.currentUser!.displayName,
+                          'email': authService.currentUser!.email,
                         });
                   }
                 },

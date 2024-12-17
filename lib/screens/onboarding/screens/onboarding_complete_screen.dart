@@ -1,8 +1,6 @@
 // Flutter imports:
+import 'package:bites/core/services/firebase_service.dart';
 import 'package:flutter/material.dart';
-
-// Package imports:
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 // Project imports:
 import 'package:bites/core/constants/app_typography.dart';
@@ -52,24 +50,13 @@ class _OnboardingCompleteScreenState extends State<OnboardingCompleteScreen>
   Future<void> _startAnimation() async {
     await Future.delayed(const Duration(milliseconds: 500));
     await _progressController.forward();
-    await _saveUserData();
+    await FirebaseService().updateUserData(widget.userData['userId'], {
+      ...widget.userData,
+    });
     if (mounted) {
       Navigator.pushNamed(context, '/onboarding/comparison', arguments: {
         ...widget.userData,
       });
-    }
-  }
-
-  Future<void> _saveUserData() async {
-    try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.userData['userId'])
-          .set({
-        ...widget.userData,
-      });
-    } catch (e) {
-      rethrow;
     }
   }
 

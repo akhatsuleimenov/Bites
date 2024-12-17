@@ -31,10 +31,8 @@ class AuthService extends ChangeNotifier {
     notifyListeners();
 
     _currentUser = user;
-    print("AuthService _onAuthStateChanged: $user ");
     _userData =
         user != null ? await FirebaseService().getUserData(user.uid) : null;
-
     _isLoading = false;
     notifyListeners();
   }
@@ -80,22 +78,20 @@ class AuthService extends ChangeNotifier {
         password: password,
       );
 
-      // Update display name
-      await userCredential.user?.updateDisplayName(name);
-
-      // Create initial user data
       if (userCredential.user != null) {
         await FirebaseService().createUserDocument(userCredential.user!.uid, {
           'userId': userCredential.user!.uid,
           'email': email,
           'name': name,
-          'emailVisible': false, // Following guideline to keep email private
-          'dataCollectionConsent':
-              false, // Following guideline about data collection consent
+          'emailVisible': false,
+          'dataCollectionConsent': false,
           'onboardingCompleted': false,
           'isSubscribed': false,
           'createdAt': DateTime.now().toIso8601String(),
         });
+
+        // Update display name after creating document
+        await userCredential.user?.updateDisplayName(name);
       }
     } catch (e) {
       throw AuthException('Failed to sign up: $e');

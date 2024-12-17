@@ -160,12 +160,9 @@ class FirebaseService {
   Future<Map<String, dynamic>> getUserData(String uid) async {
     try {
       final doc = await _firestore.collection('users').doc(uid).get();
-      print("Firestore Get User Result: ${doc.exists}"); // Debug print
-      print("Firestore Get User Data: ${doc.data()}"); // Debug print
-      print("Firestore Get User Data: ${doc.data() ?? {}}"); // Debug print
       return doc.data() ?? {};
     } catch (e) {
-      print("Firestore Error: $e"); // Debug print
+      print("Firestore Error: $e");
       rethrow;
     }
   }
