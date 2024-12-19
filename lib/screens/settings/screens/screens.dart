@@ -3,3 +3,4 @@ export 'help_support_screen.dart';
 export 'privacy_policy_screen.dart';
 export 'settings_screen.dart';
 export 'update_goals_screen.dart';
+export 'delete_account_screen.dart';

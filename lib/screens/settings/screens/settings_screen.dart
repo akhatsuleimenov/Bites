@@ -56,7 +56,13 @@ class SettingsScreen extends StatelessWidget {
                   onTap: () =>
                       Navigator.pushNamed(context, '/settings/privacy'),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 12),
+                SettingsCard(
+                  title: 'Delete Account',
+                  icon: Icons.delete_forever,
+                  onTap: () =>
+                      Navigator.pushNamed(context, '/settings/delete-account'),
+                ),
               ],
             ),
           ),

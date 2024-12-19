@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 // Package imports:
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 // Project imports:
 import 'package:bites/core/services/firebase_service.dart';
@@ -53,6 +54,26 @@ class AuthService extends ChangeNotifier {
       // No need for delays - auth state listener will handle the rest
     } catch (e) {
       throw AuthException('Failed to sign in: $e');
+    }
+  }
+
+  Future<void> signInWithApple() async {
+    try {
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      final oauthCredential = OAuthProvider("apple.com").credential(
+        idToken: appleCredential.identityToken,
+        accessToken: appleCredential.authorizationCode,
+      );
+
+      await _auth.signInWithCredential(oauthCredential);
+    } catch (e) {
+      throw AuthException('Failed to sign in with Apple: $e');
     }
   }
 
@@ -109,6 +130,87 @@ class AuthService extends ChangeNotifier {
       );
     } catch (e) {
       throw AuthException('Failed to sign in: $e');
+    }
+  }
+
+  Future<void> deleteAccount() async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) throw AuthException('No user signed in');
+
+      // Delete user data from Firestore
+      await FirebaseService().deleteUserData(user.uid);
+
+      // Delete the Firebase Auth account
+      await user.delete();
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'requires-recent-login') {
+        throw AuthException('requires-recent-login');
+      }
+      throw AuthException('Failed to delete account: $e');
+    } catch (e) {
+      throw AuthException('Failed to delete account: $e');
+    }
+  }
+
+  Future<void> reauthenticateWithPassword(String password) async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null || user.email == null) {
+        throw AuthException('No user signed in or no email found');
+      }
+
+      final credential = EmailAuthProvider.credential(
+        email: user.email!,
+        password: password,
+      );
+
+      await user.reauthenticateWithCredential(credential);
+    } catch (e) {
+      throw AuthException('Failed to reauthenticate: $e');
+    }
+  }
+
+  Future<void> reauthenticateWithGoogle() async {
+    try {
+      final googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) throw const AuthException('Sign in aborted');
+
+      final googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final user = _auth.currentUser;
+      if (user == null) throw AuthException('No user signed in');
+
+      await user.reauthenticateWithCredential(credential);
+    } catch (e) {
+      throw AuthException('Failed to reauthenticate: $e');
+    }
+  }
+
+  Future<void> reauthenticateWithApple() async {
+    try {
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      final oauthCredential = OAuthProvider("apple.com").credential(
+        idToken: appleCredential.identityToken,
+        accessToken: appleCredential.authorizationCode,
+      );
+
+      final user = _auth.currentUser;
+      if (user == null) throw AuthException('No user signed in');
+
+      await user.reauthenticateWithCredential(oauthCredential);
+    } catch (e) {
+      throw AuthException('Failed to reauthenticate: $e');
     }
   }
 }

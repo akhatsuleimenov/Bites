@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:provider/provider.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 // Project imports:
 import 'package:bites/core/constants/app_typography.dart';
@@ -76,6 +77,26 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Google sign in failed. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _handleAppleSignIn() async {
+    setState(() => _isLoading = true);
+
+    try {
+      await _authService.signInWithApple();
+      if (!mounted) return;
+      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Apple sign in failed. Please try again.'),
           backgroundColor: Colors.red,
         ),
       );
@@ -219,6 +240,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ],
                         ),
+                      ),
+                      const SizedBox(height: 16),
+                      // Apple sign in
+                      SignInWithAppleButton(
+                        onPressed: _handleAppleSignIn,
+                        style: SignInWithAppleButtonStyle.black,
+                        height: 50,
                       ),
                     ],
                     const SizedBox(height: 24),

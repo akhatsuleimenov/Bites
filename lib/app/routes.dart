@@ -161,6 +161,8 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const HelpSupportScreen());
       case '/settings/privacy':
         return MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen());
+      case '/settings/delete-account':
+        return MaterialPageRoute(builder: (_) => const DeleteAccountScreen());
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(

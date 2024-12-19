@@ -76,6 +76,7 @@ dependencies:
     in_app_purchase_storekit: ^0.3.20+2
     flutter_animate: ^4.5.2
     flutter_image_compress: ^2.3.0
+    sign_in_with_apple: ^6.1.4
 
 dev_dependencies:
     flutter_test:

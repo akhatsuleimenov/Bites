@@ -63,8 +63,7 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen> {
         builder: (context) => AlertDialog(
           title: const Text('Camera Permission Required'),
           content: const Text(
-            'We need camera access to take photos of your meals. '
-            'Please grant camera access in settings.',
+            'We need access to your camera so that you can take photos of your meals directly within the app.\nFor example, you can snap a picture of your breakfast to track your nutrition and receive personalized meal suggestions.',
           ),
           actions: [
             TextButton(
@@ -124,9 +123,10 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen> {
             if (!mounted) return;
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content:
-                    Text('Photo library access is required to select images'),
-                duration: Duration(seconds: 3),
+                content: Text(
+                  'We need access to your photo library so that you can select existing meal images and add them to your food log.\nThis helps you keep a comprehensive visual record of what you eat over time.',
+                ),
+                duration: const Duration(seconds: 3),
               ),
             );
             return;

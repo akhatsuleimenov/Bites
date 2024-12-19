@@ -172,7 +172,14 @@ class FirebaseService {
     String userId,
     Map<String, dynamic> updates,
   ) async {
-    await _firestore.collection('users').doc(userId).update(updates);
+    final docRef = _firestore.collection('users').doc(userId);
+    final doc = await docRef.get();
+
+    if (!doc.exists) {
+      await docRef.set(updates);
+    } else {
+      await docRef.update(updates);
+    }
   }
 
   // Create User Document
@@ -249,7 +256,7 @@ class FirebaseService {
     } catch (e) {
       throw FirebaseException(
         plugin: 'bites',
-        message: 'Failed to log user weight: $e',
+        message: 'Failed to log weight: $e',
       );
     }
   }
@@ -266,5 +273,48 @@ class FirebaseService {
     }).map((snapshot) => snapshot.docs
             .map((doc) => WeightLog.fromJson(doc.data()))
             .toList());
+  }
+
+  Future<void> deleteUserData(String userId) async {
+    try {
+      // Delete all meal logs
+      final mealLogs = await _firestore
+          .collection('meal_logs')
+          .where('userId', isEqualTo: userId)
+          .get();
+
+      for (var doc in mealLogs.docs) {
+        final data = doc.data();
+        // Delete associated image if exists
+        if (data['imagePath'] != null && data['imagePath'].isNotEmpty) {
+          try {
+            final imageRef = _storage.refFromURL(data['imagePath']);
+            await imageRef.delete();
+          } catch (e) {
+            print('Error deleting image: $e');
+          }
+        }
+        await doc.reference.delete();
+      }
+
+      // Delete weight logs subcollection
+      final weightLogs = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('weight_logs')
+          .get();
+
+      for (var doc in weightLogs.docs) {
+        await doc.reference.delete();
+      }
+
+      // Delete user document
+      await _firestore.collection('users').doc(userId).delete();
+    } catch (e) {
+      throw FirebaseException(
+        plugin: 'bites',
+        message: 'Failed to delete user data: $e',
+      );
+    }
   }
 }

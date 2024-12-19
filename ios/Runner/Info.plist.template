@@ -28,6 +28,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>GOOGLE_CLIENT_URL_SCHEME</string>
+				<string>signinwithapple</string>
 			</array>
 		</dict>
 	</array>
@@ -43,11 +44,11 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>We need camera access to take photos of your meals.</string>
+	<string>We need access to your camera so that you can take photos of your meals directly within the app. For example, you can snap a picture of your breakfast to track your nutrition and receive personalized meal suggestions.</string>
 	<key>NSNotificationUsageDescription</key>
-	<string>We need to send you notifications for daily reminders and updates about your progress</string>
+	<string>We need permission to send you notifications so that we can remind you to log your meals, provide timely progress updates, and alert you to new health insights, helping you stay on track with your goals.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>We need access to your photo library to select images.</string>
+	<string>We need access to your photo library so that you can select existing meal images and add them to your food log. This helps you keep a comprehensive visual record of what you eat over time.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
