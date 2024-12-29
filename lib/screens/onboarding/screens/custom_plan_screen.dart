@@ -28,7 +28,7 @@ class CustomPlanScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Your custom plan\nis ready!',
+                        'Your custom plan is ready!',
                         style: AppTypography.headlineLarge,
                       ),
                       const SizedBox(height: 48),

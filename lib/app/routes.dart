@@ -96,12 +96,6 @@ class AppRoutes {
         return MaterialPageRoute(
           builder: (_) => NotificationPermissionScreen(userData: args!),
         );
-      case '/onboarding/calories-goals':
-        return MaterialPageRoute(
-          builder: (_) => CaloriesGoalsScreen(
-            userData: args!,
-          ),
-        );
       case '/onboarding/macros-goals':
         return MaterialPageRoute(
           builder: (_) => MacrosGoalsScreen(

@@ -11,6 +11,5 @@ export 'goals_screen.dart';
 export 'desired_weight_screen.dart';
 export 'notification_permission_screen.dart';
 export 'onboarding_complete_screen.dart';
-export 'calories_goals_screen.dart';
 export 'macros_goals_screen.dart';
 export 'paywall_screen.dart';
