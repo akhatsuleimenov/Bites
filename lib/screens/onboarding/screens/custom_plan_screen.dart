@@ -1,17 +1,15 @@
 // Flutter imports:
+import 'package:bites/core/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 
 // Project imports:
 import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/widgets/buttons.dart';
+import 'package:superwallkit_flutter/superwallkit_flutter.dart';
 
 class CustomPlanScreen extends StatelessWidget {
   final Map<String, dynamic> userData;
-
-  const CustomPlanScreen({
-    super.key,
-    required this.userData,
-  });
+  const CustomPlanScreen({super.key, required this.userData});
 
   @override
   Widget build(BuildContext context) {
@@ -135,11 +133,14 @@ class CustomPlanScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: PrimaryButton(
-                onPressed: () => Navigator.pushNamed(
-                  context,
-                  '/onboarding/paywall',
-                  arguments: userData,
-                ),
+                onPressed: () {
+                  Superwall.shared.registerEvent('Subscribe', feature: () {
+                    FirebaseService().updateUserData(userData['userId'], {
+                      'isSubscribed': true,
+                    });
+                    Navigator.pushNamed(context, '/onboarding/payment-success');
+                  });
+                },
                 text: "Let's Begin!",
               ),
             ),

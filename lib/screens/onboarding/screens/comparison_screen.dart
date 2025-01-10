@@ -19,12 +19,8 @@ class ComparisonScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 32),
-              Text(
-                'But with Bites,\nyou\'re different',
-                style: AppTypography.headlineLarge,
-              ),
               const Spacer(),
+              const SizedBox(height: 48.0),
               Container(
                 width: double.infinity,
                 padding:
@@ -58,6 +54,25 @@ class ComparisonScreen extends StatelessWidget {
                         fontSize: 18,
                       ),
                     ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 32),
+              Container(
+                child: Column(
+                  children: [
+                    Center(
+                      child: Text(
+                        'But with Bites, you\'re',
+                        style: AppTypography.headlineLarge,
+                      ),
+                    ),
+                    Center(
+                      child: Text(
+                        'different',
+                        style: AppTypography.headlineLarge,
+                      ),
+                    )
                   ],
                 ),
               ),

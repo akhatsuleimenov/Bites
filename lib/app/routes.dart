@@ -102,10 +102,6 @@ class AppRoutes {
             userData: args!,
           ),
         );
-      case '/onboarding/paywall':
-        return MaterialPageRoute(
-          builder: (_) => PaywallScreen(userData: args!),
-        );
       case '/onboarding/payment-success':
         return MaterialPageRoute(
           builder: (_) => const PaymentSuccessScreen(),

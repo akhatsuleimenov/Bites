@@ -46,8 +46,8 @@ class AuthWrapper extends StatelessWidget {
 
         // Check subscription
         if (!(userData['isSubscribed'] ?? false)) {
-          print("AuthWrapper PaywallScreen");
-          return PaywallScreen(userData: userData);
+          print("AuthWrapper CustomPlanScreen");
+          return CustomPlanScreen(userData: userData);
         }
 
         // All good 🎉

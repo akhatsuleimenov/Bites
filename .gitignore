@@ -136,6 +136,3 @@ ios/Runner/Info.plist
 
 # Keep templates
 !ios/Runner/Info.plist.template
-
-# RevenueCat
-purchases-flutter/

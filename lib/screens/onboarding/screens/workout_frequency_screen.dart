@@ -33,7 +33,7 @@ class _WorkoutFrequencyScreenState extends State<WorkoutFrequencyScreen> {
               const CustomBackButton(),
               const SizedBox(height: 32),
               Text(
-                'How often do youwork out?',
+                'How often do you work out?',
                 style: AppTypography.headlineLarge,
               ),
               const SizedBox(height: 8),

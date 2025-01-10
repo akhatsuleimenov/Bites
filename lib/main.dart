@@ -1,6 +1,5 @@
 // Flutter imports:
-// import 'package:bites/core/services/revenue_cat_service.dart';
-import 'package:bites/core/services/revenue_cat_service.dart';
+import 'package:bites/core/utils/env.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -11,9 +10,9 @@ import 'package:provider/provider.dart';
 import 'package:bites/app/routes.dart';
 import 'package:bites/core/auth/auth_wrapper.dart';
 import 'package:bites/core/controllers/app_controller.dart';
-import 'package:bites/core/controllers/subscription_controller.dart';
 import 'package:bites/core/services/auth_service.dart';
 import 'package:bites/core/themes/app_theme.dart';
+import 'package:superwallkit_flutter/superwallkit_flutter.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -22,7 +21,10 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await RevenueCatService.init();
+
+  String apiKey = await Env.superwallApiKey;
+  Superwall.configure(apiKey);
+
   final authService = AuthService();
 
   runApp(
@@ -30,7 +32,6 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => authService),
         ChangeNotifierProvider(create: (context) => AppController(authService)),
-        ChangeNotifierProvider(create: (context) => SubscriptionController()),
       ],
       child: const BitesApp(),
     ),
