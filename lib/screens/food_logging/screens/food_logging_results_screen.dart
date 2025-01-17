@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 // Package imports:
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 // Project imports:
 import 'package:bites/core/constants/app_colors.dart';
@@ -15,16 +16,23 @@ import 'package:bites/core/models/food_model.dart';
 import 'package:bites/core/services/firebase_service.dart';
 import 'package:bites/core/widgets/buttons.dart';
 import 'package:bites/core/widgets/cards.dart';
+import 'package:bites/core/controllers/app_controller.dart';
 
 class FoodLoggingResultsScreen extends StatefulWidget {
-  final String imagePath;
-  final FoodInfo resultFoodInfo;
+  final String? imagePath;
+  final FoodInfo? resultFoodInfo;
+  final MealLog? existingMealLog;
 
   const FoodLoggingResultsScreen({
     super.key,
-    required this.imagePath,
-    required this.resultFoodInfo,
-  });
+    this.imagePath,
+    this.resultFoodInfo,
+    this.existingMealLog,
+  }) : assert(
+          (imagePath != null && resultFoodInfo != null) ||
+              existingMealLog != null,
+          'Either provide imagePath and resultFoodInfo for new log, or existingMealLog for editing',
+        );
 
   @override
   State<FoodLoggingResultsScreen> createState() =>
@@ -36,17 +44,24 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
   TimeOfDay _selectedTime = TimeOfDay.now();
   late MealLog _mealLog;
   bool _isSaving = false;
+  bool get _isEditing => widget.existingMealLog != null;
 
   @override
   void initState() {
     super.initState();
 
-    _mealLog = MealLog(
-      userId: FirebaseAuth.instance.currentUser!.uid,
-      dateTime: DateTime.now(),
-      imagePath: widget.imagePath,
-      foodInfo: widget.resultFoodInfo,
-    );
+    if (_isEditing) {
+      _mealLog = widget.existingMealLog!;
+      _selectedDate = _mealLog.dateTime;
+      _selectedTime = TimeOfDay.fromDateTime(_mealLog.dateTime);
+    } else {
+      _mealLog = MealLog(
+        userId: FirebaseAuth.instance.currentUser!.uid,
+        dateTime: DateTime.now(),
+        imagePath: widget.imagePath!,
+        foodInfo: widget.resultFoodInfo!,
+      );
+    }
   }
 
   void _updateValue(String field, double value, [int? ingredientIndex]) {
@@ -113,14 +128,21 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
 
       _mealLog.dateTime = combinedDateTime;
 
-      await FirebaseService().saveMealLog(_mealLog, _mealLog.userId);
+      final appController = Provider.of<AppController>(context, listen: false);
+      if (_isEditing) {
+        await appController.updateMealLog(_mealLog);
+      } else {
+        await FirebaseService().saveMealLog(_mealLog, _mealLog.userId);
+      }
 
       if (!mounted) return;
 
       // Show success feedback
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Meal saved successfully'),
+        SnackBar(
+          content: Text(_isEditing
+              ? 'Meal updated successfully'
+              : 'Meal saved successfully'),
           backgroundColor: Colors.green,
         ),
       );
@@ -132,7 +154,9 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
       // Show error feedback
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to save meal: $e'),
+          content: Text(_isEditing
+              ? 'Failed to update meal: $e'
+              : 'Failed to save meal: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -145,7 +169,7 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Analysis Results'),
+        title: Text(_isEditing ? 'Edit Meal' : 'Analysis Results'),
         backgroundColor: AppColors.cardBackground,
       ),
       body: SingleChildScrollView(
@@ -156,13 +180,19 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
           child: Column(
             children: [
               // Image preview
-              AspectRatio(
-                aspectRatio: 16 / 9,
-                child: Image.file(
-                  File(_mealLog.imagePath),
-                  fit: BoxFit.cover,
+              if (_mealLog.imagePath.isNotEmpty)
+                AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: _mealLog.imagePath.startsWith('http')
+                      ? Image.network(
+                          _mealLog.imagePath,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.file(
+                          File(_mealLog.imagePath),
+                          fit: BoxFit.cover,
+                        ),
                 ),
-              ),
 
               // Date, Time and Meal Type selector
               Padding(
@@ -232,7 +262,7 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
                 child: PrimaryButton(
                   onPressed: _saveMealLog,
                   loading: _isSaving,
-                  text: 'Save to Log',
+                  text: _isEditing ? 'Update Meal' : 'Save to Log',
                 ),
               ),
             ],

@@ -163,6 +163,16 @@ class AppRoutes {
   }
 
   static Route<dynamic> _handleFoodLoggingResults(Map<String, dynamic>? args) {
+    // Handle edit case
+    if (args != null && args.containsKey('existingMealLog')) {
+      return MaterialPageRoute(
+        builder: (_) => FoodLoggingResultsScreen(
+          existingMealLog: args['existingMealLog'],
+        ),
+      );
+    }
+
+    // Handle new case
     if (args == null ||
         !args.containsKey('imagePath') ||
         !args.containsKey('resultFoodInfo')) {

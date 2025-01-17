@@ -89,7 +89,11 @@ class FirebaseService {
       }
 
       print('Saving meal log to Firestore with data: $mealLogData');
-      final docRef = await _firestore.collection('meal_logs').add(mealLogData);
+      final docRef = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('meal_logs')
+          .add(mealLogData);
       print('Successfully saved meal log with ID: ${docRef.id}');
     } catch (e, stackTrace) {
       print('❌ Error saving meal log: $e');
@@ -97,6 +101,42 @@ class FirebaseService {
       throw FirebaseException(
         plugin: 'bites',
         message: 'Failed to save meal log: $e',
+      );
+    }
+  }
+
+  Future<void> updateMealLog(MealLog mealLog) async {
+    try {
+      if (mealLog.id == null)
+        throw Exception('Meal log ID is required for update');
+
+      final mealLogData = mealLog.toFirestore();
+
+      // If the image path is a local file path, upload it
+      if (mealLog.imagePath.isNotEmpty &&
+          !mealLog.imagePath.startsWith('http')) {
+        final imageFile = File(mealLog.imagePath);
+        final storageRef = _storage
+            .ref()
+            .child('meal_images')
+            .child(mealLog.userId)
+            .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
+
+        await storageRef.putFile(imageFile);
+        final imageUrl = await storageRef.getDownloadURL();
+        mealLogData['imagePath'] = imageUrl;
+      }
+
+      await _firestore
+          .collection('users')
+          .doc(mealLog.userId)
+          .collection('meal_logs')
+          .doc(mealLog.id)
+          .update(mealLogData);
+    } catch (e) {
+      throw FirebaseException(
+        plugin: 'bites',
+        message: 'Failed to update meal log: $e',
       );
     }
   }
@@ -136,8 +176,9 @@ class FirebaseService {
     print('📅 Date range: $startOfDay to $endOfDay');
 
     return _firestore
+        .collection('users')
+        .doc(userId)
         .collection('meal_logs')
-        .where('userId', isEqualTo: userId)
         .where('dateTime', isGreaterThanOrEqualTo: startOfDay)
         .where('dateTime', isLessThan: endOfDay)
         .snapshots()
@@ -160,14 +201,19 @@ class FirebaseService {
   }
 
   // Delete meal log
-  Future<void> deleteMealLog(String mealLogId) async {
+  Future<void> deleteMealLog(String userId, String mealLogId) async {
     try {
-      final mealLog =
-          await _firestore.collection('meal_logs').doc(mealLogId).get();
+      final mealLog = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('meal_logs')
+          .doc(mealLogId)
+          .get();
 
       if (mealLog.exists) {
         final data = mealLog.data()!;
-        if (data['imagePath'] != null) {
+        if (data['imagePath'] != null && data['imagePath'] != '') {
+          print("IN HERE");
           final imageRef = _storage.refFromURL(data['imagePath']);
           await imageRef.delete();
         }
@@ -255,8 +301,9 @@ class FirebaseService {
     final pastWeek = currentDay.subtract(Duration(days: 7));
 
     final snapshot = await _firestore
+        .collection('users')
+        .doc(userId)
         .collection('meal_logs')
-        .where('userId', isEqualTo: userId)
         .where('dateTime', isGreaterThanOrEqualTo: pastWeek)
         .where('dateTime', isLessThan: currentDay)
         .get();
@@ -304,8 +351,9 @@ class FirebaseService {
     try {
       // Delete all meal logs
       final mealLogs = await _firestore
+          .collection('users')
+          .doc(userId)
           .collection('meal_logs')
-          .where('userId', isEqualTo: userId)
           .get();
 
       for (var doc in mealLogs.docs) {

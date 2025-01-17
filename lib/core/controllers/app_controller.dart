@@ -213,6 +213,23 @@ class AppController extends ChangeNotifier {
     }
   }
 
+  Future<void> deleteMealLog(String mealLogId) async {
+    try {
+      await _firebaseService.deleteMealLog(
+          _authService.currentUser!.uid, mealLogId);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> updateMealLog(MealLog mealLog) async {
+    try {
+      await _firebaseService.updateMealLog(mealLog);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   double _calculateBMR() {
     if (_userProfile == null) return 0;
 
