@@ -27,48 +27,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
   final _carbsController = TextEditingController();
   final _fatController = TextEditingController();
 
-  MealType _selectedMealType = MealType.lunch;
   bool _isSaving = false;
-  // Add the dialog method
-  void _showMealTypeDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Select Meal Type',
-                style: AppTypography.headlineLarge,
-              ),
-              const SizedBox(height: 16),
-              ...List.generate(
-                MealType.values.length,
-                (index) => ListTile(
-                  title: Text(MealType.values[index].name),
-                  trailing: _selectedMealType == MealType.values[index]
-                      ? Icon(
-                          Icons.check_circle,
-                          color: Theme.of(context).primaryColor,
-                        )
-                      : null,
-                  onTap: () {
-                    setState(() => _selectedMealType = MealType.values[index]);
-                    Navigator.pop(context);
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -120,21 +79,6 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  OutlinedButton.icon(
-                    onPressed: _showMealTypeDialog,
-                    icon: const Icon(Icons.schedule),
-                    label: Text(_selectedMealType.name),
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size.fromHeight(48),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      backgroundColor: AppColors.cardBackground,
-                      side: BorderSide(
-                        color: AppColors.primary,
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -343,12 +287,10 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
       final protein = double.parse(_proteinController.text);
       final carbs = double.parse(_carbsController.text);
       final fat = double.parse(_fatController.text);
-      print("userid: $userId");
       final foodInfo = FoodInfo(
-        nutritionalInfo: NutritionalInfo(
-          grade: 'N/A', // Manual entries don't have grades
-          name: _nameController.text,
-          quantity: quantity,
+        mainItem: Ingredient(
+          title: _nameController.text,
+          grams: quantity,
           nutritionData: NutritionData(
             calories: calories,
             carbs: carbs,
@@ -357,21 +299,18 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
           ),
         ),
         ingredients: [], // Manual entries don't have ingredients
+        description: '',
+        healthScore: 0,
       );
-      print("Food info $foodInfo");
 
       final mealLog = MealLog(
         userId: userId,
         dateTime: DateTime.now(),
-        mealType: _selectedMealType.name,
         imagePath: '', // Manual entries don't have images
-        analysisId: 'manual_entry_${DateTime.now().millisecondsSinceEpoch}',
         foodInfo: foodInfo,
       );
-      print("$mealLog");
 
       await FirebaseService().saveMealLog(mealLog, userId);
-      print("Saved");
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Meal saved successfully')),

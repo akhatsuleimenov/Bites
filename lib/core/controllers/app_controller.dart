@@ -73,17 +73,24 @@ class AppController extends ChangeNotifier {
   }
 
   Future<void> initializeData() async {
-    print('Initializing Data');
-    if (_userProfile != null) return;
+    print('🚀 Initializing Data');
+    if (_userProfile != null) {
+      print('⚠️ User profile already exists, skipping initialization');
+      return;
+    }
     await loadAppData();
   }
 
   Future<void> loadAppData() async {
-    print('Loading App Data');
-    if (_isLoading) return;
+    print('📚 Loading App Data');
+    if (_isLoading) {
+      print('⚠️ Already loading data, skipping');
+      return;
+    }
 
     try {
       _isLoading = true;
+      print('🔄 Starting data load');
       // Only notify if not during initialization
       if (_userProfile != null) notifyListeners();
 
@@ -94,12 +101,16 @@ class AppController extends ChangeNotifier {
 
       _nutritionPlan = futures[0] as NutritionData;
       _userProfile = UserProfile.fromMap(futures[1] as Map<String, dynamic>);
+      print('✅ Loaded nutrition plan and user profile');
 
       _setupMealLogsSubscription();
       await loadWeightLogs();
+      print('✅ Setup meal logs subscription and loaded weight logs');
     } catch (e) {
+      print('❌ Error loading app data: $e');
     } finally {
       _isLoading = false;
+      print('🏁 Finished loading app data');
       // Only notify if not during initialization
       if (_userProfile != null) notifyListeners();
     }
@@ -120,17 +131,21 @@ class AppController extends ChangeNotifier {
   }
 
   void _setupMealLogsSubscription() {
+    print('🔄 Setting up meal logs subscription');
     _mealLogsSubscription?.cancel();
     _mealLogsSubscription = _firebaseService
         .getMealLogsStream(userId: userId, date: DateTime.now())
         .listen(
       (mealLogs) {
+        print('📥 Received ${mealLogs.length} meal logs from stream');
         _todaysMealLogs = mealLogs
           ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
+        print('📊 Updated _todaysMealLogs with ${_todaysMealLogs.length} logs');
         _updateWeeklyLogs();
         notifyListeners();
       },
       onError: (e) {
+        print('❌ Error in meal logs subscription: $e');
         notifyListeners();
       },
     );
@@ -148,12 +163,10 @@ class AppController extends ChangeNotifier {
     final consumed = _todaysMealLogs.fold(
       NutritionData.empty(),
       (sum, log) => NutritionData(
-        calories:
-            sum.calories + log.foodInfo.nutritionalInfo.nutritionData.calories,
-        protein:
-            sum.protein + log.foodInfo.nutritionalInfo.nutritionData.protein,
-        carbs: sum.carbs + log.foodInfo.nutritionalInfo.nutritionData.carbs,
-        fats: sum.fats + log.foodInfo.nutritionalInfo.nutritionData.fats,
+        calories: sum.calories + log.foodInfo.mainItem.nutritionData.calories,
+        protein: sum.protein + log.foodInfo.mainItem.nutritionData.protein,
+        carbs: sum.carbs + log.foodInfo.mainItem.nutritionData.carbs,
+        fats: sum.fats + log.foodInfo.mainItem.nutritionData.fats,
       ),
     );
 

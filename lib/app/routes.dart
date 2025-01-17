@@ -165,14 +165,14 @@ class AppRoutes {
   static Route<dynamic> _handleFoodLoggingResults(Map<String, dynamic>? args) {
     if (args == null ||
         !args.containsKey('imagePath') ||
-        !args.containsKey('analysisResults')) {
+        !args.containsKey('resultFoodInfo')) {
       throw ArgumentError(
           'Missing required arguments for FoodLoggingResultsScreen');
     }
     return MaterialPageRoute(
       builder: (_) => FoodLoggingResultsScreen(
-        imagePath: args['imagePath'] as String,
-        analysisResults: args['analysisResults'] as Map<String, dynamic>,
+        imagePath: args['imagePath'],
+        resultFoodInfo: args['resultFoodInfo'],
       ),
     );
   }

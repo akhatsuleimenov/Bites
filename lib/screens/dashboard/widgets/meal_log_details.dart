@@ -42,7 +42,7 @@ class MealLogDetails extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        mealLog.foodInfo.nutritionalInfo.name,
+                        mealLog.foodInfo.mainItem.title,
                         style: AppTypography.headlineMedium,
                       ),
                       const SizedBox(height: 8),
@@ -52,28 +52,26 @@ class MealLogDetails extends StatelessWidget {
                           _NutrientInfo(
                             label: 'Calories',
                             value: mealLog
-                                .foodInfo.nutritionalInfo.nutritionData.calories
+                                .foodInfo.mainItem.nutritionData.calories
                                 .toStringAsFixed(0),
                             unit: 'kcal',
                           ),
                           _NutrientInfo(
                             label: 'Protein',
                             value: mealLog
-                                .foodInfo.nutritionalInfo.nutritionData.protein
+                                .foodInfo.mainItem.nutritionData.protein
                                 .toString(),
                             unit: 'g',
                           ),
                           _NutrientInfo(
                             label: 'Carbs',
-                            value: mealLog
-                                .foodInfo.nutritionalInfo.nutritionData.carbs
+                            value: mealLog.foodInfo.mainItem.nutritionData.carbs
                                 .toString(),
                             unit: 'g',
                           ),
                           _NutrientInfo(
                             label: 'Fat',
-                            value: mealLog
-                                .foodInfo.nutritionalInfo.nutritionData.fats
+                            value: mealLog.foodInfo.mainItem.nutritionData.fats
                                 .toString(),
                             unit: 'g',
                           ),
@@ -104,7 +102,7 @@ class MealLogDetails extends StatelessWidget {
 }
 
 class _ItemCard extends StatelessWidget {
-  final NutritionalInfo item;
+  final Ingredient item;
 
   const _ItemCard({required this.item});
 
@@ -117,7 +115,7 @@ class _ItemCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              item.name,
+              item.title,
               style: AppTypography.headlineSmall,
             ),
             const SizedBox(height: 8),

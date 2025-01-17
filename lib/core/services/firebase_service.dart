@@ -63,10 +63,13 @@ class FirebaseService {
   // Meal Logs
   Future<void> saveMealLog(MealLog mealLog, String userId) async {
     try {
+      print('Starting to save meal log for user: $userId');
       final mealLogData = mealLog.toFirestore();
+      print('Converted meal log to Firestore data: $mealLogData');
 
       // Only handle image upload if there's an image path
       if (mealLog.imagePath.isNotEmpty) {
+        print('Image path exists, uploading to Storage: ${mealLog.imagePath}');
         final imageFile = File(mealLog.imagePath);
         final storageRef = _storage
             .ref()
@@ -74,16 +77,23 @@ class FirebaseService {
             .child(userId)
             .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
 
+        print('Uploading image to: ${storageRef.fullPath}');
         await storageRef.putFile(imageFile);
         final imageUrl = await storageRef.getDownloadURL();
+        print('Image uploaded successfully. URL: $imageUrl');
         mealLogData['imagePath'] = imageUrl;
       } else {
+        print('No image path, setting empty string');
         // For manual entries, set imagePath to empty string
         mealLogData['imagePath'] = '';
       }
 
-      await _firestore.collection('meal_logs').add(mealLogData);
-    } catch (e) {
+      print('Saving meal log to Firestore with data: $mealLogData');
+      final docRef = await _firestore.collection('meal_logs').add(mealLogData);
+      print('Successfully saved meal log with ID: ${docRef.id}');
+    } catch (e, stackTrace) {
+      print('❌ Error saving meal log: $e');
+      print('Stack trace: $stackTrace');
       throw FirebaseException(
         plugin: 'bites',
         message: 'Failed to save meal log: $e',
@@ -122,6 +132,9 @@ class FirebaseService {
     final startOfDay = DateTime(date.year, date.month, date.day);
     final endOfDay = startOfDay.add(const Duration(days: 1));
 
+    print('🔍 Getting meal logs for userId: $userId');
+    print('📅 Date range: $startOfDay to $endOfDay');
+
     return _firestore
         .collection('meal_logs')
         .where('userId', isEqualTo: userId)
@@ -129,9 +142,21 @@ class FirebaseService {
         .where('dateTime', isLessThan: endOfDay)
         .snapshots()
         .handleError((error) {
+      print('❌ Error in meal logs stream: $error');
       // throw error;
-    }).map((snapshot) =>
-            snapshot.docs.map((doc) => MealLog.fromFirestore(doc)).toList());
+    }).map((snapshot) {
+      print('📦 Got ${snapshot.docs.length} meal logs');
+      final logs = snapshot.docs.map((doc) {
+        try {
+          return MealLog.fromFirestore(doc);
+        } catch (e) {
+          print('❌ Error parsing meal log ${doc.id}: $e');
+          rethrow;
+        }
+      }).toList();
+      print('✅ Parsed ${logs.length} meal logs successfully');
+      return logs;
+    });
   }
 
   // Delete meal log

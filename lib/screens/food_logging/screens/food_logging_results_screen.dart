@@ -18,12 +18,12 @@ import 'package:bites/core/widgets/cards.dart';
 
 class FoodLoggingResultsScreen extends StatefulWidget {
   final String imagePath;
-  final Map<String, dynamic> analysisResults;
+  final FoodInfo resultFoodInfo;
 
   const FoodLoggingResultsScreen({
     super.key,
     required this.imagePath,
-    required this.analysisResults,
+    required this.resultFoodInfo,
   });
 
   @override
@@ -34,7 +34,6 @@ class FoodLoggingResultsScreen extends StatefulWidget {
 class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
-  MealType _selectedMealType = MealType.lunch;
   late MealLog _mealLog;
   bool _isSaving = false;
 
@@ -42,94 +41,23 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
   void initState() {
     super.initState();
 
-    if (widget.analysisResults['items']?.isEmpty ?? true) {
-      // Default values when no items are present
-      _mealLog = MealLog(
-        userId: FirebaseAuth.instance.currentUser!.uid,
-        dateTime: DateTime.now(),
-        mealType: _selectedMealType.name,
-        imagePath: widget.imagePath,
-        analysisId: widget.analysisResults['analysis_id'],
-        foodInfo: FoodInfo(
-          nutritionalInfo: NutritionalInfo(
-            grade: 'N/A',
-            name: 'Unknown Food',
-            quantity: 100.0,
-            nutritionData: NutritionData(
-              calories: 0.0,
-              carbs: 0.0,
-              fats: 0.0,
-              protein: 0.0,
-            ),
-          ),
-          ingredients: [],
-        ),
-      );
-      return;
-    }
-
-    // Convert analysis results to MealLog immediately
-    final foodItem = widget.analysisResults['items'][0]['food'][0];
-    final foodInfo = foodItem['food_info'];
-    final nutrition = foodInfo['nutrition'];
-    final quantity = foodItem['quantity'] as double;
-
-    // Create ingredients list
-    final ingredients =
-        (foodItem['ingredients'] as List? ?? []).map((ingredient) {
-      final ingredientInfo = ingredient['food_info'];
-      final ingNutrition = ingredientInfo['nutrition'];
-      final ingQuantity = ingredient['quantity'] as double;
-
-      return NutritionalInfo(
-        grade: ingredientInfo['fv_grade'],
-        name: ingredientInfo['display_name'],
-        quantity: ingQuantity,
-        nutritionData: NutritionData(
-          calories:
-              double.parse(ingNutrition['calories_100g'].toStringAsFixed(1)),
-          carbs: double.parse(ingNutrition['carbs_100g'].toStringAsFixed(1)),
-          fats: double.parse(ingNutrition['fat_100g'].toStringAsFixed(1)),
-          protein:
-              double.parse(ingNutrition['proteins_100g'].toStringAsFixed(1)),
-        ),
-      );
-    }).toList();
-
-    final foodInfoObj = FoodInfo(
-      nutritionalInfo: NutritionalInfo(
-        grade: foodInfo['fv_grade'],
-        name: foodInfo['display_name'],
-        quantity: quantity,
-        nutritionData: NutritionData(
-          calories: double.parse(nutrition['calories_100g'].toStringAsFixed(1)),
-          carbs: double.parse(nutrition['carbs_100g'].toStringAsFixed(1)),
-          fats: double.parse(nutrition['fat_100g'].toStringAsFixed(1)),
-          protein: double.parse(nutrition['proteins_100g'].toStringAsFixed(1)),
-        ),
-      ),
-      ingredients: ingredients,
-    );
-
     _mealLog = MealLog(
       userId: FirebaseAuth.instance.currentUser!.uid,
       dateTime: DateTime.now(),
-      mealType: _selectedMealType.name,
       imagePath: widget.imagePath,
-      analysisId: widget.analysisResults['analysis_id'],
-      foodInfo: foodInfoObj,
+      foodInfo: widget.resultFoodInfo,
     );
   }
 
   void _updateValue(String field, double value, [int? ingredientIndex]) {
     setState(() {
-      NutritionalInfo target = ingredientIndex != null
+      Ingredient target = ingredientIndex != null
           ? _mealLog.foodInfo.ingredients[ingredientIndex]
-          : _mealLog.foodInfo.nutritionalInfo;
+          : _mealLog.foodInfo.mainItem;
 
       switch (field) {
-        case 'quantity':
-          target.quantity = value;
+        case 'grams':
+          target.grams = value;
           break;
         case 'calories':
           target.nutritionData.calories = value;
@@ -169,46 +97,6 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
     }
   }
 
-  void _showMealTypeDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Select Meal Type',
-                style: AppTypography.headlineLarge,
-              ),
-              const SizedBox(height: 16),
-              ...List.generate(
-                MealType.values.length,
-                (index) => ListTile(
-                  title: Text(MealType.values[index].name),
-                  trailing: _selectedMealType == MealType.values[index]
-                      ? Icon(
-                          Icons.check_circle,
-                          color: Theme.of(context).primaryColor,
-                        )
-                      : null,
-                  onTap: () {
-                    setState(() => _selectedMealType = MealType.values[index]);
-                    Navigator.pop(context);
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Future<void> _saveMealLog() async {
     if (_isSaving) return; // Prevent double-taps
 
@@ -224,7 +112,6 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
       );
 
       _mealLog.dateTime = combinedDateTime;
-      _mealLog.mealType = _selectedMealType.name;
 
       await FirebaseService().saveMealLog(_mealLog, _mealLog.userId);
 
@@ -316,21 +203,6 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: OutlinedButton.icon(
-                  onPressed: _showMealTypeDialog,
-                  icon: const Icon(Icons.restaurant),
-                  label: Text(_selectedMealType.name),
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(48),
-                    backgroundColor: AppColors.cardBackground,
-                    side: BorderSide(
-                      color: AppColors.primary,
-                    ),
-                  ),
-                ),
-              ),
 
               // Results list
               Padding(
@@ -394,20 +266,19 @@ class _FoodItemCardState extends State<_FoodItemCard> {
   @override
   void initState() {
     super.initState();
-    NutritionalInfo nutritionalInfo = widget.showIngredients == true
-        ? widget.item.nutritionalInfo
-        : widget.item;
+    Ingredient ingredientInfo =
+        widget.showIngredients ? widget.item.mainItem : widget.item;
     controllers = {
-      'quantity': TextEditingController(
-          text: nutritionalInfo.quantity.toStringAsFixed(1)),
+      'grams':
+          TextEditingController(text: ingredientInfo.grams.toStringAsFixed(1)),
       'calories': TextEditingController(
-          text: nutritionalInfo.nutritionData.calories.toStringAsFixed(1)),
+          text: ingredientInfo.nutritionData.calories.toStringAsFixed(1)),
       'protein': TextEditingController(
-          text: nutritionalInfo.nutritionData.protein.toStringAsFixed(1)),
+          text: ingredientInfo.nutritionData.protein.toStringAsFixed(1)),
       'carbs': TextEditingController(
-          text: nutritionalInfo.nutritionData.carbs.toStringAsFixed(1)),
+          text: ingredientInfo.nutritionData.carbs.toStringAsFixed(1)),
       'fat': TextEditingController(
-          text: nutritionalInfo.nutritionData.fats.toStringAsFixed(1)),
+          text: ingredientInfo.nutritionData.fats.toStringAsFixed(1)),
     };
   }
 
@@ -430,12 +301,12 @@ class _FoodItemCardState extends State<_FoodItemCard> {
               Expanded(
                 child: Text(
                   widget.showIngredients
-                      ? widget.item.nutritionalInfo.name
-                      : widget.item.name,
+                      ? widget.item.mainItem.title
+                      : widget.item.title,
                   style: AppTypography.headlineSmall,
                 ),
               ),
-              _buildEditableField('quantity', 'g'),
+              _buildEditableField('grams', 'g'),
             ],
           ),
           const SizedBox(height: 8),

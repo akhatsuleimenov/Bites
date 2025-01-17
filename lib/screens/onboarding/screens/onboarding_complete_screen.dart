@@ -1,9 +1,9 @@
 // Flutter imports:
-import 'package:bites/core/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 
 // Project imports:
 import 'package:bites/core/constants/app_typography.dart';
+import 'package:bites/core/services/firebase_service.dart';
 
 class OnboardingCompleteScreen extends StatefulWidget {
   final Map<String, dynamic> userData;

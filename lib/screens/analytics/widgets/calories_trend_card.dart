@@ -22,8 +22,8 @@ class CaloriesTrendCard extends StatelessWidget {
     final dailyTotals = weeklyLogs.fold<Map<DateTime, double>>({}, (map, log) {
       final date =
           DateTime(log.dateTime.year, log.dateTime.month, log.dateTime.day);
-      map[date] = (map[date] ?? 0) +
-          log.foodInfo.nutritionalInfo.nutritionData.calories;
+      map[date] =
+          (map[date] ?? 0) + log.foodInfo.mainItem.nutritionData.calories;
       return map;
     });
 

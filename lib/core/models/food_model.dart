@@ -1,11 +1,11 @@
 // Package imports:
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:uuid/uuid.dart';
 
 class MealLog {
   final String? id;
   final String userId;
   DateTime dateTime;
-  String mealType;
   final String imagePath;
   final String analysisId;
   FoodInfo foodInfo;
@@ -14,16 +14,14 @@ class MealLog {
     this.id,
     required this.userId,
     required this.dateTime,
-    required this.mealType,
     required this.imagePath,
-    required this.analysisId,
+    String? analysisId,
     required this.foodInfo,
-  });
+  }) : analysisId = analysisId ?? const Uuid().v4();
 
   Map<String, dynamic> toFirestore() => {
         'userId': userId,
         'dateTime': Timestamp.fromDate(dateTime),
-        'mealType': mealType,
         'imagePath': imagePath,
         'analysisId': analysisId,
         'foodInfo': foodInfo.toMap(),
@@ -33,12 +31,10 @@ class MealLog {
     DocumentSnapshot<Map<String, dynamic>> snapshot,
   ) {
     final data = snapshot.data()!;
-
     return MealLog(
       id: snapshot.id,
       userId: data['userId'],
       dateTime: (data['dateTime'] as Timestamp).toDate(),
-      mealType: data['mealType'],
       imagePath: data['imagePath'],
       analysisId: data['analysisId'],
       foodInfo: FoodInfo.fromMap(data['foodInfo']),
@@ -47,57 +43,68 @@ class MealLog {
 }
 
 class FoodInfo {
-  final NutritionalInfo nutritionalInfo;
-  List<NutritionalInfo> ingredients;
+  final String description;
+  final double healthScore;
+  final Ingredient mainItem;
+  final List<Ingredient> ingredients;
 
   FoodInfo({
-    required this.nutritionalInfo,
+    required this.description,
+    required this.healthScore,
+    required this.mainItem,
     required this.ingredients,
   });
 
   Map<String, dynamic> toMap() => {
-        'nutritionalInfo': nutritionalInfo.toMap(),
+        'description': description,
+        'healthScore': healthScore,
+        'mainItem': mainItem.toMap(),
         'ingredients': ingredients.map((i) => i.toMap()).toList(),
       };
 
   factory FoodInfo.fromMap(Map<String, dynamic> map) {
     return FoodInfo(
-      nutritionalInfo: NutritionalInfo.fromMap(map['nutritionalInfo']),
+      description: map['description'],
+      healthScore: map['healthScore'].toDouble(),
+      mainItem: Ingredient.fromMap(map['mainItem']),
       ingredients: (map['ingredients'] as List)
-          .map((i) => NutritionalInfo.fromMap(i))
+          .map((i) => Ingredient.fromMap(i))
           .toList(),
     );
   }
+
+  factory FoodInfo.empty() => FoodInfo(
+        description: '',
+        healthScore: 0,
+        mainItem: Ingredient.empty(),
+        ingredients: [],
+      );
 }
 
-class NutritionalInfo {
-  final String grade;
-  final String name;
-  double quantity;
-  NutritionData nutritionData;
+class Ingredient {
+  final String title;
+  double grams;
+  final NutritionData nutritionData;
 
-  NutritionalInfo({
-    required this.grade,
-    required this.name,
-    required this.quantity,
-    required this.nutritionData,
-  });
+  Ingredient(
+      {required this.title, required this.grams, required this.nutritionData});
 
   Map<String, dynamic> toMap() => {
-        'grade': grade,
-        'name': name,
-        'quantity': quantity,
+        'title': title,
+        'grams': grams,
         'nutritionData': nutritionData.toMap(),
       };
 
-  factory NutritionalInfo.fromMap(Map<String, dynamic> map) {
-    return NutritionalInfo(
-      grade: map['grade'],
-      name: map['name'],
-      quantity: map['quantity'],
+  factory Ingredient.fromMap(Map<String, dynamic> map) {
+    return Ingredient(
+      title: map['title'],
+      grams: map['grams'].toDouble(),
       nutritionData: NutritionData.fromMap(map['nutritionData']),
     );
   }
+
+  factory Ingredient.empty() =>
+      Ingredient(title: '', grams: 0.0, nutritionData: NutritionData.empty());
 }
 
 class NutritionData {
@@ -129,30 +136,10 @@ class NutritionData {
 
   factory NutritionData.fromMap(Map<String, dynamic> map) {
     return NutritionData(
-      calories: map['calories'],
-      protein: map['protein'],
-      carbs: map['carbs'],
-      fats: map['fats'],
+      calories: map['calories'].toDouble(),
+      protein: map['protein'].toDouble(),
+      carbs: map['carbs'].toDouble(),
+      fats: map['fats'].toDouble(),
     );
-  }
-}
-
-enum MealType {
-  breakfast,
-  lunch,
-  dinner,
-  snack;
-
-  String get name {
-    switch (this) {
-      case MealType.breakfast:
-        return 'Breakfast';
-      case MealType.lunch:
-        return 'Lunch';
-      case MealType.dinner:
-        return 'Dinner';
-      case MealType.snack:
-        return 'Snack';
-    }
   }
 }

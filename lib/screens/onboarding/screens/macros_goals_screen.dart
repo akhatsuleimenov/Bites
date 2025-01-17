@@ -71,7 +71,6 @@ class MacrosGoalsScreen extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: PrimaryButton(
                 onPressed: () {
-                  print('LAST FULL WIDGET DATA: $userData');
                   Navigator.pushNamed(
                     context,
                     '/onboarding/paywall',

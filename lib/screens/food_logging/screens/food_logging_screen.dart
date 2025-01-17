@@ -11,7 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 // Project imports:
 import 'package:bites/core/constants/app_colors.dart';
 import 'package:bites/core/constants/app_typography.dart';
-import 'package:bites/core/services/foodvisor_service.dart';
+import 'package:bites/core/services/gemini_service.dart';
 import 'package:bites/core/widgets/buttons.dart';
 
 class FoodLoggingScreen extends StatefulWidget {
@@ -23,31 +23,39 @@ class FoodLoggingScreen extends StatefulWidget {
 
 class _FoodLoggingScreenState extends State<FoodLoggingScreen> {
   final ImagePicker _picker = ImagePicker();
-  final FoodvisorService _foodvisorService = FoodvisorService();
+  final GeminiSerivce _geminiService = GeminiSerivce();
   bool _isAnalyzing = false;
 
   Future<void> _analyzeImage(XFile image) async {
+    print('Starting image analysis for path: ${image.path}');
     setState(() => _isAnalyzing = true);
 
     try {
-      final results = await _foodvisorService.analyzeImage(File(image.path));
-      if (!mounted) return;
+      print('Calling Gemini service...');
+      final results = await _geminiService.analyzeImage(image.path);
+      print('Gemini analysis complete. Results: ${results}');
+
+      if (!mounted) {
+        print('Widget not mounted after analysis, returning');
+        return;
+      }
 
       Navigator.pushNamed(
         context,
         '/food-logging/results',
         arguments: {
           'imagePath': image.path,
-          'analysisResults': results,
+          'resultFoodInfo': results,
         },
       );
-    } on FoodvisorException catch (e) {
+    } on Exception catch (e) {
+      print('❌ Analysis failed with error: $e');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())),
       );
-      print('FoodvisorException: ${e}');
     } finally {
+      print('Analysis process complete');
       setState(() => _isAnalyzing = false);
     }
   }

@@ -18,6 +18,9 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppController>(
       builder: (context, appController, _) {
+        print('🎯 Building DashboardScreen');
+        print(
+            '📊 Today\'s meal logs count: ${appController.todaysMealLogs.length}');
         return Scaffold(
           body: SafeArea(
             child: RefreshIndicator(
@@ -87,6 +90,7 @@ class DashboardScreen extends StatelessWidget {
                           delegate: SliverChildBuilderDelegate(
                             (context, index) {
                               if (appController.todaysMealLogs.isEmpty) {
+                                print('⚠️ No meals logged today');
                                 return const Padding(
                                   padding: EdgeInsets.all(24.0),
                                   child: Text('No meals logged today'),
@@ -95,6 +99,8 @@ class DashboardScreen extends StatelessWidget {
 
                               final mealLog =
                                   appController.todaysMealLogs[index];
+                              print(
+                                  '🍽️ Rendering meal log: ${mealLog.foodInfo.mainItem.title}');
                               return MealLogCard(
                                 mealLog: mealLog,
                                 onTap: () => showModalBottomSheet(

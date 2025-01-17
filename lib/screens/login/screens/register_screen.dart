@@ -59,7 +59,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (!mounted) return;
       Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
     } catch (e) {
-      print("RegisterScreen error: $e");
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

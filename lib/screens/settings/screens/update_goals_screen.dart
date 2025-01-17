@@ -38,7 +38,6 @@ class _UpdateGoalsScreenState extends State<UpdateGoalsScreenContent> {
 
   @override
   void initState() {
-    print("initState");
     super.initState();
     _profile = UserProfile();
     _initializeControllers();
@@ -168,9 +167,7 @@ class _UpdateGoalsScreenState extends State<UpdateGoalsScreenContent> {
             MeasurementHelper.childCountWeightPicker(false),
             (value) {
               setState(() {
-                print("value: $value");
                 final lbs = value + MeasurementHelper.offsetWeightPicker(false);
-                print("lbs: $lbs");
                 _profile.targetWeight = lbs * MeasurementHelper.lbToKg;
               });
             },
@@ -216,8 +213,6 @@ class _UpdateGoalsScreenState extends State<UpdateGoalsScreenContent> {
 
   Future<void> _saveChanges() async {
     try {
-      print("saving changes");
-      print("targetWeight: ${_profile.targetWeight}");
       await context.read<AppController>().updateProfile({
         'goal': _profile.goal,
         'targetWeight': _profile.targetWeight,

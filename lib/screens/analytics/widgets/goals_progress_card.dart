@@ -19,15 +19,13 @@ class GoalsProgressCard extends StatelessWidget {
     final nutritionPlan = appController.nutritionPlan;
 
     final totalCalories = weeklyLogs.fold(
-        0.0,
-        (sum, log) =>
-            sum + log.foodInfo.nutritionalInfo.nutritionData.calories);
-    final totalProtein = weeklyLogs.fold(0.0,
-        (sum, log) => sum + log.foodInfo.nutritionalInfo.nutritionData.protein);
-    final totalCarbs = weeklyLogs.fold(0.0,
-        (sum, log) => sum + log.foodInfo.nutritionalInfo.nutritionData.carbs);
-    final totalFat = weeklyLogs.fold(0.0,
-        (sum, log) => sum + log.foodInfo.nutritionalInfo.nutritionData.fats);
+        0.0, (sum, log) => sum + log.foodInfo.mainItem.nutritionData.calories);
+    final totalProtein = weeklyLogs.fold(
+        0.0, (sum, log) => sum + log.foodInfo.mainItem.nutritionData.protein);
+    final totalCarbs = weeklyLogs.fold(
+        0.0, (sum, log) => sum + log.foodInfo.mainItem.nutritionData.carbs);
+    final totalFat = weeklyLogs.fold(
+        0.0, (sum, log) => sum + log.foodInfo.mainItem.nutritionData.fats);
 
     final avgCalories = totalCalories / 7;
     final avgProtein = totalProtein / 7;

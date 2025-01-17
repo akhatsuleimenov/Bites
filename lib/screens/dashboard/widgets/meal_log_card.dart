@@ -50,7 +50,7 @@ class MealLogCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      mealLog.foodInfo.nutritionalInfo.name,
+                      mealLog.foodInfo.mainItem.title,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -60,21 +60,7 @@ class MealLogCard extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          '${mealLog.foodInfo.nutritionalInfo.nutritionData.calories.toStringAsFixed(0)} cal',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          '•',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          mealLog.mealType,
+                          '${mealLog.foodInfo.mainItem.nutritionData.calories.toStringAsFixed(0)} cal',
                           style: TextStyle(
                             color: Colors.grey[600],
                           ),
