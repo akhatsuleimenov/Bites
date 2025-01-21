@@ -134,11 +134,15 @@ class AppController extends ChangeNotifier {
     print('🔄 Setting up meal logs subscription');
     _mealLogsSubscription?.cancel();
 
+    print("TOMORROW: ${DateTime.now().add(Duration(days: 1))}");
+    print("TODAY: ${DateTime.now()}");
     _mealLogsSubscription = _firebaseService
         .getMealLogsStream(
-            userId: userId,
-            currentDate: DateTime.now().add(Duration(days: 1)),
-            pastDate: DateTime.now())
+      userId: userId,
+      currentDate: DateTime.now().add(Duration(days: 1)),
+      pastDate: DateTime(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day),
+    )
         .listen(
       (mealLogs) {
         print('📥 Received ${mealLogs.length} meal logs from stream');
