@@ -173,12 +173,14 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen> {
       final now = DateTime.now();
       final thirtyDaysAgo = now.subtract(const Duration(days: 30));
 
-      final meals = await _firebaseService
-          .getMealLogsStream(
-              userId: appController.userId,
-              currentDate: now,
-              pastDate: thirtyDaysAgo)
-          .first;
+      final meals = (await _firebaseService
+              .getMealLogsStream(
+                  userId: appController.userId,
+                  currentDate: now,
+                  pastDate: thirtyDaysAgo)
+              .first)
+          .reversed
+          .toList();
 
       if (!mounted) return;
 
