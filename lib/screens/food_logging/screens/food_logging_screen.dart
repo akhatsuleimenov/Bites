@@ -13,6 +13,10 @@ import 'package:bites/core/constants/app_colors.dart';
 import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/services/gemini_service.dart';
 import 'package:bites/core/widgets/buttons.dart';
+import 'package:bites/core/models/food_model.dart';
+import 'package:bites/core/services/firebase_service.dart';
+import 'package:bites/core/controllers/app_controller.dart';
+import 'package:provider/provider.dart';
 
 class FoodLoggingScreen extends StatefulWidget {
   const FoodLoggingScreen({super.key});
@@ -24,6 +28,7 @@ class FoodLoggingScreen extends StatefulWidget {
 class _FoodLoggingScreenState extends State<FoodLoggingScreen> {
   final ImagePicker _picker = ImagePicker();
   final GeminiSerivce _geminiService = GeminiSerivce();
+  final FirebaseService _firebaseService = FirebaseService();
   bool _isAnalyzing = false;
 
   Future<void> _analyzeImage(XFile image) async {
@@ -161,6 +166,183 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen> {
     }
   }
 
+  Future<void> _selectPreviousMeal() async {
+    try {
+      final appController = context.read<AppController>();
+      // Get all meals from the last 30 days
+      final now = DateTime.now();
+      final thirtyDaysAgo = now.subtract(const Duration(days: 30));
+
+      final meals = await _firebaseService
+          .getMealLogsStream(
+              userId: appController.userId,
+              currentDate: now,
+              pastDate: thirtyDaysAgo)
+          .first;
+
+      if (!mounted) return;
+
+      final selectedMeal = await showDialog<MealLog>(
+        context: context,
+        builder: (context) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(16)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.history, color: Colors.white),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Previous Meals',
+                      style: AppTypography.headlineSmall
+                          .copyWith(color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.6,
+                  maxWidth: MediaQuery.of(context).size.width * 0.9,
+                ),
+                child: ListView.separated(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  shrinkWrap: true,
+                  itemCount: meals.length,
+                  separatorBuilder: (context, index) =>
+                      const Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final meal = meals[index];
+                    return InkWell(
+                      onTap: () => Navigator.pop(context, meal),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 70,
+                              height: 70,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                color: Colors.grey[200],
+                              ),
+                              child: meal.imagePath.isNotEmpty
+                                  ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: Image.network(
+                                        meal.imagePath,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    )
+                                  : const Icon(Icons.fastfood, size: 32),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    meal.foodInfo.mainItem.title,
+                                    style: AppTypography.bodyLarge.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 4,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.primary
+                                              .withOpacity(0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        child: Text(
+                                          '${meal.foodInfo.mainItem.nutritionData.calories.round()} cal',
+                                          style:
+                                              AppTypography.bodySmall.copyWith(
+                                            color: AppColors.primary,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        _formatDateTime(meal.dateTime),
+                                        style:
+                                            AppTypography.bodyMedium.copyWith(
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(Icons.chevron_right, color: Colors.grey),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        'Cancel',
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+
+      if (selectedMeal != null) {
+        Navigator.pushNamed(
+          context,
+          '/food-logging/results',
+          arguments: {
+            'imagePath': selectedMeal.imagePath,
+            'resultFoodInfo': selectedMeal.foodInfo,
+          },
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load previous meals: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -228,6 +410,27 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 16),
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: AppColors.cardBackground,
+                    side: BorderSide(
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  onPressed: _selectPreviousMeal,
+                  child: const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.history),
+                        SizedBox(width: 8),
+                        Text('Use Previous Meal'),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -256,5 +459,20 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen> {
         ],
       ),
     );
+  }
+
+  String _formatDateTime(DateTime dateTime) {
+    final now = DateTime.now();
+    final difference = now.difference(dateTime);
+
+    if (difference.inDays == 0) {
+      return 'Today ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+    } else if (difference.inDays == 1) {
+      return 'Yesterday ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays}d ago';
+    } else {
+      return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+    }
   }
 }

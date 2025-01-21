@@ -53,26 +53,26 @@ class MealLogDetails extends StatelessWidget {
                             label: 'Calories',
                             value: mealLog
                                 .foodInfo.mainItem.nutritionData.calories
-                                .toStringAsFixed(0),
+                                .toStringAsFixed(1),
                             unit: 'kcal',
                           ),
                           _NutrientInfo(
                             label: 'Protein',
                             value: mealLog
                                 .foodInfo.mainItem.nutritionData.protein
-                                .toString(),
+                                .toStringAsFixed(1),
                             unit: 'g',
                           ),
                           _NutrientInfo(
                             label: 'Carbs',
                             value: mealLog.foodInfo.mainItem.nutritionData.carbs
-                                .toString(),
+                                .toStringAsFixed(1),
                             unit: 'g',
                           ),
                           _NutrientInfo(
                             label: 'Fat',
                             value: mealLog.foodInfo.mainItem.nutritionData.fats
-                                .toString(),
+                                .toStringAsFixed(1),
                             unit: 'g',
                           ),
                         ],
@@ -129,17 +129,17 @@ class _ItemCard extends StatelessWidget {
                 ),
                 _NutrientInfo(
                   label: 'Protein',
-                  value: item.nutritionData.protein.toString(),
+                  value: item.nutritionData.protein.toStringAsFixed(1),
                   unit: 'g',
                 ),
                 _NutrientInfo(
                   label: 'Carbs',
-                  value: item.nutritionData.carbs.toString(),
+                  value: item.nutritionData.carbs.toStringAsFixed(1),
                   unit: 'g',
                 ),
                 _NutrientInfo(
                   label: 'Fat',
-                  value: item.nutritionData.fats.toString(),
+                  value: item.nutritionData.fats.toStringAsFixed(1),
                   unit: 'g',
                 ),
               ],

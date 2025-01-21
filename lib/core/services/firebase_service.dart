@@ -67,24 +67,32 @@ class FirebaseService {
       final mealLogData = mealLog.toFirestore();
       print('Converted meal log to Firestore data: $mealLogData');
 
-      // Only handle image upload if there's an image path
+      // Handle image path
       if (mealLog.imagePath.isNotEmpty) {
-        print('Image path exists, uploading to Storage: ${mealLog.imagePath}');
-        final imageFile = File(mealLog.imagePath);
-        final storageRef = _storage
-            .ref()
-            .child('meal_images')
-            .child(userId)
-            .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
+        // If it's already a Firebase Storage URL, reuse it
+        if (mealLog.imagePath
+            .startsWith('https://firebasestorage.googleapis.com')) {
+          print('Using existing Firebase Storage URL: ${mealLog.imagePath}');
+          mealLogData['imagePath'] = mealLog.imagePath;
+        } else {
+          // It's a local file, upload it
+          print(
+              'Image path exists, uploading to Storage: ${mealLog.imagePath}');
+          final imageFile = File(mealLog.imagePath);
+          final storageRef = _storage
+              .ref()
+              .child('meal_images')
+              .child(userId)
+              .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
 
-        print('Uploading image to: ${storageRef.fullPath}');
-        await storageRef.putFile(imageFile);
-        final imageUrl = await storageRef.getDownloadURL();
-        print('Image uploaded successfully. URL: $imageUrl');
-        mealLogData['imagePath'] = imageUrl;
+          print('Uploading image to: ${storageRef.fullPath}');
+          await storageRef.putFile(imageFile);
+          final imageUrl = await storageRef.getDownloadURL();
+          print('Image uploaded successfully. URL: $imageUrl');
+          mealLogData['imagePath'] = imageUrl;
+        }
       } else {
         print('No image path, setting empty string');
-        // For manual entries, set imagePath to empty string
         mealLogData['imagePath'] = '';
       }
 
@@ -165,22 +173,19 @@ class FirebaseService {
   }
 
   // Get meal logs stream
-  Stream<List<MealLog>> getMealLogsStream({
-    required String userId,
-    required DateTime date,
-  }) {
-    final startOfDay = DateTime(date.year, date.month, date.day);
-    final endOfDay = startOfDay.add(const Duration(days: 1));
-
+  Stream<List<MealLog>> getMealLogsStream(
+      {required String userId,
+      required DateTime currentDate,
+      required DateTime pastDate}) {
     print('🔍 Getting meal logs for userId: $userId');
-    print('📅 Date range: $startOfDay to $endOfDay');
+    print('📅 Date range: $pastDate to $currentDate');
 
     return _firestore
         .collection('users')
         .doc(userId)
         .collection('meal_logs')
-        .where('dateTime', isGreaterThanOrEqualTo: startOfDay)
-        .where('dateTime', isLessThan: endOfDay)
+        .where('dateTime', isGreaterThanOrEqualTo: pastDate)
+        .where('dateTime', isLessThan: currentDate)
         .snapshots()
         .handleError((error) {
       print('❌ Error in meal logs stream: $error');

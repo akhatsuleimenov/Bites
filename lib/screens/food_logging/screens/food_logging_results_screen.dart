@@ -70,24 +70,57 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
           ? _mealLog.foodInfo.ingredients[ingredientIndex]
           : _mealLog.foodInfo.mainItem;
 
-      switch (field) {
-        case 'grams':
-          target.grams = value;
-          break;
-        case 'calories':
-          target.nutritionData.calories = value;
-          break;
-        case 'protein':
-          target.nutritionData.protein = value;
-          break;
-        case 'carbs':
-          target.nutritionData.carbs = value;
-          break;
-        case 'fat':
-          target.nutritionData.fats = value;
-          break;
+      if (field == 'grams') {
+        // Calculate ratio for scaling
+        double ratio = value / target.grams;
+        target.grams = value;
+        target.nutritionData.calories *= ratio;
+        target.nutritionData.protein *= ratio;
+        target.nutritionData.carbs *= ratio;
+        target.nutritionData.fats *= ratio;
+      } else {
+        switch (field) {
+          case 'calories':
+            target.nutritionData.calories = value;
+            break;
+          case 'protein':
+            target.nutritionData.protein = value;
+            break;
+          case 'carbs':
+            target.nutritionData.carbs = value;
+            break;
+          case 'fat':
+            target.nutritionData.fats = value;
+            break;
+        }
+      }
+
+      // Update main item totals if this was an ingredient change
+      if (ingredientIndex != null) {
+        _updateMainItemTotals();
       }
     });
+  }
+
+  void _updateMainItemTotals() {
+    var mainItem = _mealLog.foodInfo.mainItem;
+    var ingredients = _mealLog.foodInfo.ingredients;
+
+    // Reset main item values
+    mainItem.grams = 0;
+    mainItem.nutritionData.calories = 0;
+    mainItem.nutritionData.protein = 0;
+    mainItem.nutritionData.carbs = 0;
+    mainItem.nutritionData.fats = 0;
+
+    // Sum up all ingredients
+    for (var ingredient in ingredients) {
+      mainItem.grams += ingredient.grams;
+      mainItem.nutritionData.calories += ingredient.nutritionData.calories;
+      mainItem.nutritionData.protein += ingredient.nutritionData.protein;
+      mainItem.nutritionData.carbs += ingredient.nutritionData.carbs;
+      mainItem.nutritionData.fats += ingredient.nutritionData.fats;
+    }
   }
 
   Future<void> _selectDate() async {
@@ -292,12 +325,19 @@ class _FoodItemCard extends StatefulWidget {
 
 class _FoodItemCardState extends State<_FoodItemCard> {
   late Map<String, TextEditingController> controllers;
+  final Map<String, FocusNode> _focusNodes = {};
 
   @override
   void initState() {
     super.initState();
     Ingredient ingredientInfo =
         widget.showIngredients ? widget.item.mainItem : widget.item;
+
+    // Initialize focus nodes
+    ['grams', 'calories', 'protein', 'carbs', 'fat'].forEach((field) {
+      _focusNodes[field] = FocusNode();
+    });
+
     controllers = {
       'grams':
           TextEditingController(text: ingredientInfo.grams.toStringAsFixed(1)),
@@ -310,6 +350,22 @@ class _FoodItemCardState extends State<_FoodItemCard> {
       'fat': TextEditingController(
           text: ingredientInfo.nutritionData.fats.toStringAsFixed(1)),
     };
+
+    // Add focus listeners to update on focus loss
+    _focusNodes.forEach((field, node) {
+      node.addListener(() {
+        if (!node.hasFocus) {
+          _updateFieldValue(field);
+        }
+      });
+    });
+  }
+
+  void _updateFieldValue(String field) {
+    final value = double.tryParse(controllers[field]!.text);
+    if (value != null) {
+      widget.onValueChanged(field, value);
+    }
   }
 
   @override
@@ -317,7 +373,44 @@ class _FoodItemCardState extends State<_FoodItemCard> {
     for (var controller in controllers.values) {
       controller.dispose();
     }
+    for (var node in _focusNodes.values) {
+      node.dispose();
+    }
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant _FoodItemCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Only update controllers that don't have focus
+    Ingredient ingredientInfo =
+        widget.showIngredients ? widget.item.mainItem : widget.item;
+    controllers.forEach((field, controller) {
+      if (!_focusNodes[field]!.hasFocus) {
+        double value;
+        switch (field) {
+          case 'grams':
+            value = ingredientInfo.grams;
+            break;
+          case 'calories':
+            value = ingredientInfo.nutritionData.calories;
+            break;
+          case 'protein':
+            value = ingredientInfo.nutritionData.protein;
+            break;
+          case 'carbs':
+            value = ingredientInfo.nutritionData.carbs;
+            break;
+          case 'fat':
+            value = ingredientInfo.nutritionData.fats;
+            break;
+          default:
+            return;
+        }
+        controller.text = value.toStringAsFixed(1);
+      }
+    });
   }
 
   @override
@@ -385,6 +478,7 @@ class _FoodItemCardState extends State<_FoodItemCard> {
           ],
           TextField(
             controller: controllers[field],
+            focusNode: _focusNodes[field],
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             textAlign: TextAlign.right,
             decoration: InputDecoration(
@@ -399,12 +493,7 @@ class _FoodItemCardState extends State<_FoodItemCard> {
                 borderSide: BorderSide(color: Theme.of(context).primaryColor),
               ),
             ),
-            onChanged: (value) {
-              final newValue = double.tryParse(value);
-              if (newValue != null) {
-                widget.onValueChanged(field, newValue);
-              }
-            },
+            onSubmitted: (_) => _updateFieldValue(field),
           ),
         ],
       ),
