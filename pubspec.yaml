@@ -138,3 +138,32 @@ flutter:
     assets:
         - assets/images/
         - .env
+
+    fonts:
+        - family: YourFont
+          fonts:
+              - asset: fonts/Satoshi-Light.otf
+                weight: 300
+              - asset: fonts/Satoshi-Regular.otf
+                weight: 400
+              - asset: fonts/Satoshi-Medium.otf
+                weight: 500
+              - asset: fonts/Satoshi-Bold.otf
+                weight: 700
+              - asset: fonts/Satoshi-Black.otf
+                weight: 900
+              - asset: fonts/Satoshi-LightItalic.otf
+                weight: 300
+                style: italic
+              - asset: fonts/Satoshi-Italic.otf
+                weight: 400
+                style: italic
+              - asset: fonts/Satoshi-MediumItalic.otf
+                weight: 500
+                style: italic
+              - asset: fonts/Satoshi-BoldItalic.otf
+                weight: 700
+                style: italic
+              - asset: fonts/Satoshi-BlackItalic.otf
+                weight: 900
+                style: italic

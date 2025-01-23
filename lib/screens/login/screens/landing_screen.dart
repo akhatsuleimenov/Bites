@@ -47,21 +47,11 @@ class LandingScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // Register button with outline style
-              OutlinedButton(
+              // Register button
+              PrimaryButton(
                 onPressed: () => Navigator.pushNamed(context, '/register'),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  side: const BorderSide(color: Colors.black),
-                  minimumSize: const Size(double.infinity, 0),
-                ),
-                child: const Text(
-                  'Register',
-                  style: TextStyle(color: Colors.black),
-                ),
+                text: 'Register',
+                variant: ButtonVariant.outlined,
               ),
               const SizedBox(height: 24),
             ],

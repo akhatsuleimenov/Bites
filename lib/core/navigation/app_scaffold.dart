@@ -41,6 +41,13 @@ class _AppScaffoldState extends State<AppScaffold> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) => setState(() => _selectedIndex = index),
+        type: BottomNavigationBarType.fixed,
+        selectedFontSize: 14.0,
+        unselectedFontSize: 14.0,
+        selectedItemColor: Theme.of(context).primaryColor,
+        unselectedItemColor: Colors.grey,
+        showUnselectedLabels: true,
+        enableFeedback: false,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
