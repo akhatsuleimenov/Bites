@@ -23,4 +23,15 @@ class Env {
       'GEMINI_API_KEY',
     );
   }
+
+  static Future<String> get amplitudeApiKey async {
+    if (bool.fromEnvironment('dart.vm.product') == false) {
+      await dotenv.load();
+      return dotenv.env['AMPLITUDE_API_KEY'] ?? '';
+    }
+    // Production
+    return const String.fromEnvironment(
+      'AMPLITUDE_API_KEY',
+    );
+  }
 }

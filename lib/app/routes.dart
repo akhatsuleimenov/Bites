@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:amplitude_flutter/amplitude.dart';
 import 'package:flutter/material.dart';
 
 // Project imports:
@@ -28,31 +29,40 @@ class AppRoutes {
     // Handle main routes
     switch (settings.name) {
       case '/':
+        logPageView('Landing');
         return MaterialPageRoute(builder: (_) => const LandingScreen());
       case '/login':
+        logPageView('Login');
         return MaterialPageRoute(builder: (_) => const LoginScreen());
       case '/register':
+        logPageView('Register');
         return MaterialPageRoute(builder: (_) => const RegisterScreen());
       case '/dashboard':
       case '/analytics':
       case '/profile':
         final index = _getIndexFromRoute(settings.name!);
+        logPageView(settings.name!.substring(1)); // Remove leading slash
         return MaterialPageRoute(
           builder: (_) => AppScaffold(initialIndex: index),
           settings: settings,
         );
       case '/food-logging':
+        logPageView('Food Logging');
         return MaterialPageRoute(
           builder: (_) => const FoodLoggingScreen(),
           fullscreenDialog: true,
         );
       case '/food-logging/results':
+        logPageView('Food Logging Results');
         return _handleFoodLoggingResults(args);
       case '/welcome':
+        logPageView('Welcom');
         return MaterialPageRoute(builder: (_) => const WelcomeScreen());
       case '/add-log':
+        logPageView('Add Log');
         return MaterialPageRoute(builder: (_) => const AddLogMenuScreen());
       case '/manual-entry':
+        logPageView('Manual Entry');
         return MaterialPageRoute(builder: (_) => const ManualEntryScreen());
       default:
         return MaterialPageRoute(
@@ -67,6 +77,7 @@ class AppRoutes {
     RouteSettings settings,
     Map<String, dynamic>? args,
   ) {
+    logPageView('Onboarding - ${settings.name!.split('/').last}');
     switch (settings.name) {
       case '/onboarding/gender':
         return MaterialPageRoute(
@@ -140,6 +151,7 @@ class AppRoutes {
   }
 
   static Route<dynamic> _handleSettingsRoutes(RouteSettings settings) {
+    logPageView('Settings - ${settings.name!.split('/').last}');
     switch (settings.name) {
       case '/settings':
         return MaterialPageRoute(builder: (_) => const SettingsScreen());
@@ -163,6 +175,7 @@ class AppRoutes {
   }
 
   static Route<dynamic> _handleFoodLoggingResults(Map<String, dynamic>? args) {
+    logPageView('Food Logging Results');
     // Handle edit case
     if (args != null && args.containsKey('existingMealLog')) {
       return MaterialPageRoute(
@@ -199,4 +212,10 @@ class AppRoutes {
         return 0;
     }
   }
+}
+
+void logPageView(String pageName) {
+  Amplitude.getInstance().logEvent('Page View', eventProperties: {
+    'page_name': pageName,
+  });
 }

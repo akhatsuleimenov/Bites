@@ -84,6 +84,8 @@ dependencies:
 
     uuid: ^4.5.1
 
+    amplitude_flutter: ^3.16.7
+
 dev_dependencies:
     flutter_test:
         sdk: flutter

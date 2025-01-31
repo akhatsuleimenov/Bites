@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:amplitude_flutter/amplitude.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -24,6 +25,10 @@ void main() async {
 
   String apiKey = await Env.superwallApiKey;
   Superwall.configure(apiKey);
+
+  String amplitudeApiKey = await Env.amplitudeApiKey;
+  Amplitude amplitude = Amplitude.getInstance();
+  amplitude.init(amplitudeApiKey);
 
   final authService = AuthService();
 
