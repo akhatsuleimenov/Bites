@@ -108,7 +108,7 @@ class FirebaseService {
       print('Stack trace: $stackTrace');
       throw FirebaseException(
         plugin: 'bites',
-        message: 'Failed to save meal log: $e',
+        message: 'Failed to save meal log. Try again later',
       );
     }
   }
@@ -144,7 +144,7 @@ class FirebaseService {
     } catch (e) {
       throw FirebaseException(
         plugin: 'bites',
-        message: 'Failed to update meal log: $e',
+        message: 'Failed to save meal log. Try again later',
       );
     }
   }

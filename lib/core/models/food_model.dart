@@ -43,20 +43,17 @@ class MealLog {
 }
 
 class FoodInfo {
-  final String description;
   final double healthScore;
   final Ingredient mainItem;
   final List<Ingredient> ingredients;
 
   FoodInfo({
-    required this.description,
     required this.healthScore,
     required this.mainItem,
     required this.ingredients,
   });
 
   Map<String, dynamic> toMap() => {
-        'description': description,
         'healthScore': healthScore,
         'mainItem': mainItem.toMap(),
         'ingredients': ingredients.map((i) => i.toMap()).toList(),
@@ -64,7 +61,6 @@ class FoodInfo {
 
   factory FoodInfo.fromMap(Map<String, dynamic> map) {
     return FoodInfo(
-      description: map['description'],
       healthScore: map['healthScore'].toDouble(),
       mainItem: Ingredient.fromMap(map['mainItem']),
       ingredients: (map['ingredients'] as List)
@@ -74,7 +70,6 @@ class FoodInfo {
   }
 
   factory FoodInfo.empty() => FoodInfo(
-        description: '',
         healthScore: 0,
         mainItem: Ingredient.empty(),
         ingredients: [],

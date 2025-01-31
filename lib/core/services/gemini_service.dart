@@ -40,12 +40,7 @@ class GeminiSerivce {
           responseSchema: Schema(
             SchemaType.object,
             enumValues: [],
-            requiredProperties: [
-              "mainItem",
-              "description",
-              "healthScore",
-              "ingredients"
-            ],
+            requiredProperties: ["mainItem", "healthScore", "ingredients"],
             properties: {
               "mainItem": Schema(
                 SchemaType.object,
@@ -83,9 +78,6 @@ class GeminiSerivce {
                     },
                   ),
                 },
-              ),
-              "description": Schema(
-                SchemaType.string,
               ),
               "healthScore": Schema(
                 SchemaType.number,
@@ -134,18 +126,27 @@ class GeminiSerivce {
           ),
         ),
         systemInstruction: Content.system(
-            'You are an AI calories calculator, you will be given an image of food, and output what ingredients does it contain and its macros(calories, carbs, protein, fat). For description, generate a simple 1 sentence information about the dish/food iteself without information about the photo or anything else. If the image does not look like food, simply return "Not food" string'),
+            'You are an AI calories calculator, you will be given an image of food, and output what ingredients does it contain and its macros(calories, carbs, protein, fat). If the image does not look like food, simply return "Not food" string'),
       );
       print('Model initialized, preparing image data...');
       final prompt = 'Describe how this product might be manufactured.';
       final image = await fileToPart('image/jpeg', imagePath);
       print('Image data prepared, sending to Gemini...');
 
-      final response = await model.generateContent([
-        Content.multi([TextPart(prompt), image])
-      ]);
+      final content = Content.multi([TextPart(prompt), image]);
+
+      final tokenCount = await model.countTokens([content]);
+      print('Total tokens: ${tokenCount.totalTokens}');
+
+      final response = await model.generateContent([content]);
       print(
           'Received response from Gemini: ${response.text?.substring(0, 50)}...');
+
+      if (response.usageMetadata case final usage?) {
+        print('Prompt tokens: ${usage.promptTokenCount}');
+        print('Response tokens: ${usage.candidatesTokenCount}');
+        print('Total tokens: ${usage.totalTokenCount}');
+      }
 
       final Map<String, dynamic> jsonResponse = json.decode(response.text!);
       print('Successfully parsed JSON response: $jsonResponse');

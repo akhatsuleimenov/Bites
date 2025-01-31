@@ -299,7 +299,6 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
           ),
         ),
         ingredients: [], // Manual entries don't have ingredients
-        description: '',
         healthScore: 0,
       );
 

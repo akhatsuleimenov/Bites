@@ -13,7 +13,6 @@ import 'package:provider/provider.dart';
 import 'package:bites/core/constants/app_colors.dart';
 import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/models/food_model.dart';
-import 'package:bites/core/services/firebase_service.dart';
 import 'package:bites/core/widgets/buttons.dart';
 import 'package:bites/core/widgets/cards.dart';
 import 'package:bites/core/controllers/app_controller.dart';
@@ -165,7 +164,7 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
       if (_isEditing) {
         await appController.updateMealLog(_mealLog);
       } else {
-        await FirebaseService().saveMealLog(_mealLog, _mealLog.userId);
+        await appController.saveMealLog(_mealLog, _mealLog.userId);
       }
 
       if (!mounted) return;
@@ -183,13 +182,14 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
       Navigator.popUntil(context, (route) => route.isFirst);
     } catch (e) {
       if (!mounted) return;
+      print("error: $e");
 
       // Show error feedback
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(_isEditing
-              ? 'Failed to update meal: $e'
-              : 'Failed to save meal: $e'),
+              ? 'Failed to update meal. Try again later'
+              : 'Failed to save meal. Try again later'),
           backgroundColor: Colors.red,
         ),
       );

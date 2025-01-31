@@ -109,7 +109,7 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen> {
       final XFile? photo = await _picker.pickImage(
         source: ImageSource.camera,
         preferredCameraDevice: CameraDevice.rear,
-        imageQuality: 80,
+        imageQuality: 50,
       );
 
       if (photo != null) {
@@ -117,9 +117,10 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen> {
       }
     } catch (e) {
       if (!mounted) return;
+      print("Failed to take picture: ${e.toString()}");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to take picture: ${e.toString()}'),
+          content: Text('Failed to take picture. Try again later'),
           duration: const Duration(seconds: 3),
         ),
       );
@@ -157,9 +158,10 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen> {
       }
     } catch (e) {
       if (!mounted) return;
+      print('Failed to pick image: ${e.toString()}');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to pick image: ${e.toString()}'),
+          content: Text('Failed to pick image. Try another image'),
           duration: const Duration(seconds: 3),
         ),
       );

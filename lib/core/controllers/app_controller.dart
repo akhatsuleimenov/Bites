@@ -238,6 +238,14 @@ class AppController extends ChangeNotifier {
     }
   }
 
+  Future<void> saveMealLog(MealLog mealLog, String userId) async {
+    try {
+      await _firebaseService.saveMealLog(mealLog, userId);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   double _calculateBMR() {
     if (_userProfile == null) return 0;
 
