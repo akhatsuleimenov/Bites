@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const primary = Color(0xFFFF9800); // Orange
+  static const primary = Color(0xFF71E582);
   static const background = Color(0xFFF8F8F8);
   static const cardBackground = Colors.white;
   static const progressRed = Color(0xFFFF0000);
@@ -12,6 +12,7 @@ class AppColors {
   // Text colors
   static const textPrimary = Color(0xFF000000);
   static const textSecondary = Color(0xFF757575);
+  static const textWhite = Color(0xFFFFFFFF);
 
   // Status colors
   static const success = Color(0xFF4CAF50);
@@ -19,4 +20,5 @@ class AppColors {
   static const warning = Color(0xFFFFA000);
 
   static const buttonBorder = Color(0xFFE0E0E0);
+  static const inputBorder = Color(0xFFD9D9D9);
 }

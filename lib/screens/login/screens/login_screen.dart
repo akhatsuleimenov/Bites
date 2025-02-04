@@ -6,9 +6,10 @@ import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 // Project imports:
-import 'package:bites/core/constants/app_typography.dart';
+import 'package:bites/core/utils/typography.dart';
 import 'package:bites/core/services/auth_service.dart';
 import 'package:bites/core/widgets/buttons.dart';
+import 'package:bites/core/widgets/input_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -119,168 +120,155 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Welcome text
-              Center(
-                child: Text(
-                  'Welcome back!',
-                  style: AppTypography.headlineLarge,
-                ),
-              ),
-              const SizedBox(height: 32),
-
-              // Login form
-              Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: _emailController,
-                      decoration: InputDecoration(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height -
+                  MediaQuery.of(context).padding.top -
+                  MediaQuery.of(context).padding.bottom -
+                  kToolbarHeight -
+                  48.0, // 48.0 is the padding
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Login form
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      Text(
+                        'Welcome back!',
+                        style: TypographyStyles.h3(),
+                      ),
+                      const SizedBox(height: 32),
+                      InputField(
+                        controller: _emailController,
                         labelText: 'Enter your email',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey[100],
+                        keyboardType: TextInputType.emailAddress,
+                        borderRadius: BorderRadius.circular(12),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your email';
+                          }
+                          if (!value.contains('@')) {
+                            return 'Please enter a valid email';
+                          }
+                          return null;
+                        },
                       ),
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
-                        }
-                        if (!value.contains('@')) {
-                          return 'Please enter a valid email';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _passwordController,
-                      decoration: InputDecoration(
+                      const SizedBox(height: 16),
+                      InputField(
+                        controller: _passwordController,
                         labelText: 'Enter your password',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey[100],
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                            color: Colors.grey,
-                          ),
-                          onPressed: () => setState(
-                              () => _obscurePassword = !_obscurePassword),
-                        ),
-                      ),
-                      obscureText: _obscurePassword,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 24),
-
-                    if (_isLoading)
-                      const CircularProgressIndicator()
-                    else ...[
-                      // Login button
-                      PrimaryButton(
-                        onPressed: _handleEmailSignIn,
-                        text: 'Login',
+                        obscureText: _obscurePassword,
+                        showVisibilityToggle: true,
+                        borderRadius: BorderRadius.circular(12),
+                        onVisibilityToggle: () => setState(
+                            () => _obscurePassword = !_obscurePassword),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your password';
+                          }
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 24),
 
-                      // Or divider
+                      if (_isLoading)
+                        const CircularProgressIndicator()
+                      else ...[
+                        // Login button
+                        PrimaryButton(
+                          onPressed: _handleEmailSignIn,
+                          text: 'Login',
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Or divider
+                        Row(
+                          children: [
+                            Expanded(child: Divider(color: Colors.grey[300])),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              child: Text(
+                                'Or Login with',
+                                style: TypographyStyles.bodyMedium(
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ),
+                            Expanded(child: Divider(color: Colors.grey[300])),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Google sign in
+                        OutlinedButton(
+                          onPressed: _handleGoogleSignIn,
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            side: BorderSide(color: Colors.grey[300]!),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/images/google_logo.png',
+                                height: 30,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Sign in with Google',
+                                style: TypographyStyles.h4(),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        // Apple sign in
+                        SignInWithAppleButton(
+                          onPressed: _handleAppleSignIn,
+                          style: SignInWithAppleButtonStyle.black,
+                          height: 50,
+                        ),
+                      ],
+                      const SizedBox(height: 24),
+
+                      // Register link
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Expanded(child: Divider(color: Colors.grey[300])),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                          Text(
+                            "Don't have an account? ",
+                            style: TypographyStyles.bodyMedium(),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pushReplacementNamed(
+                                context, '/register'),
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
                             child: Text(
-                              'Or Login with',
-                              style: AppTypography.bodyMedium.copyWith(
-                                color: Colors.grey[600],
+                              'Register Now',
+                              style: TypographyStyles.bodyMedium(
+                                color: Theme.of(context).primaryColor,
                               ),
                             ),
                           ),
-                          Expanded(child: Divider(color: Colors.grey[300])),
                         ],
                       ),
-                      const SizedBox(height: 24),
-
-                      // Google sign in
-                      OutlinedButton(
-                        onPressed: _handleGoogleSignIn,
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          side: BorderSide(color: Colors.grey[300]!),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/images/google_logo.png',
-                              height: 24,
-                            ),
-                            const SizedBox(width: 12),
-                            const Text(
-                              'Sign in with Google',
-                              style: TextStyle(color: Colors.black),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      // Apple sign in
-                      SignInWithAppleButton(
-                        onPressed: _handleAppleSignIn,
-                        style: SignInWithAppleButtonStyle.black,
-                        height: 50,
-                      ),
                     ],
-                    const SizedBox(height: 24),
-
-                    // Register link
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Don't have an account? ",
-                          style: AppTypography.bodyMedium,
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.pushReplacementNamed(
-                              context, '/register'),
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: Text(
-                            'Register Now',
-                            style: AppTypography.bodyMedium.copyWith(
-                              color: Theme.of(context).primaryColor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
