@@ -64,20 +64,31 @@ class PrimaryButton extends StatelessWidget {
             )
           : ElevatedButton(
               onPressed: (loading || !enabled) ? null : onPressed,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: buttonColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: borderRadius ?? BorderRadius.circular(8),
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.all(
+                    enabled ? buttonColor : AppColors.inputBorder),
+                foregroundColor: WidgetStateProperty.all(textColor),
+                overlayColor: WidgetStateProperty.all(
+                    AppColors.buttonPressed), // Change color on press
+                shadowColor: WidgetStateProperty.all(
+                    Colors.transparent), // Remove shadow when pressed
+                elevation: WidgetStateProperty.all(
+                    0), // No elevation even when pressed
+                shape: WidgetStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: borderRadius ?? BorderRadius.circular(8),
+                  ),
                 ),
-                elevation: 0,
               ),
-              child: _buildChild(textColor, text, leading, loading),
+              child: _buildChild(enabled ? textColor : AppColors.textSecondary,
+                  text, leading, loading),
             ),
     );
   }
 
   static Widget _buildChild(
-      Color textColor, String? text, Widget? leading, bool loading) {
+      Color textColor, String? text, Widget? leading, bool loading,
+      {TextStyle? style}) {
     if (loading) {
       return SizedBox(
         height: 24,
@@ -93,7 +104,7 @@ class PrimaryButton extends StatelessWidget {
 
     return Text(
       text!,
-      style: TypographyStyles.bodyBold(color: textColor),
+      style: style ?? TypographyStyles.bodyBold(color: textColor),
     );
   }
 }
@@ -106,7 +117,9 @@ class ChoiceButton extends StatelessWidget {
   final Widget? leading;
   final double? width;
   final BorderRadius? borderRadius;
+  final bool? pressed;
   final Color? color;
+  final IconData? icon;
 
   const ChoiceButton({
     super.key,
@@ -114,33 +127,100 @@ class ChoiceButton extends StatelessWidget {
     required this.onPressed,
     this.loading = false,
     this.enabled = true,
+    this.icon,
     this.leading,
     this.width,
     this.borderRadius,
     this.color,
+    this.pressed,
   }) : assert(text != null || leading != null,
             'Either text or leading must be provided');
 
   @override
   Widget build(BuildContext context) {
     final buttonColor =
-        enabled ? color ?? Theme.of(context).primaryColor : Colors.grey[200];
-    final textColor = enabled ? color ?? Colors.white : Colors.grey[500]!;
+        enabled ? color ?? AppColors.textWhite : Colors.grey[200];
+    final textColor =
+        enabled ? color ?? AppColors.textPrimary : Colors.grey[500]!;
 
     return SizedBox(
       width: width ?? double.infinity,
-      child: ElevatedButton(
-        onPressed: (loading || !enabled) ? null : onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: buttonColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: borderRadius ?? BorderRadius.circular(8),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-          elevation: 0,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color:
+                  Colors.black.withOpacity(0.15), // Shadow color with opacity
+              spreadRadius: 0, // Spread value
+              blurRadius: 2, // Blur value
+              offset: Offset(0, 0), // Offset (horizontal, vertical)
+            ),
+          ],
         ),
-        child: PrimaryButton._buildChild(textColor, text, leading, loading),
+        child: ElevatedButton(
+          onPressed: (loading || !enabled) ? null : onPressed,
+          style: ButtonStyle(
+            shape: WidgetStateProperty.all(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+                side: BorderSide(
+                  color: pressed == true
+                      ? AppColors.primary
+                      : AppColors.buttonBorder,
+                  width: 1,
+                ),
+              ),
+            ),
+            backgroundColor: WidgetStateProperty.all(
+                pressed == true ? AppColors.primary25 : buttonColor),
+            padding: WidgetStateProperty.all(
+                const EdgeInsets.symmetric(vertical: 16, horizontal: 16)),
+            elevation: WidgetStateProperty.all(0), // No
+          ),
+          child: _buildChild(textColor),
+        ),
       ),
+    );
+  }
+
+  Widget _buildChild(Color textColor) {
+    if (loading) {
+      return SizedBox(
+        height: 24,
+        width: 24,
+        child: CircularProgressIndicator(
+          color: textColor,
+          strokeWidth: 2,
+        ),
+      );
+    }
+
+    if (leading != null) return leading!;
+
+    return Row(
+      children: [
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: pressed == true
+                ? AppColors.primary.withOpacity(0.5)
+                : AppColors.grayBackground,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon!,
+            color: textColor,
+            size: 24,
+          ),
+        ),
+        const SizedBox(width: 16),
+        Text(
+          text!,
+          style: TypographyStyles.bodyMedium(color: textColor),
+        ),
+      ],
     );
   }
 }
@@ -158,11 +238,15 @@ class CustomBackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 44,
+      width: 44,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: (color ?? Colors.grey[200])?.withOpacity(0.8),
+        color: color ?? AppColors.grayBackground,
       ),
       child: IconButton(
+        color: color ?? AppColors.textPrimary,
+        iconSize: 16,
         icon: const Icon(Icons.arrow_back),
         onPressed: onPressed ?? () => Navigator.pop(context),
       ),

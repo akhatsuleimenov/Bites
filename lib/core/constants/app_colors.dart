@@ -9,9 +9,11 @@ class AppColors {
   static const progressGreen = Color(0xFF4CAF50);
   static const progressBlue = Color(0xFF2196F3);
 
+  static const primary25 = Color.fromRGBO(225, 248, 226, 1);
+
   // Text colors
   static const textPrimary = Color(0xFF000000);
-  static const textSecondary = Color(0xFF757575);
+  static const textSecondary = Color(0xFF707070);
   static const textWhite = Color(0xFFFFFFFF);
 
   // Status colors
@@ -19,6 +21,9 @@ class AppColors {
   static const error = Color(0xFFE53935);
   static const warning = Color(0xFFFFA000);
 
+  static const buttonPressed = Color(0xFFE0E0E0);
+
   static const buttonBorder = Color(0xFFE0E0E0);
   static const inputBorder = Color(0xFFD9D9D9);
+  static const grayBackground = Color(0xFFF0F0F0);
 }

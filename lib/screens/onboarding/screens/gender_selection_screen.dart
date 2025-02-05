@@ -1,4 +1,7 @@
 // Flutter imports:
+import 'package:bites/core/constants/app_colors.dart';
+import 'package:bites/core/utils/typography.dart';
+import 'package:bites/core/widgets/progress_app_bar.dart';
 import 'package:flutter/material.dart';
 
 // Project imports:
@@ -7,7 +10,10 @@ import 'package:bites/core/widgets/buttons.dart';
 
 class GenderSelectionScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
-  const GenderSelectionScreen({super.key, required this.userData});
+  const GenderSelectionScreen({
+    super.key,
+    required this.userData,
+  });
 
   @override
   State<GenderSelectionScreen> createState() => _GenderSelectionScreenState();
@@ -19,51 +25,60 @@ class _GenderSelectionScreenState extends State<GenderSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: ProgressAppBar(
+        currentStep: 1,
+        totalSteps: 8,
+      ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const CustomBackButton(),
-              const SizedBox(height: 32),
-              const Text(
-                'What is your gender?',
-                style: AppTypography.headlineLarge,
+              const SizedBox(height: 16),
+              Text(
+                'What is your sex?',
+                style: TypographyStyles.h2(
+                  color: AppColors.textPrimary,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
-                'This helps us calculate your calorie needs more accurately',
-                style: AppTypography.bodyLarge.copyWith(
-                  color: Colors.grey[600],
+                'Your sex influences metabolism, helping us calculate your calorie needs more accurately.',
+                style: TypographyStyles.body(
+                  color: AppColors.textSecondary,
                 ),
               ),
-              const SizedBox(height: 48),
-              Row(
+              const SizedBox(height: 56),
+              Column(
                 children: [
-                  Expanded(
-                    child: _GenderCard(
-                      gender: 'male',
-                      icon: Icons.male,
-                      label: 'Male',
-                      isSelected: _selectedGender == 'male',
-                      onTap: () => setState(() => _selectedGender = 'male'),
-                    ),
+                  ChoiceButton(
+                    icon: Icons.male,
+                    onPressed: () => setState(() => _selectedGender = 'male'),
+                    text: 'Male',
+                    pressed: _selectedGender == 'male',
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _GenderCard(
-                      gender: 'female',
-                      icon: Icons.female,
-                      label: 'Female',
-                      isSelected: _selectedGender == 'female',
-                      onTap: () => setState(() => _selectedGender = 'female'),
-                    ),
+                  const SizedBox(height: 8),
+                  ChoiceButton(
+                    icon: Icons.female,
+                    onPressed: () => setState(() => _selectedGender = 'female'),
+                    text: 'Female',
+                    pressed: _selectedGender == 'female',
+                  ),
+                  const SizedBox(height: 8),
+                  ChoiceButton(
+                    icon: Icons.gps_not_fixed,
+                    onPressed: () =>
+                        setState(() => _selectedGender = 'prefer_not_to_say'),
+                    text: 'Prefer Not To Say',
+                    pressed: _selectedGender == 'prefer_not_to_say',
                   ),
                 ],
               ),
               const Spacer(),
               PrimaryButton(
+                textColor: AppColors.textPrimary,
                 text: 'Continue',
                 onPressed: () => Navigator.pushNamed(
                   context,
@@ -77,66 +92,6 @@ class _GenderSelectionScreenState extends State<GenderSelectionScreen> {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _GenderCard extends StatelessWidget {
-  final String gender;
-  final IconData icon;
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _GenderCard({
-    required this.gender,
-    required this.icon,
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: isSelected ? Theme.of(context).primaryColor : Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color:
-                isSelected ? Theme.of(context).primaryColor : Colors.grey[300]!,
-          ),
-          boxShadow: [
-            if (isSelected)
-              BoxShadow(
-                color: Theme.of(context).primaryColor.withOpacity(0.3),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 48,
-              color: isSelected ? Colors.white : Colors.grey[600],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              label,
-              style: AppTypography.bodyLarge.copyWith(
-                color: isSelected ? Colors.white : Colors.grey[600],
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
         ),
       ),
     );

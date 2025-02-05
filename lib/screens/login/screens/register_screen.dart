@@ -249,7 +249,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 8),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(8),
                             ),
                             side: BorderSide(color: Colors.grey[300]!),
                           ),
