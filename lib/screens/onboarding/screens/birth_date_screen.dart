@@ -1,5 +1,9 @@
 // Flutter imports:
+import 'package:bites/core/constants/app_colors.dart';
+import 'package:bites/core/utils/typography.dart';
+import 'package:bites/core/widgets/progress_app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 // Project imports:
 import 'package:bites/core/constants/app_typography.dart';
@@ -19,38 +23,80 @@ class BirthDateScreen extends StatefulWidget {
 
 class _BirthDateScreenState extends State<BirthDateScreen> {
   DateTime? _selectedDate;
-  final DateTime _minDate = DateTime(1900);
-  final DateTime _maxDate = DateTime.now();
 
-  Future<void> _selectDate() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now()
-          .subtract(const Duration(days: 365 * 20)), // Default to 20 years ago
-      firstDate: _minDate,
-      lastDate: _maxDate,
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: Theme.of(context).primaryColor,
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
+  late FixedExtentScrollController _yearController;
+  late FixedExtentScrollController _monthController;
+  late FixedExtentScrollController _dayController;
 
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
-    }
+  final int _startYear = 1920;
+  final int _currentYear = DateTime.now().year - 2;
+
+  int _selectedDay = 1;
+  int _selectedMonth = 1;
+  int _selectedYear = 2000;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeControllers();
   }
 
-  String get _formattedDate {
-    if (_selectedDate == null) return 'Select your birth date';
-    return '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}';
+  void _initializeControllers() {
+    _yearController = FixedExtentScrollController(
+      initialItem: 2000 - _startYear,
+    );
+    _monthController = FixedExtentScrollController(
+      initialItem: 0,
+    );
+    _dayController = FixedExtentScrollController(
+      initialItem: 0,
+    );
+  }
+
+  int _getDaysInMonth(int year, int month) {
+    return DateTime(year, month + 1, 0).day;
+  }
+
+  void _updateSelectedDate() {
+    setState(() {
+      _selectedDate = DateTime(_selectedYear, _selectedMonth, _selectedDay);
+    });
+  }
+
+  Widget _buildScrollWheel({
+    required FixedExtentScrollController controller,
+    required int itemCount,
+    required String Function(int) labelBuilder,
+    required Function(int) onChanged,
+  }) {
+    return Container(
+      width: 64,
+      child: ListWheelScrollView.useDelegate(
+        controller: controller,
+        itemExtent: 32,
+        perspective: 0.005,
+        diameterRatio: 1.2,
+        physics: const FixedExtentScrollPhysics(),
+        onSelectedItemChanged: onChanged,
+        childDelegate: ListWheelChildBuilderDelegate(
+          childCount: itemCount,
+          builder: (context, index) {
+            return Center(
+              child: Text(
+                labelBuilder(index),
+                style: controller.selectedItem == index
+                    ? TypographyStyles.bodyBold(
+                        color: AppColors.textPrimary,
+                      )
+                    : TypographyStyles.body(
+                        color: AppColors.textSecondary,
+                      ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
   }
 
   int? get _age {
@@ -68,64 +114,119 @@ class _BirthDateScreenState extends State<BirthDateScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: Hero(
+          tag: 'onboardingAppBar',
+          child: ProgressAppBar(
+            currentStep: 2,
+            totalSteps: 8,
+          ),
+        ),
+      ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const CustomBackButton(),
-              const SizedBox(height: 32),
-
+              const SizedBox(height: 16),
               Text(
                 'When were you born?',
-                style: AppTypography.headlineLarge,
+                style: TypographyStyles.h2(
+                  color: AppColors.textPrimary,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
-                'This helps us personalize your nutrition plan',
-                style: AppTypography.bodyLarge.copyWith(
-                  color: Colors.grey[600],
+                'Your age plays a key role in determining your metabolism and daily calorie requirements.',
+                style: TypographyStyles.body(
+                  color: AppColors.textSecondary,
                 ),
               ),
-              const SizedBox(height: 48),
+              const SizedBox(height: 56),
 
-              // Date Selection Button
-              InkWell(
-                onTap: _selectDate,
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.grey[300]!,
+              // Date Scroll Wheels
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Green highlight container
+                  Container(
+                    width: double.infinity,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary25,
+                      border: Border.all(
+                        color: AppColors.primary,
+                        width: 1,
+                      ),
+                      borderRadius: BorderRadius.circular(4),
                     ),
-                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.calendar_today,
-                        color: Colors.grey[600],
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        _formattedDate,
-                        style: AppTypography.bodyLarge.copyWith(
-                          color: _selectedDate == null
-                              ? Colors.grey[600]
-                              : Colors.black,
+
+                  // Existing scroll wheels
+                  SizedBox(
+                    height: 160,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Day Scroll
+                        _buildScrollWheel(
+                          controller: _dayController,
+                          itemCount:
+                              _getDaysInMonth(_selectedYear, _selectedMonth),
+                          labelBuilder: (index) => '${index + 1}',
+                          onChanged: (value) {
+                            _selectedDay = value + 1;
+                            _updateSelectedDate();
+                          },
                         ),
-                      ),
-                      const Spacer(),
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        size: 16,
-                        color: Colors.grey[600],
-                      ),
-                    ],
+                        const SizedBox(width: 16),
+
+                        // Month Scroll
+                        _buildScrollWheel(
+                          controller: _monthController,
+                          itemCount: 12,
+                          labelBuilder: (index) {
+                            final month = DateTime(2000, index + 1);
+                            return DateFormat('MMM').format(month);
+                          },
+                          onChanged: (value) {
+                            _selectedMonth = value + 1;
+                            // Validate day when month changes
+                            final daysInMonth =
+                                _getDaysInMonth(_selectedYear, _selectedMonth);
+                            if (_selectedDay > daysInMonth) {
+                              _selectedDay = daysInMonth;
+                              _dayController.jumpToItem(daysInMonth - 1);
+                            }
+                            _updateSelectedDate();
+                          },
+                        ),
+                        const SizedBox(width: 16),
+
+                        // Year Scroll
+                        _buildScrollWheel(
+                          controller: _yearController,
+                          itemCount: _currentYear - _startYear + 1,
+                          labelBuilder: (index) => '${_startYear + index}',
+                          onChanged: (value) {
+                            _selectedYear = _startYear + value;
+                            // Validate day when year changes (for leap years)
+                            final daysInMonth =
+                                _getDaysInMonth(_selectedYear, _selectedMonth);
+                            if (_selectedDay > daysInMonth) {
+                              _selectedDay = daysInMonth;
+                              _dayController.jumpToItem(daysInMonth - 1);
+                            }
+                            _updateSelectedDate();
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                ],
               ),
 
               if (_selectedDate != null) ...[
@@ -133,8 +234,8 @@ class _BirthDateScreenState extends State<BirthDateScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(12),
+                    color: AppColors.grayBackground,
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     children: [
@@ -168,6 +269,7 @@ class _BirthDateScreenState extends State<BirthDateScreen> {
                     arguments: updatedUserData,
                   );
                 },
+                textColor: AppColors.textPrimary,
                 enabled: _selectedDate != null,
               ),
             ],
@@ -175,5 +277,13 @@ class _BirthDateScreenState extends State<BirthDateScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _yearController.dispose();
+    _monthController.dispose();
+    _dayController.dispose();
+    super.dispose();
   }
 }

@@ -1,11 +1,11 @@
 // Flutter imports:
-import 'package:bites/core/constants/app_colors.dart';
-import 'package:bites/core/utils/typography.dart';
-import 'package:bites/core/widgets/progress_app_bar.dart';
+import 'package:bites/screens/onboarding/widgets/warning.dart';
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:bites/core/constants/app_typography.dart';
+import 'package:bites/core/constants/app_colors.dart';
+import 'package:bites/core/utils/typography.dart';
+import 'package:bites/core/widgets/progress_app_bar.dart';
 import 'package:bites/core/widgets/buttons.dart';
 
 class GenderSelectionScreen extends StatefulWidget {
@@ -25,9 +25,15 @@ class _GenderSelectionScreenState extends State<GenderSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: ProgressAppBar(
-        currentStep: 1,
-        totalSteps: 8,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: Hero(
+          tag: 'onboardingAppBar',
+          child: ProgressAppBar(
+            currentStep: 1,
+            totalSteps: 8,
+          ),
+        ),
       ),
       body: SafeArea(
         child: Padding(
@@ -77,12 +83,18 @@ class _GenderSelectionScreenState extends State<GenderSelectionScreen> {
                 ],
               ),
               const Spacer(),
+              if (_selectedGender == 'prefer_not_to_say')
+                const WarningMessage(
+                  text:
+                      'Not specifying your sex will make the calculations less accurate and may slow down your progress.',
+                ),
+              const SizedBox(height: 32),
               PrimaryButton(
                 textColor: AppColors.textPrimary,
                 text: 'Continue',
                 onPressed: () => Navigator.pushNamed(
                   context,
-                  '/onboarding/height',
+                  '/onboarding/birth',
                   arguments: {
                     ...widget.userData,
                     'gender': _selectedGender,

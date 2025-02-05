@@ -19,7 +19,8 @@ class AppColors {
   // Status colors
   static const success = Color(0xFF4CAF50);
   static const error = Color(0xFFE53935);
-  static const warning = Color(0xFFFFA000);
+  static const warning = Color(0xFF64A5DE);
+  static const warningBackground = Color(0xFFD6E8F7);
 
   static const buttonPressed = Color(0xFFE0E0E0);
 
