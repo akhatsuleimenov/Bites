@@ -39,6 +39,11 @@ class _WeightScreenState extends State<WeightScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Calculate the current value based on the unit system
+    final currentValue = _isMetric
+        ? weightKg.round()
+        : MeasurementHelper.convertWeight(weightKg, false).round();
+
     return OnboardingLayout(
       currentStep: 4,
       totalSteps: 8,
@@ -48,7 +53,7 @@ class _WeightScreenState extends State<WeightScreen> {
       onContinue: () {
         Navigator.pushNamed(
           context,
-          '/onboarding/workouts',
+          '/onboarding/desired-weight',
           arguments: {
             ...widget.userData,
             'weight': weightKg,
@@ -86,9 +91,7 @@ class _WeightScreenState extends State<WeightScreen> {
           RulerNumberPicker(
             minValue: MeasurementHelper.offsetWeightPicker(_isMetric).round(),
             maxValue: _isMetric ? 200 : 440,
-            initialValue: _isMetric
-                ? weightKg.round()
-                : MeasurementHelper.convertWeight(weightKg, false).round(),
+            initialValue: currentValue,
             indicatorColor: Theme.of(context).primaryColor,
             indicatorWidth: 2,
             onValueChanged: _updateWeight,

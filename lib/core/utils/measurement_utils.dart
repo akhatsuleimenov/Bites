@@ -22,9 +22,9 @@ class MeasurementHelper {
   static dynamic convertHeight(int heightCm, bool toMetric) {
     if (toMetric) return heightCm;
 
-    final totalInches = heightCm / inchToCm;
+    final totalInches = (heightCm / inchToCm).round();
     final feet = (totalInches / 12).floor();
-    final inches = (totalInches % 12).round();
+    final inches = totalInches % 12;
 
     return [feet, inches];
   }
@@ -45,8 +45,9 @@ class MeasurementHelper {
   static int parseImperialHeight(List<int> feetInches) {
     final feet = feetInches[0];
     final inches = feetInches[1];
+    final heightCm = ((feet * feetToCm) + (inches * inchToCm)).round();
 
-    return ((feet * feetToCm) + (inches * inchToCm)).round();
+    return heightCm;
   }
 
   static int childCountWeightPicker(bool isMetric) {

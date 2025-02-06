@@ -37,12 +37,31 @@ class _RulerNumberPickerState extends State<RulerNumberPicker> {
   @override
   void initState() {
     super.initState();
-    _selectedValue =
-        widget.initialValue.clamp(widget.minValue, widget.maxValue);
+    _selectedValue = widget.initialValue;
     _scrollController = ScrollController(
       initialScrollOffset: (_selectedValue - widget.minValue) * _stepWidth,
     );
     _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void didUpdateWidget(RulerNumberPicker oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialValue != oldWidget.initialValue ||
+        widget.minValue != oldWidget.minValue ||
+        widget.maxValue != oldWidget.maxValue) {
+      setState(() {
+        _selectedValue = widget.initialValue;
+      });
+      if (widget.minValue != oldWidget.minValue ||
+          widget.maxValue != oldWidget.maxValue) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _scrollController.jumpTo(
+            (_selectedValue - widget.minValue) * _stepWidth,
+          );
+        });
+      }
+    }
   }
 
   @override
