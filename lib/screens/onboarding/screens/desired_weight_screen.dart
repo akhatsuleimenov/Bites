@@ -7,6 +7,7 @@ import 'package:bites/core/constants/app_colors.dart';
 import 'package:bites/core/utils/typography.dart';
 import 'package:bites/screens/onboarding/widgets/custom_number_picker.dart';
 import 'package:bites/screens/onboarding/widgets/onboarding_layout.dart';
+import 'package:bites/screens/onboarding/widgets/unit_selector.dart';
 
 class DesiredWeightScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -81,9 +82,9 @@ class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        color: color.withAlpha(26),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withAlpha(77)),
       ),
       child: Row(
         children: [
@@ -115,13 +116,13 @@ class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
       totalSteps: 8,
       title: 'What\'s your target weight?',
       subtitle:
-          'Current weight: ${MeasurementHelper.formatWeight(currentWeightKg, _isMetric)}',
+          'Setting a clear goal weight helps us tailor a plan to achieve it efficiently and healthily.',
       enableContinue: true,
       warningWidget: _buildWarningWidget(),
       onContinue: () {
         Navigator.pushNamed(
           context,
-          '/onboarding/birth',
+          '/onboarding/workouts',
           arguments: {
             ...widget.userData,
             'targetWeight': targetWeightKg,
@@ -130,94 +131,27 @@ class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
       },
       child: Column(
         children: [
-          // Unit Toggle
+          const SizedBox(height: 16),
           Center(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _UnitToggleButton(
-                    text: 'Metric',
-                    isSelected: _isMetric,
-                    onTap: () => setState(() => _isMetric = true),
-                  ),
-                  _UnitToggleButton(
-                    text: 'Imperial',
-                    isSelected: !_isMetric,
-                    onTap: () => setState(() => _isMetric = false),
-                  ),
-                ],
-              ),
+            child: UnitSelector(
+              isMetric: _isMetric,
+              onUnitChanged: (value) => setState(() => _isMetric = value),
             ),
           ),
-          const SizedBox(height: 48),
-
-          // Ruler number picker
-          Stack(
-            children: [
-              // Current weight indicator
-              Positioned.fill(
-                child: Center(
-                  child: Container(
-                    width: 2,
-                    height: 60,
-                    color: Colors.grey.withOpacity(0.3),
-                  ),
-                ),
-              ),
-              RulerNumberPicker(
-                minValue:
-                    MeasurementHelper.offsetWeightPicker(_isMetric).round(),
-                maxValue: _isMetric ? 200 : 440,
-                initialValue: currentValue,
-                indicatorColor: _getDifferenceColor(),
-                indicatorWidth: 2,
-                onValueChanged: _updateTargetWeight,
-                textStyle: TypographyStyles.h2(
-                  color: AppColors.textPrimary,
-                ),
-                unit: MeasurementHelper.getWeightLabel(_isMetric),
-              ),
-            ],
+          const SizedBox(height: 56),
+          RulerNumberPicker(
+            minValue: MeasurementHelper.offsetWeightPicker(_isMetric).round(),
+            maxValue: _isMetric ? 200 : 440,
+            initialValue: currentValue,
+            indicatorColor: _getDifferenceColor(),
+            indicatorWidth: 2,
+            onValueChanged: _updateTargetWeight,
+            textStyle: TypographyStyles.h2(
+              color: AppColors.textPrimary,
+            ),
+            unit: MeasurementHelper.getWeightLabel(_isMetric),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _UnitToggleButton extends StatelessWidget {
-  final String text;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _UnitToggleButton({
-    required this.text,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.white : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Text(
-          text,
-          style: TextStyle(
-            color: isSelected ? Theme.of(context).primaryColor : Colors.grey,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          ),
-        ),
       ),
     );
   }

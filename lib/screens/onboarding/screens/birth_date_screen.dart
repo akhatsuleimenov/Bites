@@ -134,7 +134,11 @@ class _BirthDateScreenState extends State<BirthDateScreen> {
         );
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: const EdgeInsets.only(
+          left: 16.0,
+          right: 16.0,
+          top: 56,
+        ),
         child: Column(
           children: [
             // Date Scroll Wheels

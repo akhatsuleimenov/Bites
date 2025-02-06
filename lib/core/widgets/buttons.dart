@@ -120,6 +120,7 @@ class ChoiceButton extends StatelessWidget {
   final bool? pressed;
   final Color? color;
   final IconData? icon;
+  final String? subtitle;
 
   const ChoiceButton({
     super.key,
@@ -133,6 +134,7 @@ class ChoiceButton extends StatelessWidget {
     this.borderRadius,
     this.color,
     this.pressed,
+    this.subtitle,
   }) : assert(text != null || leading != null,
             'Either text or leading must be provided');
 
@@ -216,9 +218,28 @@ class ChoiceButton extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 16),
-        Text(
-          text!,
-          style: TypographyStyles.bodyMedium(color: textColor),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                text!,
+                style: subtitle != null
+                    ? TypographyStyles.bodyBold(color: textColor)
+                    : TypographyStyles.bodyMedium(color: textColor),
+              ),
+              if (subtitle != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  subtitle!,
+                  style: TypographyStyles.body(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
       ],
     );

@@ -71,7 +71,6 @@ class OnboardingLayout extends StatelessWidget {
                       color: AppColors.textSecondary,
                     ),
                   ),
-                  const SizedBox(height: 56),
                 ],
               ),
             ),

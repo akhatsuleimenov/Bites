@@ -4,6 +4,7 @@ import 'package:bites/core/utils/measurement_utils.dart';
 import 'package:bites/screens/onboarding/widgets/custom_number_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:bites/screens/onboarding/widgets/onboarding_layout.dart';
+import 'package:bites/screens/onboarding/widgets/unit_selector.dart';
 
 class WeightScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -39,7 +40,6 @@ class _WeightScreenState extends State<WeightScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Calculate the current value based on the unit system
     final currentValue = _isMetric
         ? weightKg.round()
         : MeasurementHelper.convertWeight(weightKg, false).round();
@@ -63,31 +63,14 @@ class _WeightScreenState extends State<WeightScreen> {
       },
       child: Column(
         children: [
-          // Unit Toggle
+          const SizedBox(height: 16),
           Center(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _UnitToggleButton(
-                    text: 'Metric',
-                    isSelected: _isMetric,
-                    onTap: () => setState(() => _isMetric = true),
-                  ),
-                  _UnitToggleButton(
-                    text: 'Imperial',
-                    isSelected: !_isMetric,
-                    onTap: () => setState(() => _isMetric = false),
-                  ),
-                ],
-              ),
+            child: UnitSelector(
+              isMetric: _isMetric,
+              onUnitChanged: (value) => setState(() => _isMetric = value),
             ),
           ),
-          const SizedBox(height: 48),
+          const SizedBox(height: 56),
           RulerNumberPicker(
             minValue: MeasurementHelper.offsetWeightPicker(_isMetric).round(),
             maxValue: _isMetric ? 200 : 440,
@@ -101,39 +84,6 @@ class _WeightScreenState extends State<WeightScreen> {
             unit: MeasurementHelper.getWeightLabel(_isMetric),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _UnitToggleButton extends StatelessWidget {
-  final String text;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _UnitToggleButton({
-    required this.text,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.white : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Text(
-          text,
-          style: TextStyle(
-            color: isSelected ? Theme.of(context).primaryColor : Colors.grey,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          ),
-        ),
       ),
     );
   }

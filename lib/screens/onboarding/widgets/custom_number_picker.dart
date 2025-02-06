@@ -122,7 +122,7 @@ class _RulerNumberPickerState extends State<RulerNumberPicker> {
                 color: Colors.black,
               ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 16),
         SizedBox(
           height: 60,
           width: MediaQuery.of(context).size.width,

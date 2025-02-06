@@ -61,11 +61,4 @@ final List<Map<String, dynamic>> frequencies = [
     'icon': Icons.fitness_center,
     'multiplier': 1.725,
   },
-  {
-    'id': 'athlete',
-    'title': 'Athlete',
-    'subtitle': 'Professional/Intense training',
-    'icon': Icons.sports_gymnastics,
-    'multiplier': 1.9,
-  },
 ];
