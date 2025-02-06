@@ -121,6 +121,7 @@ class ChoiceButton extends StatelessWidget {
   final Color? color;
   final IconData? icon;
   final String? subtitle;
+  final bool displayCheck;
 
   const ChoiceButton({
     super.key,
@@ -135,6 +136,7 @@ class ChoiceButton extends StatelessWidget {
     this.color,
     this.pressed,
     this.subtitle,
+    this.displayCheck = false,
   }) : assert(text != null || leading != null,
             'Either text or leading must be provided');
 
@@ -241,6 +243,16 @@ class ChoiceButton extends StatelessWidget {
             ],
           ),
         ),
+        if (displayCheck) ...[
+          const SizedBox(width: 16),
+          pressed == true
+              ? Icon(
+                  Icons.check_circle_rounded,
+                  color: AppColors.primary,
+                  size: 24,
+                )
+              : const SizedBox(width: 0),
+        ],
       ],
     );
   }

@@ -26,7 +26,7 @@ final List<Map<String, dynamic>> goals = [
   {
     'id': 'gain_weight',
     'title': 'Gain Weight',
-    'subtitle': 'I want to increase my body weight',
+    'subtitle': 'I want to increase my body mass',
     'icon': Icons.trending_up,
     'calorieAdjustment': 500, // 500 calorie surplus
   },

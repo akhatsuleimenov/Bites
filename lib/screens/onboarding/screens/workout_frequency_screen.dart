@@ -62,6 +62,7 @@ class _WorkoutFrequencyScreenState extends State<WorkoutFrequencyScreen> {
                 text: frequency['title'],
                 subtitle: frequency['subtitle'],
                 pressed: _selectedFrequency == frequency['id'],
+                displayCheck: true,
               ),
             );
           }).toList(),
