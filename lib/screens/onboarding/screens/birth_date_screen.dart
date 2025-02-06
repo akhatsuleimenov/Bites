@@ -68,9 +68,10 @@ class _BirthDateScreenState extends State<BirthDateScreen> {
     required int itemCount,
     required String Function(int) labelBuilder,
     required Function(int) onChanged,
+    double? width,
   }) {
     return Container(
-      width: 64,
+      width: width ?? 64,
       child: ListWheelScrollView.useDelegate(
         controller: controller,
         itemExtent: 32,
@@ -174,6 +175,7 @@ class _BirthDateScreenState extends State<BirthDateScreen> {
                         // Day Scroll
                         _buildScrollWheel(
                           controller: _dayController,
+                          width: 48,
                           itemCount:
                               _getDaysInMonth(_selectedYear, _selectedMonth),
                           labelBuilder: (index) => '${index + 1}',
@@ -265,7 +267,7 @@ class _BirthDateScreenState extends State<BirthDateScreen> {
                   };
                   Navigator.pushNamed(
                     context,
-                    '/onboarding/workouts',
+                    '/onboarding/height',
                     arguments: updatedUserData,
                   );
                 },

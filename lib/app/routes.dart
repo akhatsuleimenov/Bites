@@ -1,5 +1,6 @@
 // Flutter imports:
 import 'package:amplitude_flutter/amplitude.dart';
+import 'package:bites/screens/onboarding/screens/height_screen.dart';
 import 'package:flutter/material.dart';
 
 // Project imports:
@@ -11,6 +12,7 @@ import 'package:bites/screens/login/screens/register_screen.dart';
 import 'package:bites/screens/onboarding/screens/payment_success_screen.dart';
 import 'package:bites/screens/onboarding/screens/screens.dart';
 import 'package:bites/screens/settings/screens/screens.dart';
+import 'package:bites/screens/onboarding/screens/weight_screen.dart';
 
 class AppRoutes {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -85,7 +87,7 @@ class AppRoutes {
         );
       case '/onboarding/height':
         return MaterialPageRoute(
-          builder: (_) => HeightWeightScreen(userData: args!),
+          builder: (_) => HeightScreen(userData: args!),
         );
       case '/onboarding/birth':
         return MaterialPageRoute(
@@ -140,6 +142,10 @@ class AppRoutes {
           builder: (_) => CustomPlanScreen(
             userData: args!,
           ),
+        );
+      case '/onboarding/weight':
+        return MaterialPageRoute(
+          builder: (_) => WeightScreen(userData: args!),
         );
       default:
         return MaterialPageRoute(
