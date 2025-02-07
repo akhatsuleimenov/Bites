@@ -19,7 +19,7 @@ class WeightScreen extends StatefulWidget {
 }
 
 class _WeightScreenState extends State<WeightScreen> {
-  bool _isMetric = true;
+  bool _isMetricWeight = true;
   late double weightKg;
 
   @override
@@ -30,7 +30,7 @@ class _WeightScreenState extends State<WeightScreen> {
 
   void _updateWeight(int value) {
     setState(() {
-      if (_isMetric) {
+      if (_isMetricWeight) {
         weightKg = value.toDouble();
       } else {
         weightKg = (value * MeasurementHelper.lbToKg).roundToDouble();
@@ -40,7 +40,7 @@ class _WeightScreenState extends State<WeightScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currentValue = _isMetric
+    final currentValue = _isMetricWeight
         ? weightKg.round()
         : MeasurementHelper.convertWeight(weightKg, false).round();
 
@@ -57,7 +57,7 @@ class _WeightScreenState extends State<WeightScreen> {
           arguments: {
             ...widget.userData,
             'weight': weightKg,
-            'isMetric': _isMetric,
+            'isMetricWeight': _isMetricWeight,
           },
         );
       },
@@ -66,14 +66,15 @@ class _WeightScreenState extends State<WeightScreen> {
           const SizedBox(height: 16),
           Center(
             child: UnitSelector(
-              isMetric: _isMetric,
-              onUnitChanged: (value) => setState(() => _isMetric = value),
+              isMetric: _isMetricWeight,
+              onUnitChanged: (value) => setState(() => _isMetricWeight = value),
             ),
           ),
           const SizedBox(height: 56),
           RulerNumberPicker(
-            minValue: MeasurementHelper.offsetWeightPicker(_isMetric).round(),
-            maxValue: _isMetric ? 200 : 440,
+            minValue:
+                MeasurementHelper.offsetWeightPicker(_isMetricWeight).round(),
+            maxValue: _isMetricWeight ? 200 : 440,
             initialValue: currentValue,
             indicatorColor: Theme.of(context).primaryColor,
             indicatorWidth: 2,
@@ -81,7 +82,7 @@ class _WeightScreenState extends State<WeightScreen> {
             textStyle: TypographyStyles.h2(
               color: AppColors.textPrimary,
             ),
-            unit: MeasurementHelper.getWeightLabel(_isMetric),
+            unit: MeasurementHelper.getWeightLabel(_isMetricWeight),
           ),
         ],
       ),

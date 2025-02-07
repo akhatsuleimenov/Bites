@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 // Project imports:
 import 'package:bites/core/constants/app_colors.dart';
 import 'package:bites/core/utils/typography.dart';
-import 'package:bites/core/utils/measurement_utils.dart';
 import 'package:bites/screens/onboarding/widgets/onboarding_layout.dart';
 
 class GoalSpeedScreen extends StatefulWidget {
@@ -20,13 +19,29 @@ class _GoalSpeedScreenState extends State<GoalSpeedScreen> {
   double _selectedSpeed = 0.0;
   late DateTime _estimatedDate;
   late double _weightDifference;
+  late bool _isMetricWeight;
 
   @override
   void initState() {
     super.initState();
-    _selectedSpeed = 0.4; // Default to recommended rate
+    _isMetricWeight = widget.userData['isMetricWeight'] as bool;
+    // Set default in proper units
+    _selectedSpeed = _isMetricWeight ? 0.4 : 0.9; // 0.4kg or ~0.9lb
     _calculateEstimatedDate();
   }
+
+  String get _weightUnit => _isMetricWeight ? 'kg' : 'lb';
+
+  double get _recommendedMin => _isMetricWeight ? 0.1 : 0.22;
+  double get _recommendedMax => _isMetricWeight ? 0.6 : 1.32;
+
+  bool get _isRecommendedRate {
+    final speedInKg = _selectedSpeed;
+    return speedInKg >= 0.1 && speedInKg <= 0.6;
+  }
+
+  double get _displaySpeed =>
+      _isMetricWeight ? _selectedSpeed : _selectedSpeed * 2.2;
 
   void _calculateEstimatedDate() {
     // Get current and target weights
@@ -34,8 +49,17 @@ class _GoalSpeedScreenState extends State<GoalSpeedScreen> {
     final double targetWeight = widget.userData['targetWeight'] as double;
     _weightDifference = (targetWeight - currentWeight).abs();
 
-    // Calculate weeks needed
-    final double weeksNeeded = _weightDifference / _selectedSpeed;
+    // Convert speed to kg for calculations if using imperial
+    final double speedInKg = _isMetricWeight ? _selectedSpeed : _selectedSpeed;
+
+    // Prevent division by zero by using a minimum value
+    final double speedForCalculation = speedInKg < 0.05 ? 0.05 : speedInKg;
+
+    print(
+        'weightDifference: $_weightDifference speedForCalculation: $speedForCalculation');
+
+    // Calculate weeks needed based on selected speed
+    final double weeksNeeded = _weightDifference / speedForCalculation;
 
     // Calculate estimated completion date
     _estimatedDate =
@@ -53,12 +77,12 @@ class _GoalSpeedScreenState extends State<GoalSpeedScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            '${_selectedSpeed.toStringAsFixed(1)}',
+            '${_displaySpeed.toStringAsFixed(1)}',
             style: TypographyStyles.h2(),
           ),
           const SizedBox(width: 8),
           Text(
-            'Kg',
+            _weightUnit,
             style: TypographyStyles.h3(color: AppColors.textSecondary),
           ),
         ],
@@ -94,26 +118,88 @@ class _GoalSpeedScreenState extends State<GoalSpeedScreen> {
     );
   }
 
+  Widget _buildSlider() {
+    return Column(
+      children: [
+        SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            activeTrackColor: Colors.transparent,
+            inactiveTrackColor: Colors.transparent,
+            thumbColor: AppColors.cardBackground,
+            trackHeight: 4.0,
+            thumbShape: const RoundSliderThumbShape(
+              enabledThumbRadius: 12.0,
+              elevation: 0,
+              pressedElevation: 0,
+            ),
+            overlayShape: const RoundSliderOverlayShape(
+              overlayRadius: 20.0,
+            ),
+            tickMarkShape: const RoundSliderTickMarkShape(
+              tickMarkRadius: 0,
+            ),
+            trackShape: CustomTrackShape(
+              recommendedMin: _recommendedMin,
+              recommendedMax: _recommendedMax,
+              isMetric: _isMetricWeight,
+            ),
+          ),
+          child: Slider(
+            value: _selectedSpeed,
+            min: 0,
+            max: 1.0,
+            divisions: _isMetricWeight ? 10 : 22,
+            onChanged: (value) {
+              setState(() {
+                _selectedSpeed = value;
+                _calculateEstimatedDate();
+              });
+            },
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '0 $_weightUnit',
+              style: TypographyStyles.body(
+                color: AppColors.textSecondary,
+              ),
+            ),
+            Text(
+              '${_isMetricWeight ? "1.0" : "2.2"} $_weightUnit',
+              style: TypographyStyles.body(
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget _buildRecommendationBadge() {
+    final bool isRecommended = _isRecommendedRate;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFEBF9F0).withOpacity(0.5),
+        color: isRecommended ? AppColors.primary25 : AppColors.errorBackground,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         children: [
           Icon(
-            Icons.check_circle_rounded,
-            color: const Color(0xFF4CD964),
-            size: 20,
+            isRecommended ? Icons.check_circle_rounded : Icons.warning_rounded,
+            color: isRecommended ? AppColors.primary : AppColors.error,
+            size: 24,
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 10),
           Text(
-            'Recommended rate',
-            style: TypographyStyles.bodyMedium(
-              color: const Color(0xFF4CD964),
+            isRecommended ? 'Recommended rate' : 'Not recommended rate',
+            style: TypographyStyles.body(
+              color: AppColors.textPrimary,
             ),
           ),
         ],
@@ -122,26 +208,62 @@ class _GoalSpeedScreenState extends State<GoalSpeedScreen> {
   }
 
   Widget _buildEstimatedDate() {
+    // Check if speed is effectively zero
+    if (_selectedSpeed < 0.05) {
+      final bool isMale = widget.userData['gender'] == 'male';
+      final String message = isMale
+          ? 'Oh, you really don\'t want to achieve your goals?'
+          : 'Take your time, there\'s no rush to reach your goal.';
+
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: AppColors.warningBackground,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.info_rounded,
+              color: AppColors.warning,
+              size: 24,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                message,
+                style: TypographyStyles.body(
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Regular estimated date display for non-zero speeds
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: AppColors.primary25,
+        color: AppColors.warningBackground,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         children: [
           Icon(
             Icons.info_rounded,
-            color: AppColors.primary,
-            size: 20,
+            color: AppColors.warning,
+            size: 24,
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 10),
           Expanded(
             child: Text(
               'At this pace, you\'ll reach your goal by ${_formatDate(_estimatedDate)}.',
-              style: TypographyStyles.bodyMedium(
-                color: AppColors.primary,
+              style: TypographyStyles.body(
+                color: AppColors.textPrimary,
               ),
             ),
           ),
@@ -190,7 +312,7 @@ class _GoalSpeedScreenState extends State<GoalSpeedScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 32),
+            const SizedBox(height: 56),
             _buildWeightDisplay(),
             const SizedBox(height: 8),
             Text(
@@ -201,58 +323,98 @@ class _GoalSpeedScreenState extends State<GoalSpeedScreen> {
             ),
             const SizedBox(height: 32),
             _buildSpeedIndicators(),
-            SliderTheme(
-              data: SliderTheme.of(context).copyWith(
-                activeTrackColor: AppColors.primary,
-                inactiveTrackColor: AppColors.grayBackground,
-                thumbColor: Colors.white,
-                overlayColor: AppColors.primary.withOpacity(0.1),
-                trackHeight: 2.0,
-                thumbShape: const RoundSliderThumbShape(
-                  enabledThumbRadius: 10.0,
-                  elevation: 2.0,
-                ),
-                overlayShape: const RoundSliderOverlayShape(
-                  overlayRadius: 20.0,
-                ),
-              ),
-              child: Slider(
-                value: _selectedSpeed,
-                min: 0,
-                max: 1,
-                divisions: 20,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedSpeed = value;
-                    _calculateEstimatedDate();
-                  });
-                },
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '0 kg',
-                  style: TypographyStyles.body(
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-                Text(
-                  '1 kg',
-                  style: TypographyStyles.body(
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            _buildRecommendationBadge(),
+            const SizedBox(height: 8),
+            _buildSlider(),
             const SizedBox(height: 16),
-            _buildEstimatedDate(),
+            _buildRecommendationBadge(),
           ],
         ),
       ),
+      warningWidget: _buildEstimatedDate(),
+    );
+  }
+}
+
+class CustomTrackShape extends RoundedRectSliderTrackShape {
+  final double recommendedMin;
+  final double recommendedMax;
+  final bool isMetric;
+
+  CustomTrackShape({
+    required this.recommendedMin,
+    required this.recommendedMax,
+    required this.isMetric,
+  });
+
+  @override
+  void paint(
+    PaintingContext context,
+    Offset offset, {
+    required RenderBox parentBox,
+    required SliderThemeData sliderTheme,
+    required Animation<double> enableAnimation,
+    required TextDirection textDirection,
+    required Offset thumbCenter,
+    Offset? secondaryOffset,
+    bool isDiscrete = false,
+    bool isEnabled = false,
+    double? additionalActiveTrackHeight,
+  }) {
+    final Canvas canvas = context.canvas;
+
+    final Rect trackRect = getPreferredRect(
+      parentBox: parentBox,
+      offset: offset,
+      sliderTheme: sliderTheme,
+      isEnabled: isEnabled,
+      isDiscrete: isDiscrete,
+    );
+
+    // Paint border for the entire track
+    final Paint borderPaint = Paint()
+      ..color = AppColors.inputBorder
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+
+    final RRect trackRRect = RRect.fromRectAndRadius(
+      trackRect,
+      const Radius.circular(2),
+    );
+    canvas.drawRRect(trackRRect, borderPaint);
+
+    // Calculate recommended range positions
+    final double trackLength = trackRect.width;
+    final double recommendedStartX = trackRect.left +
+        (trackLength * (recommendedMin / (isMetric ? 1.0 : 2.2)));
+    final double recommendedEndX = trackRect.left +
+        (trackLength * (recommendedMax / (isMetric ? 1.0 : 2.2)));
+
+    // Paint recommended range in green
+    final Paint recommendedPaint = Paint()
+      ..color = AppColors.primary
+      ..style = PaintingStyle.fill;
+
+    canvas.drawRect(
+      Rect.fromLTRB(
+        recommendedStartX,
+        trackRect.top,
+        recommendedEndX,
+        trackRect.bottom,
+      ),
+      recommendedPaint,
+    );
+
+    // Paint thumb border
+    final Paint thumbBorderPaint = Paint()
+      ..color = AppColors.textSecondary
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+
+    // Draw thumb border
+    canvas.drawCircle(
+      thumbCenter,
+      12.0,
+      thumbBorderPaint,
     );
   }
 }

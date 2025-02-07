@@ -22,22 +22,23 @@ class DesiredWeightScreen extends StatefulWidget {
 }
 
 class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
-  late bool _isMetric;
-  late double currentWeightKg;
+  bool _isMetricWeight = true; // Default value
   late double targetWeightKg;
+  late double currentWeightKg;
 
   @override
   void initState() {
     super.initState();
-    _isMetric = widget.userData['isMetric'];
-    currentWeightKg = widget.userData['weight'];
+    // Get the metric preference and current weight from userData
+    _isMetricWeight = widget.userData['isMetricWeight'] as bool;
+    currentWeightKg = widget.userData['weight'] as double;
     targetWeightKg =
         currentWeightKg; // Initialize target weight to current weight
   }
 
   void _updateTargetWeight(int value) {
     setState(() {
-      if (_isMetric) {
+      if (_isMetricWeight) {
         targetWeightKg = value.toDouble();
       } else {
         targetWeightKg = (value * MeasurementHelper.lbToKg).roundToDouble();
@@ -53,10 +54,10 @@ class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
 
   Widget _buildWarningWidget() {
     final difference = targetWeightKg - currentWeightKg;
-    final diffValue = _isMetric
+    final diffValue = _isMetricWeight
         ? difference.abs().round()
         : (difference.abs() / MeasurementHelper.lbToKg).round();
-    final unit = _isMetric ? 'kg' : 'lb';
+    final unit = _isMetricWeight ? 'kg' : 'lb';
 
     String message;
     Color color;
@@ -82,21 +83,16 @@ class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withAlpha(26),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withAlpha(77)),
-      ),
+          color: color.withAlpha(26), borderRadius: BorderRadius.circular(8)),
       child: Row(
         children: [
           Icon(icon, color: color),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           Expanded(
             child: Text(
               message,
-              style: TextStyle(
-                color: color,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
+              style: TypographyStyles.body(
+                color: AppColors.textPrimary,
               ),
             ),
           ),
@@ -107,7 +103,7 @@ class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currentValue = _isMetric
+    final currentValue = _isMetricWeight
         ? targetWeightKg.round()
         : MeasurementHelper.convertWeight(targetWeightKg, false).round();
 
@@ -126,6 +122,7 @@ class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
           arguments: {
             ...widget.userData,
             'targetWeight': targetWeightKg,
+            'isMetricWeight': _isMetricWeight, // Preserve the metric preference
           },
         );
       },
@@ -134,14 +131,15 @@ class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
           const SizedBox(height: 16),
           Center(
             child: UnitSelector(
-              isMetric: _isMetric,
-              onUnitChanged: (value) => setState(() => _isMetric = value),
+              isMetric: _isMetricWeight,
+              onUnitChanged: (value) => setState(() => _isMetricWeight = value),
             ),
           ),
           const SizedBox(height: 56),
           RulerNumberPicker(
-            minValue: MeasurementHelper.offsetWeightPicker(_isMetric).round(),
-            maxValue: _isMetric ? 200 : 440,
+            minValue:
+                MeasurementHelper.offsetWeightPicker(_isMetricWeight).round(),
+            maxValue: _isMetricWeight ? 200 : 440,
             initialValue: currentValue,
             indicatorColor: _getDifferenceColor(),
             indicatorWidth: 2,
@@ -149,7 +147,7 @@ class _DesiredWeightScreenState extends State<DesiredWeightScreen> {
             textStyle: TypographyStyles.h2(
               color: AppColors.textPrimary,
             ),
-            unit: MeasurementHelper.getWeightLabel(_isMetric),
+            unit: MeasurementHelper.getWeightLabel(_isMetricWeight),
           ),
         ],
       ),

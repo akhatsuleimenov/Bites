@@ -18,7 +18,8 @@ class AppColors {
 
   // Status colors
   static const success = Color(0xFF4CAF50);
-  static const error = Color(0xFFE53935);
+  static const error = Color.fromARGB(255, 209, 110, 43);
+  static const errorBackground = Color(0xFFF8D7DA);
   static const warning = Color(0xFF64A5DE);
   static const warningBackground = Color(0xFFD6E8F7);
 
