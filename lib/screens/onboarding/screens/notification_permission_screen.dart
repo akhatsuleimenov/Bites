@@ -1,8 +1,11 @@
 // Flutter imports:
+
+import 'package:bites/core/constants/app_colors.dart';
+import 'package:bites/core/utils/typography.dart';
+import 'package:bites/core/widgets/buttons.dart';
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/services/firebase_service.dart';
 
 class NotificationPermissionScreen extends StatelessWidget {
@@ -37,32 +40,22 @@ class NotificationPermissionScreen extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Spacer(flex: 1),
               Text(
-                'Reach your goals with notifications',
-                style: AppTypography.headlineLarge.copyWith(
-                  fontSize: 36,
-                  height: 1.2,
-                ),
+                'Stay on track with notifications',
+                style: TypographyStyles.h2(),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 36),
               Container(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.black,
-                      Colors.black.withOpacity(0.8),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(24),
+                  color: AppColors.grayBackground,
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
                   children: [
@@ -89,63 +82,31 @@ class NotificationPermissionScreen extends StatelessWidget {
               const Spacer(flex: 1),
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(24),
-                ),
                 child: Column(
                   children: [
-                    Text(
-                      'bites would like to send you Notifications',
-                      style: AppTypography.bodyLarge.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 24),
                     Row(
                       children: [
                         Expanded(
-                          child: TextButton(
+                          child: PrimaryButton(
                             onPressed: () => _proceedToNextScreen(context, {
                               "notificationsEnabled": false,
                               "fcmToken": null,
                               "apnsToken": null,
                             }),
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: Text(
-                              "Don't Allow",
-                              style: AppTypography.bodyLarge.copyWith(
-                                color: Colors.grey[600],
-                              ),
-                            ),
+                            text: "Don't Allow",
+                            variant: ButtonVariant.outlined,
+                            textColor: AppColors.textSecondary,
+                            color: Colors.transparent,
                           ),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
-                          child: ElevatedButton(
+                          child: PrimaryButton(
                             onPressed: () async =>
                                 await _requestNotificationPermission(context),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.black,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: Text(
-                              'Allow',
-                              style: AppTypography.bodyLarge.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                            text: 'Allow',
+                            color: AppColors.primary,
+                            textColor: AppColors.textPrimary,
                           ),
                         ),
                       ],
@@ -153,7 +114,7 @@ class NotificationPermissionScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 16),
             ],
           ),
         ),
@@ -169,14 +130,15 @@ class NotificationPermissionScreen extends StatelessWidget {
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(10),
+          height: 48,
+          width: 48,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(12),
+            color: AppColors.inputBorder,
+            borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
             icon,
-            color: Colors.white,
+            color: AppColors.textPrimary,
             size: 24,
           ),
         ),
@@ -187,15 +149,15 @@ class NotificationPermissionScreen extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: AppTypography.bodyLarge.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
+                style: TypographyStyles.bodyBold(
+                  color: AppColors.textPrimary,
                 ),
               ),
+              const SizedBox(height: 4),
               Text(
                 subtitle,
-                style: AppTypography.bodyMedium.copyWith(
-                  color: Colors.white.withOpacity(0.8),
+                style: TypographyStyles.body(
+                  color: AppColors.textSecondary,
                 ),
               ),
             ],

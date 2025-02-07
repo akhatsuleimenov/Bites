@@ -1,8 +1,9 @@
 // Flutter imports:
+import 'package:bites/core/constants/app_colors.dart';
+import 'package:bites/core/utils/typography.dart';
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/widgets/buttons.dart';
 
 class ComparisonScreen extends StatelessWidget {
@@ -12,7 +13,7 @@ class ComparisonScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -20,39 +21,33 @@ class ComparisonScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Spacer(),
-              const SizedBox(height: 48.0),
               Container(
                 width: double.infinity,
                 padding:
-                    const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+                    const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.red.shade50, Colors.white],
+                    colors: [AppColors.errorBackground, AppColors.background],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: Colors.red.shade100, width: 1),
                 ),
                 child: Column(
                   children: [
                     Text(
                       '95%',
-                      style: AppTypography.headlineLarge.copyWith(
-                        fontSize: 64,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red.shade400,
+                      style: TypographyStyles.headlineLarge(
+                        color: AppColors.progressRed,
                       ),
                     ),
                     const SizedBox(height: 12),
                     Text(
                       'of people quit traditional diets\nand can\'t reach their goals',
                       textAlign: TextAlign.center,
-                      style: AppTypography.bodyLarge.copyWith(
-                        color: Colors.red.shade900,
-                        height: 1.4,
-                        fontSize: 18,
-                      ),
+                      style: TypographyStyles.bodyBold(
+                          color: AppColors.progressRed),
                     ),
                   ],
                 ),
@@ -63,16 +58,13 @@ class ComparisonScreen extends StatelessWidget {
                   children: [
                     Center(
                       child: Text(
-                        'But with Bites, you\'re',
-                        style: AppTypography.headlineLarge,
+                        'But with Bites, you\'re different',
+                        style: TypographyStyles.h2(
+                          color: AppColors.textPrimary,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                    Center(
-                      child: Text(
-                        'different',
-                        style: AppTypography.headlineLarge,
-                      ),
-                    )
                   ],
                 ),
               ),
@@ -80,9 +72,10 @@ class ComparisonScreen extends StatelessWidget {
               PrimaryButton(
                 onPressed: () => Navigator.pushNamed(
                   context,
-                  '/onboarding/goal-speed',
+                  '/onboarding/attainable',
                   arguments: userData,
                 ),
+                textColor: AppColors.textPrimary,
                 text: 'Start Your Success Story',
               ),
             ],

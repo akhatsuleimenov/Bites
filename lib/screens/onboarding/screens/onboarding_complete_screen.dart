@@ -1,8 +1,9 @@
 // Flutter imports:
+import 'package:bites/core/constants/app_colors.dart';
+import 'package:bites/core/utils/typography.dart';
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/services/firebase_service.dart';
 
 class OnboardingCompleteScreen extends StatefulWidget {
@@ -76,12 +77,13 @@ class _OnboardingCompleteScreenState extends State<OnboardingCompleteScreen>
               duration: const Duration(milliseconds: 300),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: completed ? Colors.green : Colors.grey[300],
+                color: completed ? AppColors.primary : AppColors.grayBackground,
               ),
               padding: const EdgeInsets.all(8),
               child: Icon(
                 completed ? Icons.check : Icons.hourglass_empty,
-                color: completed ? Colors.white : Colors.grey[600],
+                color:
+                    completed ? AppColors.textPrimary : AppColors.textSecondary,
                 size: 20,
               ),
             ),
@@ -89,9 +91,10 @@ class _OnboardingCompleteScreenState extends State<OnboardingCompleteScreen>
             Expanded(
               child: Text(
                 title,
-                style: AppTypography.bodyLarge.copyWith(
-                  color: completed ? Colors.green : Colors.grey[600],
-                  fontWeight: completed ? FontWeight.bold : FontWeight.normal,
+                style: TypographyStyles.body(
+                  color: completed
+                      ? AppColors.textPrimary
+                      : AppColors.textSecondary,
                 ),
               ),
             ),
@@ -107,13 +110,13 @@ class _OnboardingCompleteScreenState extends State<OnboardingCompleteScreen>
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 'Creating a Plan for You',
-                style: AppTypography.headlineLarge,
+                style: TypographyStyles.h2(),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 48),
@@ -123,15 +126,18 @@ class _OnboardingCompleteScreenState extends State<OnboardingCompleteScreen>
                 builder: (context, double value, _) => Column(
                   children: [
                     LinearProgressIndicator(
+                      borderRadius: BorderRadius.circular(4),
                       value: value,
                       minHeight: 8,
-                      backgroundColor: Colors.grey[200],
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                      backgroundColor: AppColors.grayBackground,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        AppColors.primary,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       '${(value * 100).toInt()}%',
-                      style: AppTypography.bodyLarge,
+                      style: TypographyStyles.bodyBold(),
                     ),
                   ],
                 ),

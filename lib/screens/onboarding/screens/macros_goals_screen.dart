@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:bites/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
 // Project imports:
@@ -17,7 +18,7 @@ class MacrosGoalsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [

@@ -2,10 +2,11 @@
 import 'dart:math';
 
 // Flutter imports:
+import 'package:bites/core/constants/app_colors.dart';
+import 'package:bites/core/utils/typography.dart';
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/utils/measurement_utils.dart';
 import 'package:bites/core/widgets/buttons.dart';
 
@@ -25,7 +26,7 @@ class AttainableScreen extends StatelessWidget {
     final double weightDifference = (currentWeight - targetWeight).abs();
     final double weeks = weightDifference / weeklyGoal;
     final int months =
-        min(1, (weeks / 4.33).ceil()); // 4.33 weeks per month on average
+        max(1, (weeks / 4.33).ceil()); // 4.33 weeks per month on average
 
     return months == 1 ? '1 month' : '$months months';
   }
@@ -33,7 +34,7 @@ class AttainableScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -43,16 +44,19 @@ class AttainableScreen extends StatelessWidget {
               const Spacer(),
               Text(
                 'Your goal is completely attainable!',
-                style: AppTypography.headlineLarge,
+                style: TypographyStyles.h2(
+                  color: AppColors.textPrimary,
+                ),
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 48),
               Container(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.grey[50],
-                  borderRadius: BorderRadius.circular(24),
+                  color: AppColors.cardBackground,
+                  borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: Colors.grey[200]!,
+                    color: AppColors.inputBorder,
                     width: 1,
                   ),
                 ),
@@ -61,14 +65,15 @@ class AttainableScreen extends StatelessWidget {
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(12),
+                          height: 48,
+                          width: 48,
                           decoration: BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.circular(12),
+                            color: AppColors.textPrimary,
+                            borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Icon(
                             Icons.calendar_today,
-                            color: Colors.white,
+                            color: AppColors.background,
                             size: 24,
                           ),
                         ),
@@ -79,19 +84,19 @@ class AttainableScreen extends StatelessWidget {
                             children: [
                               Text(
                                 'Weekly Progress',
-                                style: AppTypography.bodyLarge.copyWith(
-                                  color: Colors.grey[600],
+                                style: TypographyStyles.body(
+                                  color: AppColors.textSecondary,
                                 ),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 MeasurementHelper.formatWeight(
                                   userData['weeklyGoal'],
-                                  userData['isMetric'],
+                                  userData['isMetricWeight'] as bool,
                                   decimalPlaces: 1,
                                 ),
-                                style: AppTypography.headlineSmall.copyWith(
-                                  fontWeight: FontWeight.w600,
+                                style: TypographyStyles.bodyBold(
+                                  color: AppColors.textPrimary,
                                 ),
                               ),
                             ],
@@ -103,14 +108,15 @@ class AttainableScreen extends StatelessWidget {
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(12),
+                          height: 48,
+                          width: 48,
                           decoration: BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.circular(12),
+                            color: AppColors.textPrimary,
+                            borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Icon(
                             Icons.timer,
-                            color: Colors.white,
+                            color: AppColors.background,
                             size: 24,
                           ),
                         ),
@@ -121,15 +127,15 @@ class AttainableScreen extends StatelessWidget {
                             children: [
                               Text(
                                 'Estimated Time',
-                                style: AppTypography.bodyLarge.copyWith(
-                                  color: Colors.grey[600],
+                                style: TypographyStyles.body(
+                                  color: AppColors.textSecondary,
                                 ),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 _getEstimatedTime(userData),
-                                style: AppTypography.headlineSmall.copyWith(
-                                  fontWeight: FontWeight.w600,
+                                style: TypographyStyles.bodyBold(
+                                  color: AppColors.textPrimary,
                                 ),
                               ),
                             ],
@@ -146,13 +152,13 @@ class AttainableScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Colors.black,
-                      Colors.black.withOpacity(0.8),
+                      AppColors.textPrimary,
+                      AppColors.textPrimary,
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,29 +166,27 @@ class AttainableScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: AppColors.textSecondary,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(
                         Icons.tips_and_updates,
-                        color: Colors.white,
+                        color: AppColors.background,
                         size: 24,
                       ),
                     ),
                     const SizedBox(height: 16),
                     Text(
                       'Pro Tip',
-                      style: AppTypography.bodyLarge.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
+                      style: TypographyStyles.bodyBold(
+                        color: AppColors.background,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Consistency is key! Small, sustainable changes lead to long-lasting results.',
-                      style: AppTypography.bodyLarge.copyWith(
-                        color: Colors.white.withOpacity(0.9),
-                        height: 1.4,
+                      style: TypographyStyles.body(
+                        color: AppColors.background,
                       ),
                     ),
                   ],
@@ -196,6 +200,7 @@ class AttainableScreen extends StatelessWidget {
                   arguments: userData,
                 ),
                 text: 'Next',
+                textColor: AppColors.textPrimary,
               ),
             ],
           ),

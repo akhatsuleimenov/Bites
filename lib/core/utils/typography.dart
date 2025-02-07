@@ -5,6 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:bites/core/constants/app_colors.dart';
 
 class TypographyStyles {
+  static TextStyle headlineLarge({Color? color}) {
+    return TextStyle(
+      fontFamily: 'YourFont',
+      fontSize: 64,
+      height: 1.15,
+      color: color ?? AppColors.textPrimary,
+      fontWeight: FontWeight.w900,
+    );
+  }
+
   /// fontSize: 40, lineHeight: 115%
   static TextStyle h1({Color? color}) {
     return TextStyle(

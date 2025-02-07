@@ -1,11 +1,12 @@
 // Flutter imports:
+import 'package:bites/core/constants/app_colors.dart';
+import 'package:bites/core/utils/typography.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:superwallkit_flutter/superwallkit_flutter.dart';
 
 // Project imports:
-import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/services/firebase_service.dart';
 import 'package:bites/core/widgets/buttons.dart';
 
@@ -16,7 +17,7 @@ class CustomPlanScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -29,57 +30,57 @@ class CustomPlanScreen extends StatelessWidget {
                     children: [
                       Text(
                         'Your custom plan is ready!',
-                        style: AppTypography.headlineLarge,
+                        style: TypographyStyles.h2(),
                       ),
-                      const SizedBox(height: 48),
+                      const SizedBox(height: 32),
                       _buildMetricCard(
                         'Daily Calorie Target',
                         '${userData['dailyCalories'].round()}',
                         'kcal',
                         Icons.local_fire_department,
-                        Colors.orange[400]!,
+                        AppColors.error,
                         'Based on your BMR and activity level',
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
                       _buildMetricCard(
                         'Protein Goal',
                         '${(userData['dailyCalories'] * 0.3 / 4).round()}',
                         'g',
                         Icons.fitness_center,
-                        Colors.blue[400]!,
+                        AppColors.warning,
                         'Maintain muscle mass during your journey',
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
                       _buildMetricCard(
                         'Carbs Goal',
                         '${(userData['dailyCalories'] * 0.4 / 4).round()}',
                         'g',
                         Icons.restaurant_menu,
-                        Colors.orange[400]!,
+                        AppColors.error,
                         'Keeps you full and satisfied',
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
                       _buildMetricCard(
                         'Fat Goal',
                         '${(userData['dailyCalories'] * 0.3 / 9).round()}',
                         'g',
                         Icons.food_bank,
-                        Colors.green[400]!,
+                        AppColors.success,
                         'Keeps you warm and healthy',
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 16),
                       Container(
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Colors.black,
-                              Colors.black.withOpacity(0.8),
+                              AppColors.textPrimary,
+                              AppColors.textPrimary,
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
-                          borderRadius: BorderRadius.circular(24),
+                          borderRadius: BorderRadius.circular(16),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,21 +90,20 @@ class CustomPlanScreen extends StatelessWidget {
                                 Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.2),
+                                    color: AppColors.background,
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: const Icon(
                                     Icons.psychology,
-                                    color: Colors.white,
+                                    color: AppColors.textPrimary,
                                     size: 24,
                                   ),
                                 ),
                                 const SizedBox(width: 16),
                                 Text(
                                   'Your Plan Includes',
-                                  style: AppTypography.bodyLarge.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
+                                  style: TypographyStyles.bodyBold(
+                                    color: AppColors.background,
                                   ),
                                 ),
                               ],
@@ -144,6 +144,7 @@ class CustomPlanScreen extends StatelessWidget {
                   });
                 },
                 text: "Let's Begin!",
+                textColor: AppColors.textPrimary,
               ),
             ),
           ],
@@ -161,21 +162,14 @@ class CustomPlanScreen extends StatelessWidget {
     String subtitle,
   ) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: Colors.grey[200]!,
+          color: AppColors.inputBorder,
           width: 1,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Row(
         children: [
@@ -183,7 +177,7 @@ class CustomPlanScreen extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
               icon,
@@ -198,18 +192,18 @@ class CustomPlanScreen extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: AppTypography.bodyLarge.copyWith(
-                    color: Colors.grey[600],
+                  style: TypographyStyles.body(
+                    color: AppColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
                       value,
-                      style: AppTypography.headlineSmall.copyWith(
-                        fontWeight: FontWeight.w600,
+                      style: TypographyStyles.bodyBold(
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(width: 4),
@@ -217,8 +211,8 @@ class CustomPlanScreen extends StatelessWidget {
                       padding: const EdgeInsets.only(bottom: 4),
                       child: Text(
                         unit,
-                        style: AppTypography.bodyMedium.copyWith(
-                          color: Colors.grey[600],
+                        style: TypographyStyles.body(
+                          color: AppColors.textSecondary,
                         ),
                       ),
                     ),
@@ -227,8 +221,8 @@ class CustomPlanScreen extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: AppTypography.bodySmall.copyWith(
-                    color: Colors.grey[600],
+                  style: TypographyStyles.subtitle(
+                    color: AppColors.textSecondary,
                   ),
                 ),
               ],
@@ -244,14 +238,14 @@ class CustomPlanScreen extends StatelessWidget {
       children: [
         Icon(
           icon,
-          color: Colors.white.withOpacity(0.9),
+          color: AppColors.background,
           size: 20,
         ),
         const SizedBox(width: 12),
         Text(
           text,
-          style: AppTypography.bodyLarge.copyWith(
-            color: Colors.white.withOpacity(0.9),
+          style: TypographyStyles.body(
+            color: AppColors.background,
           ),
         ),
       ],
