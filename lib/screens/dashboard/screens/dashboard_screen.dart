@@ -1,4 +1,6 @@
 // Flutter imports:
+import 'package:bites/core/utils/typography.dart';
+import 'package:bites/screens/dashboard/widgets/weekly_streak.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -21,6 +23,9 @@ class DashboardScreen extends StatelessWidget {
         print('🎯 Building DashboardScreen');
         print(
             '📊 Today\'s meal logs count: ${appController.todaysMealLogs.length}');
+        final List<double> weeklyCalories =
+            _calculateWeeklyCalories(appController);
+
         return Scaffold(
           body: SafeArea(
             child: RefreshIndicator(
@@ -29,11 +34,15 @@ class DashboardScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(24.0).copyWith(bottom: 12.0),
+                    padding: const EdgeInsets.all(16.0).copyWith(bottom: 12.0),
                     child: Text(
                       'Today\'s Dashboard',
-                      style: AppTypography.headlineLarge,
+                      style: TypographyStyles.h2(),
                     ),
+                  ),
+                  WeeklyStreak(
+                    targetCalories: appController.nutritionPlan.calories,
+                    dailyCalories: weeklyCalories,
                   ),
                   Expanded(
                     child: CustomScrollView(
@@ -131,6 +140,18 @@ class DashboardScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  List<double> _calculateWeeklyCalories(AppController appController) {
+    // For testing, we'll create mock data for Monday and Tuesday
+    return [
+      appController.nutritionPlan.calories * 1.1, // Monday - 120%
+      appController.nutritionPlan.calories * 1.1, // Tuesday - 80%
+      appController.nutritionPlan.calories * 1.2, // Wednesday - 100%
+      appController.nutritionPlan.calories * 1.0, // Thursday - 100%
+      appController.nutritionPlan.calories * 1.0, // Friday - 100%
+      appController.todaysTotalCalories, // Today's actual calories
+    ];
   }
 
   void _showAddOptions(BuildContext context) {

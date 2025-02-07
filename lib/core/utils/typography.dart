@@ -108,6 +108,7 @@ class TypographyStyles {
       fontFamily: 'YourFont',
       fontSize: 12,
       height: 1.2,
+      fontWeight: FontWeight.w500,
       color: color ?? AppColors.textSecondary,
     );
   }

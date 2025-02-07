@@ -36,6 +36,10 @@ class AppController extends ChangeNotifier {
   double? get latestWeight =>
       _weightLogs.isNotEmpty ? _weightLogs.first.weight : null;
 
+  double get todaysTotalCalories {
+    return _nutritionPlan.calories - remainingMacros.calories;
+  }
+
   AppController(this._authService) {
     _setupAuthListener();
   }

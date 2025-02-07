@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   static const primary = Color(0xFF71E582);
-  static const background = Color(0xFFF8F8F8);
-  static const cardBackground = Colors.white;
+  static const primaryDark = Color.fromARGB(255, 83, 221, 104);
+  static const background = Color(0xFFFFFFFF);
+  static const cardBackground = Color(0xFFF8F8F8);
   static const progressRed = Color(0xFFFF0000);
   static const progressGreen = Color(0xFF4CAF50);
   static const progressBlue = Color(0xFF2196F3);
@@ -28,4 +29,5 @@ class AppColors {
   static const buttonBorder = Color(0xFFE0E0E0);
   static const inputBorder = Color(0xFFD9D9D9);
   static const grayBackground = Color(0xFFF0F0F0);
+  static const progressBackground = Color(0xFFE7E7E7);
 }
