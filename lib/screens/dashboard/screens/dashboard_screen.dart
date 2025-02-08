@@ -21,46 +21,43 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppController>(
       builder: (context, appController, _) {
-        print('🎯 Building DashboardScreen');
-        print(
-            '📊 Today\'s meal logs count: ${appController.todaysMealLogs.length}');
         final List<double> weeklyCalories =
             _calculateWeeklyCalories(appController);
 
         return Scaffold(
           body: SafeArea(
-            child: RefreshIndicator(
-              onRefresh: appController.loadAppData,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16.0).copyWith(bottom: 12.0),
-                    child: Text(
-                      'Today\'s Dashboard',
-                      style: TypographyStyles.h2(),
-                    ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0).copyWith(bottom: 12.0),
+                  child: Text(
+                    'Dashboard',
+                    style: TypographyStyles.h2(),
                   ),
-                  WeeklyStreak(
-                    targetCalories: appController.nutritionPlan.calories,
-                    dailyCalories: weeklyCalories,
-                  ),
-                  Expanded(
+                ),
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: appController.loadAppData,
                     child: CustomScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
                       slivers: [
-                        // Calorie and macro tracking
+                        // Weekly Streak
                         SliverToBoxAdapter(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                DailyMacrosProgress(
-                                  targetNutrition: appController.nutritionPlan,
-                                  remainingNutrition:
-                                      appController.remainingMacros,
-                                ),
-                              ],
+                          child: WeeklyStreak(
+                            targetCalories:
+                                appController.nutritionPlan.calories,
+                            dailyCalories: weeklyCalories,
+                          ),
+                        ),
+
+                        // Calorie and macro tracking
+                        SliverPadding(
+                          padding: const EdgeInsets.all(16.0),
+                          sliver: SliverToBoxAdapter(
+                            child: DailyMacrosProgress(
+                              targetNutrition: appController.nutritionPlan,
+                              remainingNutrition: appController.remainingMacros,
                             ),
                           ),
                         ),
@@ -75,12 +72,12 @@ class DashboardScreen extends StatelessWidget {
                         ),
 
                         // Recent meals header
-                        SliverToBoxAdapter(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 16,
-                              horizontal: 24,
-                            ),
+                        SliverPadding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 16,
+                            horizontal: 24,
+                          ),
+                          sliver: SliverToBoxAdapter(
                             child: Text(
                               'Recent Meals',
                               style: AppTypography.headlineMedium,
@@ -93,7 +90,6 @@ class DashboardScreen extends StatelessWidget {
                           delegate: SliverChildBuilderDelegate(
                             (context, index) {
                               if (appController.todaysMealLogs.isEmpty) {
-                                print('⚠️ No meals logged today');
                                 return const Padding(
                                   padding: EdgeInsets.all(24.0),
                                   child: Text('No meals logged today'),
@@ -102,8 +98,6 @@ class DashboardScreen extends StatelessWidget {
 
                               final mealLog =
                                   appController.todaysMealLogs[index];
-                              print(
-                                  '🍽️ Rendering meal log: ${mealLog.foodInfo.mainItem.title}');
                               return MealLogCard(
                                 mealLog: mealLog,
                                 onTap: () => showModalBottomSheet(
@@ -121,13 +115,14 @@ class DashboardScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
           floatingActionButton: FloatingActionButton(
             heroTag: 'dashboardFAB',
-            onPressed: () => _showAddOptions(context),
+            // onPressed: () => _showAddOptions(context),
+            onPressed: () => Navigator.pushNamed(context, '/food-logging'),
             backgroundColor: Colors.black,
             shape: const CircleBorder(),
             child: const Icon(Icons.add),
