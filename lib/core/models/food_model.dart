@@ -77,12 +77,15 @@ class FoodInfo {
 }
 
 class Ingredient {
-  final String title;
+  String title;
   double grams;
   final NutritionData nutritionData;
 
-  Ingredient(
-      {required this.title, required this.grams, required this.nutritionData});
+  Ingredient({
+    required this.title,
+    required this.grams,
+    required this.nutritionData,
+  });
 
   Map<String, dynamic> toMap() => {
         'title': title,

@@ -59,21 +59,32 @@ class TypographyStyles {
     );
   }
 
+  /// fontSize: 20, lineHeight: 115%
+  static TextStyle h4Bold({Color? color}) {
+    return TextStyle(
+      fontFamily: 'YourFont',
+      fontSize: 20,
+      height: 1.15,
+      color: color ?? AppColors.textPrimary,
+      fontWeight: FontWeight.bold,
+    );
+  }
+
   /// fontSize: 16, lineHeight: 120%
   static TextStyle body({Color? color}) {
     return TextStyle(
       fontFamily: 'YourFont',
-      fontSize: 16,
+      fontSize: 18,
       height: 1.2,
       color: color ?? AppColors.textPrimary,
     );
   }
 
-  /// fontSize: 16, lineHeight: 120%
+  /// fontSize: 18, lineHeight: 120%
   static TextStyle bodyBold({Color? color}) {
     return TextStyle(
       fontFamily: 'YourFont',
-      fontSize: 16,
+      fontSize: 18,
       height: 1.2,
       color: color ?? AppColors.textPrimary,
       fontWeight: FontWeight.bold,
@@ -84,7 +95,7 @@ class TypographyStyles {
   static TextStyle bodyMedium({Color? color}) {
     return TextStyle(
       fontFamily: 'YourFont',
-      fontSize: 16,
+      fontSize: 18,
       height: 1.2,
       color: color ?? AppColors.textPrimary,
       fontWeight: FontWeight.w500,
@@ -95,7 +106,7 @@ class TypographyStyles {
   static TextStyle bodyLight({Color? color}) {
     return TextStyle(
       fontFamily: 'YourFont',
-      fontSize: 16,
+      fontSize: 18,
       height: 1.2,
       color: color ?? AppColors.textPrimary,
       fontWeight: FontWeight.w300,
@@ -106,7 +117,7 @@ class TypographyStyles {
   static TextStyle subtitle({Color? color}) {
     return TextStyle(
       fontFamily: 'YourFont',
-      fontSize: 12,
+      fontSize: 14,
       height: 1.2,
       fontWeight: FontWeight.w500,
       color: color ?? AppColors.textSecondary,

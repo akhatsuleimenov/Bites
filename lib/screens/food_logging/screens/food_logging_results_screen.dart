@@ -2,6 +2,7 @@
 import 'dart:io';
 
 // Flutter imports:
+import 'package:bites/core/utils/typography.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -11,11 +12,11 @@ import 'package:provider/provider.dart';
 
 // Project imports:
 import 'package:bites/core/constants/app_colors.dart';
-import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/models/food_model.dart';
 import 'package:bites/core/widgets/buttons.dart';
 import 'package:bites/core/widgets/cards.dart';
 import 'package:bites/core/controllers/app_controller.dart';
+import 'package:bites/screens/food_logging/widgets/ingredients_editor.dart';
 
 class FoodLoggingResultsScreen extends StatefulWidget {
   final String? imagePath;
@@ -63,11 +64,18 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
     }
   }
 
-  void _updateValue(String field, double value, [int? ingredientIndex]) {
+  void _updateValue(String field, double value,
+      [int? ingredientIndex, String? textValue]) {
     setState(() {
       Ingredient target = ingredientIndex != null
           ? _mealLog.foodInfo.ingredients[ingredientIndex]
           : _mealLog.foodInfo.mainItem;
+
+      if (field == 'title' && textValue != null) {
+        // Handle title update
+        target.title = textValue;
+        return;
+      }
 
       if (field == 'grams') {
         // Calculate ratio for scaling
@@ -201,106 +209,118 @@ class _FoodLoggingResultsScreenState extends State<FoodLoggingResultsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text(_isEditing ? 'Edit Meal' : 'Analysis Results'),
-        backgroundColor: AppColors.cardBackground,
+        title: Text('Nutrition', style: TypographyStyles.h3()),
+        backgroundColor: AppColors.background,
+        scrolledUnderElevation: 0,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-          ),
-          child: Column(
-            children: [
-              // Image preview
-              if (_mealLog.imagePath.isNotEmpty)
-                AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: _mealLog.imagePath.startsWith('http')
-                      ? Image.network(
-                          _mealLog.imagePath,
-                          fit: BoxFit.cover,
-                        )
-                      : Image.file(
-                          File(_mealLog.imagePath),
-                          fit: BoxFit.cover,
-                        ),
-                ),
-
-              // Date, Time and Meal Type selector
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          backgroundColor: AppColors.cardBackground,
-                          side: BorderSide(
-                            color: AppColors.primary,
-                          ),
-                        ),
-                        onPressed: _selectDate,
-                        icon: const Icon(Icons.calendar_today),
-                        label: Text(
-                          DateFormat('MMM d, y').format(_selectedDate),
-                        ),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            padding: const EdgeInsets.only(bottom: 80),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  // Image preview
+                  if (_mealLog.imagePath.isNotEmpty)
+                    AspectRatio(
+                      aspectRatio: 4 / 3,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: _mealLog.imagePath.startsWith('http')
+                            ? Image.network(
+                                _mealLog.imagePath,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.file(
+                                File(_mealLog.imagePath),
+                                fit: BoxFit.cover,
+                              ),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          backgroundColor: AppColors.cardBackground,
-                          side: BorderSide(
-                            color: AppColors.primary,
-                          ),
-                        ),
-                        onPressed: _selectTime,
-                        icon: const Icon(Icons.access_time),
-                        label: Text(
-                          _selectedTime.format(context),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
 
-              // Results list
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Meal Information',
-                      style: AppTypography.headlineLarge,
-                    ),
-                    const SizedBox(height: 8),
-                    _FoodItemCard(
-                      item: _mealLog.foodInfo,
-                      onValueChanged: _updateValue,
-                      onIngredientChanged: (index, field, value) =>
-                          _updateValue(field, value, index),
-                      showIngredients: true,
-                    ),
-                  ],
-                ),
-              ),
+                  // Date, Time and Meal Type selector
+                  const SizedBox(height: 16),
 
-              // Save button
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: PrimaryButton(
-                  onPressed: _saveMealLog,
-                  loading: _isSaving,
-                  text: _isEditing ? 'Update Meal' : 'Save to Log',
-                ),
+                  // Results list
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _mealLog.foodInfo.mainItem.title,
+                          style: TypographyStyles.h3(),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                style: OutlinedButton.styleFrom(
+                                  iconColor: AppColors.textPrimary,
+                                  foregroundColor: AppColors.textPrimary,
+                                  backgroundColor: AppColors.cardBackground,
+                                  side: BorderSide(
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                                onPressed: _selectDate,
+                                icon: const Icon(Icons.calendar_today),
+                                label: Text(
+                                  DateFormat('MMM d, y').format(_selectedDate),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                style: OutlinedButton.styleFrom(
+                                  iconColor: AppColors.textPrimary,
+                                  foregroundColor: AppColors.textPrimary,
+                                  backgroundColor: AppColors.cardBackground,
+                                  side: BorderSide(
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                                onPressed: _selectTime,
+                                icon: const Icon(Icons.access_time),
+                                label: Text(
+                                  _selectedTime.format(context),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        _FoodItemCard(
+                          item: _mealLog.foodInfo,
+                          onValueChanged: _updateValue,
+                          onIngredientChanged: (index, field, value,
+                                  [textValue]) =>
+                              _updateValue(field, value, index, textValue),
+                          showIngredients: true,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+          Positioned(
+            left: 16,
+            right: 16,
+            bottom: 32,
+            child: PrimaryButton(
+              onPressed: _saveMealLog,
+              loading: _isSaving,
+              text: _isEditing ? 'Update Meal' : 'Save to Log',
+              textColor: AppColors.textPrimary,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -310,13 +330,14 @@ class _FoodItemCard extends StatefulWidget {
   final dynamic item;
   final Function(String field, double value) onValueChanged;
   final bool showIngredients;
-  final Function(int index, String field, double value)? onIngredientChanged;
+  final Function(int index, String field, double value, [String? textValue])
+      onIngredientChanged;
 
   const _FoodItemCard({
     required this.item,
     required this.onValueChanged,
     this.showIngredients = false,
-    this.onIngredientChanged,
+    required this.onIngredientChanged,
   });
 
   @override
@@ -416,47 +437,74 @@ class _FoodItemCardState extends State<_FoodItemCard> {
   @override
   Widget build(BuildContext context) {
     return BaseCard(
+      padding: const EdgeInsets.only(top: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  widget.showIngredients
-                      ? widget.item.mainItem.title
-                      : widget.item.title,
-                  style: AppTypography.headlineSmall,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            decoration: BoxDecoration(
+              color: AppColors.background,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.cardBackground.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
                 ),
-              ),
-              _buildEditableField('grams', 'g'),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              _buildEditableField('calories', 'kcal', label: 'Calories'),
-              _buildEditableField('protein', 'g', label: 'Protein'),
-              _buildEditableField('carbs', 'g', label: 'Carbs'),
-              _buildEditableField('fat', 'g', label: 'Fat'),
-            ],
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Macros',
+                  style: TypographyStyles.h4Bold(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildMacroItem(
+                      'Calories',
+                      controllers['calories']!.text,
+                      'kcal',
+                      AppColors.calories,
+                      Icons.local_fire_department_rounded,
+                    ),
+                    _buildMacroItem(
+                      'Carbs',
+                      controllers['carbs']!.text,
+                      'g',
+                      AppColors.carbs,
+                      Icons.grass_rounded,
+                    ),
+                    _buildMacroItem(
+                      'Fat',
+                      controllers['fat']!.text,
+                      'g',
+                      AppColors.fat,
+                      Icons.circle,
+                    ),
+                    _buildMacroItem(
+                      'Protein',
+                      controllers['protein']!.text,
+                      'g',
+                      AppColors.protein,
+                      Icons.egg_rounded,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
           if (widget.showIngredients && widget.item is FoodInfo) ...[
-            ExpansionTile(
-              title: Text(
-                'Ingredients',
-                style: AppTypography.headlineSmall
-                    .copyWith(color: Colors.grey[700]),
-              ),
-              children:
-                  widget.item.ingredients.asMap().entries.map<Widget>((entry) {
-                return _FoodItemCard(
-                  item: entry.value,
-                  onValueChanged: (field, value) =>
-                      widget.onIngredientChanged?.call(entry.key, field, value),
-                  showIngredients: false,
-                );
-              }).toList(),
+            const SizedBox(height: 16),
+            IngredientsEditor(
+              foodInfo: widget.item,
+              onIngredientChanged: widget.onIngredientChanged,
             ),
           ],
         ],
@@ -472,7 +520,7 @@ class _FoodItemCardState extends State<_FoodItemCard> {
           if (label != null) ...[
             Text(
               label,
-              style: AppTypography.bodyMedium.copyWith(color: Colors.grey[600]),
+              style: TypographyStyles.bodyMedium(color: Colors.grey[600]),
             ),
             const SizedBox(height: 4),
           ],
@@ -497,6 +545,59 @@ class _FoodItemCardState extends State<_FoodItemCard> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildMacroItem(
+    String label,
+    String value,
+    String unit,
+    Color color,
+    IconData icon,
+  ) {
+    return Column(
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 18,
+              color: color,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: TypographyStyles.subtitle(
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              value,
+              style: TypographyStyles.bodyBold(
+                color: color,
+              ),
+            ),
+            const SizedBox(width: 1),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 1),
+              child: Text(
+                unit,
+                style: TypographyStyles.subtitle(
+                  color: color,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

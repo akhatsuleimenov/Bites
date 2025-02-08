@@ -34,4 +34,9 @@ class AppColors {
   static const protein = Color(0xFFEC4D3B);
   static const carbs = Color(0xFF1780DE);
   static const fat = Color(0xFFEBC81A);
+
+  static const Color calories = Color(0xFFFF9500);
+  // static const Color carbs = Color(0xFF4CD964);
+  // static const Color fat = Color(0xFFFF3B30);
+  // static const Color protein = Color(0xFF5856D6);
 }

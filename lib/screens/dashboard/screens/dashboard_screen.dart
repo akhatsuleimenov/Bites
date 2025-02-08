@@ -80,7 +80,7 @@ class DashboardScreen extends StatelessWidget {
                           sliver: SliverToBoxAdapter(
                             child: Text(
                               'Recent Meals',
-                              style: AppTypography.headlineMedium,
+                              style: TypographyStyles.h3(),
                             ),
                           ),
                         ),
@@ -90,9 +90,12 @@ class DashboardScreen extends StatelessWidget {
                           delegate: SliverChildBuilderDelegate(
                             (context, index) {
                               if (appController.todaysMealLogs.isEmpty) {
-                                return const Padding(
+                                return Padding(
                                   padding: EdgeInsets.all(24.0),
-                                  child: Text('No meals logged today'),
+                                  child: Text(
+                                    'No meals logged today',
+                                    style: TypographyStyles.bodyMedium(),
+                                  ),
                                 );
                               }
 
@@ -143,6 +146,7 @@ class DashboardScreen extends StatelessWidget {
     ];
   }
 
+  // ignore: unused_element
   void _showAddOptions(BuildContext context) {
     final appController = Provider.of<AppController>(context, listen: false);
 

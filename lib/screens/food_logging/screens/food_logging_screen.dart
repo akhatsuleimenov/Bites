@@ -21,6 +21,7 @@ import 'package:bites/core/services/firebase_service.dart';
 import 'package:bites/core/controllers/app_controller.dart';
 import 'package:provider/provider.dart';
 import '../painters/scan_line_painter.dart';
+import '../widgets/analyzing_indicator.dart';
 
 class FoodLoggingScreen extends StatefulWidget {
   const FoodLoggingScreen({super.key});
@@ -133,34 +134,34 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen>
     _scanLineController.repeat(); // Make scan line repeat during analysis
 
     try {
-      print('Calling LLM service...');
-      final results = await _llmService.analyzeFoodImage(image.path);
-      print('Analysis complete. Results: $results');
+      // print('Calling LLM service...');
+      // final results = await _llmService.analyzeFoodImage(image.path);
+      // print('Analysis complete. Results: $results');
 
       // Simulate longer API delay for testing (10 seconds)
-      // await Future.delayed(const Duration(seconds: 10));
+      await Future.delayed(const Duration(seconds: 5));
 
-      // final results = FoodInfo(
-      //   mainItem: Ingredient(
-      //     title: "Fettuccine Pasta",
-      //     grams: 100,
-      //     nutritionData: NutritionData(
-      //       calories: 350,
-      //       protein: 12,
-      //       carbs: 65,
-      //       fats: 8,
-      //     ),
-      //   ),
-      //   ingredients: [
-      //     Ingredient(
-      //       title: "pasta",
-      //       grams: 100,
-      //       nutritionData:
-      //           NutritionData(calories: 350, protein: 12, carbs: 65, fats: 8),
-      //     ),
-      //   ],
-      //   healthScore: 65,
-      // );
+      final results = FoodInfo(
+        mainItem: Ingredient(
+          title: "Fettuccine Pasta",
+          grams: 100,
+          nutritionData: NutritionData(
+            calories: 350,
+            protein: 12,
+            carbs: 65,
+            fats: 8,
+          ),
+        ),
+        ingredients: [
+          Ingredient(
+            title: "pasta",
+            grams: 100,
+            nutritionData:
+                NutritionData(calories: 350, protein: 12, carbs: 65, fats: 8),
+          ),
+        ],
+        healthScore: 65,
+      );
 
       setState(() => _analysisComplete = true);
       if (!mounted) return;
@@ -485,7 +486,7 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen>
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // Show either camera preview or captured image
+            // Camera preview or captured image
             if (_photoTaken && _capturedImagePath != null)
               Image.file(
                 File(_capturedImagePath!),
@@ -503,9 +504,7 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen>
                           (BuildContext context, BoxConstraints constraints) {
                         return GestureDetector(
                           behavior: HitTestBehavior.opaque,
-                          onScaleStart: (_) {
-                            _baseScale = _currentScale;
-                          },
+                          onScaleStart: (_) => _baseScale = _currentScale,
                           onScaleUpdate: (details) {
                             _currentScale = (_baseScale * details.scale)
                                 .clamp(_minAvailableZoom, _maxAvailableZoom);
@@ -518,77 +517,19 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen>
                 ),
               ),
 
-            // Overlay (always show)
+            // Overlay
             Positioned.fill(
               child: CustomPaint(
                 painter: OverlayPainter(isScanning: _isAnalyzing),
               ),
             ),
 
-            // Show analyzing overlay when processing
-            if (_isAnalyzing)
-              Positioned(
-                bottom: MediaQuery.of(context).padding.bottom + 80,
-                left: (MediaQuery.of(context).size.width - 220) / 2,
-                child: Container(
-                  width: 220,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(28),
-                  ),
-                  child: Stack(
-                    children: [
-                      // Progress animation
-                      AnimatedBuilder(
-                        animation: _progressController,
-                        builder: (context, child) {
-                          return Container(
-                            width: 220 * _progressController.value,
-                            height: 56,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(28),
-                            ),
-                          );
-                        },
-                      ),
-                      // Content
-                      Center(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (!_analysisComplete)
-                              const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  color: AppColors.textPrimary,
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            else
-                              const Icon(
-                                Icons.check_circle,
-                                color: AppColors.textPrimary,
-                                size: 16,
-                              ),
-                            const SizedBox(width: 8),
-                            Text(
-                              _analysisComplete
-                                  ? 'Analysis complete'
-                                  : 'Scanning image...',
-                              style: TypographyStyles.bodyMedium(
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+            // Analyzing indicator - using the extracted widget
+            AnalyzingIndicator(
+              isAnalyzing: _isAnalyzing,
+              analysisComplete: _analysisComplete,
+              progressAnimation: _progressController,
+            ),
 
             // Top Bar
             Positioned(
@@ -610,14 +551,14 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen>
                         'Add Item',
                         style: TypographyStyles.h3(color: AppColors.textWhite),
                       ),
-                      const SizedBox(width: 40), // For balance
+                      const SizedBox(width: 40),
                     ],
                   ),
                 ),
               ),
             ),
 
-            // Bottom Controls - Only show when not analyzing
+            // Bottom Controls
             if (!_isAnalyzing)
               Positioned(
                 bottom: 0,
@@ -678,7 +619,7 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen>
                 ),
               ),
 
-            // Scan line overlay when analyzing
+            // Scan line overlay
             if (_isAnalyzing)
               Positioned.fill(
                 child: AnimatedBuilder(
