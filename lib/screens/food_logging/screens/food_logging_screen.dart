@@ -134,34 +134,34 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen>
     _scanLineController.repeat(); // Make scan line repeat during analysis
 
     try {
-      // print('Calling LLM service...');
-      // final results = await _llmService.analyzeFoodImage(image.path);
-      // print('Analysis complete. Results: $results');
+      print('Calling LLM service...');
+      final results = await _llmService.analyzeFoodImage(image.path);
+      print('Analysis complete. Results: $results');
 
       // Simulate longer API delay for testing (10 seconds)
-      await Future.delayed(const Duration(seconds: 5));
+      // await Future.delayed(const Duration(seconds: 5));
 
-      final results = FoodInfo(
-        mainItem: Ingredient(
-          title: "Fettuccine Pasta",
-          grams: 100,
-          nutritionData: NutritionData(
-            calories: 350,
-            protein: 12,
-            carbs: 65,
-            fats: 8,
-          ),
-        ),
-        ingredients: [
-          Ingredient(
-            title: "pasta",
-            grams: 100,
-            nutritionData:
-                NutritionData(calories: 350, protein: 12, carbs: 65, fats: 8),
-          ),
-        ],
-        healthScore: 65,
-      );
+      // final results = FoodInfo(
+      //   mainItem: Ingredient(
+      //     title: "Fettuccine Pasta",
+      //     grams: 100,
+      //     nutritionData: NutritionData(
+      //       calories: 350,
+      //       protein: 12,
+      //       carbs: 65,
+      //       fats: 8,
+      //     ),
+      //   ),
+      //   ingredients: [
+      //     Ingredient(
+      //       title: "pasta",
+      //       grams: 100,
+      //       nutritionData:
+      //           NutritionData(calories: 350, protein: 12, carbs: 65, fats: 8),
+      //     ),
+      //   ],
+      //   healthScore: 65,
+      // );
 
       setState(() => _analysisComplete = true);
       if (!mounted) return;

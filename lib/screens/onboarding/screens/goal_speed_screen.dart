@@ -1,6 +1,7 @@
 // Flutter imports:
 import 'package:bites/core/utils/measurement_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 // Project imports:
 import 'package:bites/core/constants/app_colors.dart';
@@ -150,6 +151,19 @@ class _GoalSpeedScreenState extends State<GoalSpeedScreen> {
             max: 1.0,
             divisions: _isMetric ? 10 : 22,
             onChanged: (value) {
+              // Check if crossing the recommended range boundaries
+              final bool wasRecommended = _selectedSpeed >= _recommendedMin &&
+                  _selectedSpeed <= _recommendedMax;
+              final bool isNowRecommended =
+                  value >= _recommendedMin && value <= _recommendedMax;
+
+              // Provide different feedback when crossing boundaries
+              if (wasRecommended != isNowRecommended) {
+                HapticFeedback.mediumImpact();
+              } else {
+                HapticFeedback.lightImpact();
+              }
+
               setState(() {
                 _selectedSpeed = value;
                 _calculateEstimatedDate();

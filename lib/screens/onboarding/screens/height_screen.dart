@@ -4,6 +4,7 @@ import 'package:bites/core/utils/measurement_utils.dart';
 import 'package:bites/screens/onboarding/widgets/onboarding_layout.dart';
 import 'package:bites/core/constants/app_colors.dart';
 import 'package:bites/screens/onboarding/widgets/unit_selector.dart';
+import 'package:flutter/services.dart';
 
 class HeightScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -81,7 +82,10 @@ class _HeightScreenState extends State<HeightScreen> {
         perspective: 0.005,
         diameterRatio: 1.2,
         physics: const FixedExtentScrollPhysics(),
-        onSelectedItemChanged: onSelectedItemChanged,
+        onSelectedItemChanged: (index) {
+          HapticFeedback.lightImpact();
+          onSelectedItemChanged(index);
+        },
         childDelegate: ListWheelChildBuilderDelegate(
           childCount: childCount,
           builder: (context, index) {
@@ -295,7 +299,10 @@ class _ImperialNumberPicker extends StatelessWidget {
         perspective: 0.005,
         diameterRatio: 1.2,
         physics: const FixedExtentScrollPhysics(),
-        onSelectedItemChanged: (index) => onChanged(index + minValue),
+        onSelectedItemChanged: (index) {
+          HapticFeedback.lightImpact();
+          onChanged(index + minValue);
+        },
         childDelegate: ListWheelChildBuilderDelegate(
           childCount: maxValue - minValue + 1,
           builder: (context, index) {

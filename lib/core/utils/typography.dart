@@ -123,4 +123,14 @@ class TypographyStyles {
       color: color ?? AppColors.textSecondary,
     );
   }
+
+  static TextStyle subtitleSmall({Color? color}) {
+    return TextStyle(
+      fontFamily: 'YourFont',
+      fontSize: 12,
+      height: 1.2,
+      fontWeight: FontWeight.w500,
+      color: color ?? AppColors.textSecondary,
+    );
+  }
 }

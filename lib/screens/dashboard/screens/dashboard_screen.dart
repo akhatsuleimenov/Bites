@@ -136,14 +136,36 @@ class DashboardScreen extends StatelessWidget {
   }
 
   List<double> _calculateWeeklyCalories(AppController appController) {
-    return [
-      appController.nutritionPlan.calories * 1.1, // Monday - 120%
-      appController.nutritionPlan.calories * 1.1, // Tuesday - 80%
-      appController.nutritionPlan.calories * 1.2, // Wednesday - 100%
-      appController.nutritionPlan.calories * 1.0, // Thursday - 100%
-      appController.nutritionPlan.calories * 1.0, // Friday - 100%
-      appController.todaysTotalCalories, // Today's actual calories
-    ];
+    final today = DateTime.now();
+    List<double> weeklyCalories =
+        List.filled(7, 0.0); // Initialize array for Mon-Sun
+
+    // Get start of current week (Monday)
+    final monday = today.subtract(Duration(days: today.weekday - 1));
+    final startOfMonday = DateTime(monday.year, monday.month, monday.day);
+
+    // Get start of today
+    final startOfToday = DateTime(today.year, today.month, today.day);
+
+    // Only calculate up to current day of week
+    final daysToCalculate = today.weekday; // 1 for Monday, 7 for Sunday
+
+    for (var i = 0; i < daysToCalculate; i++) {
+      final currentDate = startOfMonday.add(Duration(days: i));
+      final nextDate = currentDate.add(const Duration(days: 1));
+
+      // Filter logs for current day
+      final dayLogs = appController.weeklyMealLogs.where((log) =>
+          log.dateTime.isAfter(currentDate) && log.dateTime.isBefore(nextDate));
+
+      // Sum calories for the day
+      final dailyCalories = dayLogs.fold(0.0,
+          (sum, log) => sum + log.foodInfo.mainItem.nutritionData.calories);
+
+      weeklyCalories[i] = dailyCalories;
+    }
+
+    return weeklyCalories;
   }
 
   // ignore: unused_element

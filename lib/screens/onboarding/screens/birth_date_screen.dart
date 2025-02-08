@@ -3,6 +3,7 @@ import 'package:bites/core/constants/app_colors.dart';
 import 'package:bites/core/utils/typography.dart';
 import 'package:bites/screens/onboarding/widgets/onboarding_layout.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 // Project imports:
@@ -79,7 +80,10 @@ class _BirthDateScreenState extends State<BirthDateScreen> {
         perspective: 0.005,
         diameterRatio: 1.2,
         physics: const FixedExtentScrollPhysics(),
-        onSelectedItemChanged: onChanged,
+        onSelectedItemChanged: (value) {
+          HapticFeedback.lightImpact();
+          onChanged(value);
+        },
         childDelegate: ListWheelChildBuilderDelegate(
           childCount: itemCount,
           builder: (context, index) {

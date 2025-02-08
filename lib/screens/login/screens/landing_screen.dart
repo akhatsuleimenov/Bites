@@ -142,16 +142,16 @@ class _LandingScreenState extends State<LandingScreen>
                                   color: Colors.black.withOpacity(0.05),
                                 ),
                                 child: Center(
-                                  child: Icon(
-                                    index == 0
-                                        ? Icons.camera_alt
-                                        : index == 1
-                                            ? Icons.track_changes
-                                            : Icons.recommend,
-                                    size: 48,
-                                    color: Colors.white,
-                                  ),
-                                ),
+                                    // child: Icon(
+                                    //   index == 0
+                                    //       ? Icons.camera_alt
+                                    //       : index == 1
+                                    //           ? Icons.track_changes
+                                    //           : Icons.recommend,
+                                    //   size: 48,
+                                    //   color: Colors.white,
+                                    // ),
+                                    ),
                               ),
                             );
                           },

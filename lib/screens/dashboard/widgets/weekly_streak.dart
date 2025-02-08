@@ -44,7 +44,7 @@ class WeeklyStreak extends StatelessWidget {
                     children: [
                       Text(
                         days[index],
-                        style: TypographyStyles.subtitle(
+                        style: TypographyStyles.subtitleSmall(
                           color: isAfterToday
                               ? AppColors.textSecondary
                               : AppColors.textPrimary,
