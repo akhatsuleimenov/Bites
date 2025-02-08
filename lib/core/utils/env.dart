@@ -34,4 +34,15 @@ class Env {
       'AMPLITUDE_API_KEY',
     );
   }
+
+  static Future<String> get openaiApiKey async {
+    if (bool.fromEnvironment('dart.vm.product') == false) {
+      await dotenv.load();
+      return dotenv.env['OPENAI_API_KEY'] ?? '';
+    }
+    // Production
+    return const String.fromEnvironment(
+      'OPENAI_API_KEY',
+    );
+  }
 }

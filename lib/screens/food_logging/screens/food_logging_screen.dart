@@ -11,7 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 // Project imports:
 import 'package:bites/core/constants/app_colors.dart';
 import 'package:bites/core/constants/app_typography.dart';
-import 'package:bites/core/services/gemini_service.dart';
+import 'package:bites/core/services/llm_service.dart';
 import 'package:bites/core/widgets/buttons.dart';
 import 'package:bites/core/models/food_model.dart';
 import 'package:bites/core/services/firebase_service.dart';
@@ -27,7 +27,7 @@ class FoodLoggingScreen extends StatefulWidget {
 
 class _FoodLoggingScreenState extends State<FoodLoggingScreen> {
   final ImagePicker _picker = ImagePicker();
-  final GeminiSerivce _geminiService = GeminiSerivce();
+  final LLMService _llmService = LLMService();
   final FirebaseService _firebaseService = FirebaseService();
   bool _isAnalyzing = false;
 
@@ -36,9 +36,9 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen> {
     setState(() => _isAnalyzing = true);
 
     try {
-      print('Calling Gemini service...');
-      final results = await _geminiService.analyzeImage(image.path);
-      print('Gemini analysis complete. Results: ${results}');
+      print('Calling LLM service...');
+      final results = await _llmService.analyzeFoodImage(image.path);
+      print('Analysis complete. Results: $results');
 
       if (!mounted) {
         print('Widget not mounted after analysis, returning');
