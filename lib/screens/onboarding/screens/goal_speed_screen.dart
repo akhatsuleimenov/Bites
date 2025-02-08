@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:bites/core/utils/measurement_utils.dart';
 import 'package:flutter/material.dart';
 
 // Project imports:
@@ -19,29 +20,28 @@ class _GoalSpeedScreenState extends State<GoalSpeedScreen> {
   double _selectedSpeed = 0.0;
   late DateTime _estimatedDate;
   late double _weightDifference;
-  late bool _isMetricWeight;
+  late bool _isMetric;
 
   @override
   void initState() {
     super.initState();
-    _isMetricWeight = widget.userData['isMetricWeight'] as bool;
+    _isMetric = widget.userData['isMetric'] as bool;
     // Set default in proper units
-    _selectedSpeed = _isMetricWeight ? 0.4 : 0.9; // 0.4kg or ~0.9lb
+    _selectedSpeed = _isMetric ? 0.4 : 0.9; // 0.4kg or ~0.9lb
     _calculateEstimatedDate();
   }
 
-  String get _weightUnit => _isMetricWeight ? 'kg' : 'lb';
+  String get _weightUnit => MeasurementHelper.getWeightLabel(_isMetric);
 
-  double get _recommendedMin => _isMetricWeight ? 0.1 : 0.22;
-  double get _recommendedMax => _isMetricWeight ? 0.6 : 1.32;
+  double get _recommendedMin => _isMetric ? 0.1 : 0.22;
+  double get _recommendedMax => _isMetric ? 0.6 : 1.32;
 
   bool get _isRecommendedRate {
     final speedInKg = _selectedSpeed;
     return speedInKg >= 0.1 && speedInKg <= 0.6;
   }
 
-  double get _displaySpeed =>
-      _isMetricWeight ? _selectedSpeed : _selectedSpeed * 2.2;
+  double get _displaySpeed => _isMetric ? _selectedSpeed : _selectedSpeed * 2.2;
 
   void _calculateEstimatedDate() {
     // Get current and target weights
@@ -50,7 +50,7 @@ class _GoalSpeedScreenState extends State<GoalSpeedScreen> {
     _weightDifference = (targetWeight - currentWeight).abs();
 
     // Convert speed to kg for calculations if using imperial
-    final double speedInKg = _isMetricWeight ? _selectedSpeed : _selectedSpeed;
+    final double speedInKg = _isMetric ? _selectedSpeed : _selectedSpeed;
 
     // Prevent division by zero by using a minimum value
     final double speedForCalculation = speedInKg < 0.05 ? 0.05 : speedInKg;
@@ -141,14 +141,14 @@ class _GoalSpeedScreenState extends State<GoalSpeedScreen> {
             trackShape: CustomTrackShape(
               recommendedMin: _recommendedMin,
               recommendedMax: _recommendedMax,
-              isMetric: _isMetricWeight,
+              isMetric: _isMetric,
             ),
           ),
           child: Slider(
             value: _selectedSpeed,
             min: 0,
             max: 1.0,
-            divisions: _isMetricWeight ? 10 : 22,
+            divisions: _isMetric ? 10 : 22,
             onChanged: (value) {
               setState(() {
                 _selectedSpeed = value;
@@ -167,7 +167,7 @@ class _GoalSpeedScreenState extends State<GoalSpeedScreen> {
               ),
             ),
             Text(
-              '${_isMetricWeight ? "1.0" : "2.2"} $_weightUnit',
+              '${_isMetric ? "1.0" : "2.2"} $_weightUnit',
               style: TypographyStyles.body(
                 color: AppColors.textSecondary,
               ),

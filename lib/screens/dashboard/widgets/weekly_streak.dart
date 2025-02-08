@@ -22,73 +22,91 @@ class WeeklyStreak extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: List.generate(7, (index) {
-              final isToday = index == DateTime.now().weekday - 1;
-              final calories =
-                  index < dailyCalories.length ? dailyCalories[index] : 0.0;
-              final progress = calories / targetCalories;
+          Stack(
+            children: [
+              CustomPaint(
+                size: const Size(double.infinity, 20),
+                painter: StreakLinePainter(
+                  dailyCalories: dailyCalories,
+                  targetCalories: targetCalories,
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: List.generate(7, (index) {
+                  final isToday = index == DateTime.now().weekday - 1;
+                  final calories =
+                      index < dailyCalories.length ? dailyCalories[index] : 0.0;
+                  final progress = calories / targetCalories;
+                  final isAfterToday = index > DateTime.now().weekday - 1;
 
-              return Column(
-                children: [
-                  Text(
-                    days[index],
-                    style: TypographyStyles.subtitle(
-                      color: isToday
-                          ? AppColors.textPrimary
-                          : AppColors.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Stack(
-                    alignment: Alignment.center,
+                  return Column(
                     children: [
-                      Container(
-                        width: 28,
-                        height: 28,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.transparent,
+                      Text(
+                        days[index],
+                        style: TypographyStyles.subtitle(
+                          color: isAfterToday
+                              ? AppColors.textSecondary
+                              : AppColors.textPrimary,
                         ),
                       ),
-                      if (calories > 0)
-                        Container(
-                          width: 28,
-                          height: 28,
-                          child: CircularProgressIndicator(
-                            value: progress > 1 ? 1 : progress,
-                            backgroundColor: AppColors.progressBackground,
-                            color: _getProgressColor(progress),
-                            strokeWidth: 8,
-                            strokeCap: StrokeCap.round,
+                      const SizedBox(height: 8),
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            width: 28,
+                            height: 28,
+                            child: CircularProgressIndicator(
+                              value: 0,
+                              backgroundColor: AppColors.progressBackground,
+                              strokeWidth: 8,
+                              strokeCap: StrokeCap.round,
+                            ),
                           ),
-                        ),
-                      if (progress > 1)
+                          if (calories > 0)
+                            Container(
+                              width: 28,
+                              height: 28,
+                              child: CircularProgressIndicator(
+                                value: progress > 1 ? 1 : progress,
+                                backgroundColor: Colors.transparent,
+                                color: _getProgressColor(progress),
+                                strokeWidth: 8,
+                                strokeCap: StrokeCap.round,
+                              ),
+                            ),
+                          if (progress > 1)
+                            Container(
+                              width: 28,
+                              height: 28,
+                              child: CircularProgressIndicator(
+                                value: (progress - 1).clamp(0.0, 1.0),
+                                backgroundColor: Colors.transparent,
+                                color: Colors.red.withOpacity(0.3),
+                                strokeWidth: 8,
+                                strokeCap: StrokeCap.round,
+                              ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      if (isToday)
                         Container(
-                          width: 28,
-                          height: 28,
-                          child: CircularProgressIndicator(
-                            value: (progress - 1).clamp(0.0, 1.0),
-                            backgroundColor: Colors.transparent,
-                            color: Colors.red.withOpacity(0.3),
-                            strokeWidth: 8,
-                            strokeCap: StrokeCap.round,
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: AppColors.primary,
+                            shape: BoxShape.circle,
                           ),
-                        ),
+                        )
+                      else
+                        const SizedBox(height: 8),
                     ],
-                  ),
-                ],
-              );
-            }),
-          ),
-          const SizedBox(height: 8),
-          CustomPaint(
-            size: const Size(double.infinity, 20),
-            painter: StreakLinePainter(
-              dailyCalories: dailyCalories,
-              targetCalories: targetCalories,
-            ),
+                  );
+                }),
+              ),
+            ],
           ),
         ],
       ),
@@ -118,14 +136,14 @@ class StreakLinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.green.withOpacity(0.2)
+      ..color = AppColors.primary25
       ..style = PaintingStyle.stroke
       ..strokeWidth = 28 // Increased width to match circle size
       ..strokeCap = StrokeCap.round;
 
     final width = size.width - 52;
     final segmentWidth = width / 6;
-    final centerY = size.height / 2 - 32; // Position in the middle of circles
+    final centerY = size.height / 2 + 26; // Position in the middle of circles
 
     Path? streakPath;
 
@@ -135,22 +153,35 @@ class StreakLinePainter extends CustomPainter {
       final progress = dailyCalories[i] / targetCalories;
       final nextProgress = dailyCalories[i + 1] / targetCalories;
 
-      if (progress >= 0.95 &&
-          progress <= 1.15 &&
-          nextProgress >= 0.95 &&
-          nextProgress <= 1.15) {
+      // Special handling for today (last day)
+      bool isLastDay = i == dailyCalories.length - 2;
+      bool previousDayFulfilled = progress >= 0.95 && progress <= 1.15;
+
+      bool shouldDrawStreak = false;
+      if (isLastDay && previousDayFulfilled) {
+        // If it's today and previous day was fulfilled, always draw the streak
+        shouldDrawStreak = true;
+      } else {
+        // Normal streak check for other days
+        shouldDrawStreak = progress >= 0.95 &&
+            progress <= 1.15 &&
+            nextProgress >= 0.95 &&
+            nextProgress <= 1.15;
+      }
+
+      if (shouldDrawStreak) {
         if (streakPath == null) {
           streakPath = Path()..moveTo(x, centerY);
         }
         streakPath.lineTo(nextX, centerY);
       } else if (streakPath != null) {
-        canvas.drawPath(streakPath, paint); // Removed dashed path
+        canvas.drawPath(streakPath, paint);
         streakPath = null;
       }
     }
 
     if (streakPath != null) {
-      canvas.drawPath(streakPath, paint); // Removed dashed path
+      canvas.drawPath(streakPath, paint);
     }
   }
 

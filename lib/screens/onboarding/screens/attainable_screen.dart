@@ -92,7 +92,7 @@ class AttainableScreen extends StatelessWidget {
                               Text(
                                 MeasurementHelper.formatWeight(
                                   userData['weeklyGoal'],
-                                  userData['isMetricWeight'] as bool,
+                                  userData['isMetric'] as bool,
                                   decimalPlaces: 1,
                                 ),
                                 style: TypographyStyles.bodyBold(

@@ -12,6 +12,7 @@ import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/controllers/app_controller.dart';
 import 'package:bites/core/utils/measurement_utils.dart';
 import 'package:bites/screens/dashboard/widgets/widgets.dart';
+import 'package:bites/screens/dashboard/widgets/daily_macros_progress.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -54,14 +55,7 @@ class DashboardScreen extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                CalorieCard(
-                                  targetCalories:
-                                      appController.nutritionPlan.calories,
-                                  remainingCalories:
-                                      appController.remainingMacros.calories,
-                                ),
-                                const SizedBox(height: 16),
-                                NutritionGrid(
+                                DailyMacrosProgress(
                                   targetNutrition: appController.nutritionPlan,
                                   remainingNutrition:
                                       appController.remainingMacros,
@@ -135,6 +129,7 @@ class DashboardScreen extends StatelessWidget {
             heroTag: 'dashboardFAB',
             onPressed: () => _showAddOptions(context),
             backgroundColor: Colors.black,
+            shape: const CircleBorder(),
             child: const Icon(Icons.add),
           ),
         );
@@ -143,7 +138,6 @@ class DashboardScreen extends StatelessWidget {
   }
 
   List<double> _calculateWeeklyCalories(AppController appController) {
-    // For testing, we'll create mock data for Monday and Tuesday
     return [
       appController.nutritionPlan.calories * 1.1, // Monday - 120%
       appController.nutritionPlan.calories * 1.1, // Tuesday - 80%

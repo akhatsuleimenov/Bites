@@ -30,4 +30,8 @@ class AppColors {
   static const inputBorder = Color(0xFFD9D9D9);
   static const grayBackground = Color(0xFFF0F0F0);
   static const progressBackground = Color(0xFFE7E7E7);
+
+  static const protein = Color(0xFFEC4D3B);
+  static const carbs = Color(0xFF1780DE);
+  static const fat = Color(0xFFEBC81A);
 }

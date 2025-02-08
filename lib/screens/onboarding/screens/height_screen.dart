@@ -18,7 +18,7 @@ class HeightScreen extends StatefulWidget {
 }
 
 class _HeightScreenState extends State<HeightScreen> {
-  bool _isMetricHeight = true;
+  bool _isMetric = true;
   late FixedExtentScrollController _cmController;
   late FixedExtentScrollController _feetController;
   late FixedExtentScrollController _inchesController;
@@ -32,7 +32,7 @@ class _HeightScreenState extends State<HeightScreen> {
   }
 
   void _initializeControllers() {
-    if (_isMetricHeight) {
+    if (_isMetric) {
       final cmPosition =
           _selectedHeight - MeasurementHelper.offsetHeightPicker(true);
       _cmController = FixedExtentScrollController(
@@ -55,13 +55,13 @@ class _HeightScreenState extends State<HeightScreen> {
   }
 
   void _switchUnit(bool toMetric) {
-    if (_isMetricHeight == toMetric) return;
+    if (_isMetric == toMetric) return;
 
     final currentHeightCm = _selectedHeight;
 
     setState(() {
       _disposeControllers();
-      _isMetricHeight = toMetric;
+      _isMetric = toMetric;
       _selectedHeight = currentHeightCm;
       _initializeControllers();
     });
@@ -231,7 +231,7 @@ class _HeightScreenState extends State<HeightScreen> {
           arguments: {
             ...widget.userData,
             'height': _selectedHeight,
-            'isMetricHeight': _isMetricHeight,
+            'isMetric': _isMetric,
           },
         );
       },
@@ -242,12 +242,12 @@ class _HeightScreenState extends State<HeightScreen> {
             const SizedBox(height: 16),
             Center(
               child: UnitSelector(
-                isMetric: _isMetricHeight,
+                isMetric: _isMetric,
                 onUnitChanged: _switchUnit,
               ),
             ),
             const SizedBox(height: 56),
-            _isMetricHeight
+            _isMetric
                 ? _buildMetricHeightPicker()
                 : _buildImperialHeightPicker(),
           ],
@@ -257,7 +257,7 @@ class _HeightScreenState extends State<HeightScreen> {
   }
 
   void _disposeControllers() {
-    if (_isMetricHeight) {
+    if (_isMetric) {
       _cmController.dispose();
     } else {
       _feetController.dispose();
