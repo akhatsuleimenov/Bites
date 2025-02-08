@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:bites/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -119,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(16.0),
           child: ConstrainedBox(
             constraints: BoxConstraints(
               minHeight: MediaQuery.of(context).size.height -
@@ -146,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         controller: _emailController,
                         labelText: 'Enter your email',
                         keyboardType: TextInputType.emailAddress,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(8),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your email';
@@ -163,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         labelText: 'Enter your password',
                         obscureText: _obscurePassword,
                         showVisibilityToggle: true,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(8),
                         onVisibilityToggle: () => setState(
                             () => _obscurePassword = !_obscurePassword),
                         validator: (value) {
@@ -182,24 +183,27 @@ class _LoginScreenState extends State<LoginScreen> {
                         PrimaryButton(
                           onPressed: _handleEmailSignIn,
                           text: 'Login',
+                          textColor: AppColors.textPrimary,
                         ),
                         const SizedBox(height: 24),
 
                         // Or divider
                         Row(
                           children: [
-                            Expanded(child: Divider(color: Colors.grey[300])),
+                            Expanded(
+                                child: Divider(color: AppColors.buttonBorder)),
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 16),
                               child: Text(
                                 'Or Login with',
                                 style: TypographyStyles.bodyMedium(
-                                  color: Colors.grey[600],
+                                  color: AppColors.textSecondary,
                                 ),
                               ),
                             ),
-                            Expanded(child: Divider(color: Colors.grey[300])),
+                            Expanded(
+                                child: Divider(color: AppColors.buttonBorder)),
                           ],
                         ),
                         const SizedBox(height: 24),
@@ -208,23 +212,23 @@ class _LoginScreenState extends State<LoginScreen> {
                         OutlinedButton(
                           onPressed: _handleGoogleSignIn,
                           style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                            side: BorderSide(color: Colors.grey[300]!),
+                            side: BorderSide(color: AppColors.buttonBorder),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Image.asset(
                                 'assets/images/google_logo.png',
-                                height: 30,
+                                height: 24,
                               ),
-                              const SizedBox(width: 4),
+                              const SizedBox(width: 8),
                               Text(
                                 'Sign in with Google',
-                                style: TypographyStyles.h4(),
+                                style: TypographyStyles.h4Bold(),
                               ),
                             ],
                           ),

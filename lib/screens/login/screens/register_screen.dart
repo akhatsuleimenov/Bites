@@ -123,7 +123,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         scrolledUnderElevation: 0,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
@@ -133,7 +133,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(16.0),
           child: ConstrainedBox(
             constraints: BoxConstraints(
               minHeight: MediaQuery.of(context).size.height -
@@ -212,7 +212,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 16),
 
                       if (_isLoading)
                         const CircularProgressIndicator()
@@ -221,24 +221,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         PrimaryButton(
                           onPressed: _handleRegister,
                           text: 'Register',
+                          textColor: AppColors.textPrimary,
                         ),
                         const SizedBox(height: 24),
 
                         // Or divider
                         Row(
                           children: [
-                            Expanded(child: Divider(color: Colors.grey[300])),
+                            Expanded(
+                                child: Divider(color: AppColors.buttonBorder)),
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 16),
                               child: Text(
                                 'Or Register with',
                                 style: TypographyStyles.bodyMedium(
-                                  color: Colors.grey[600],
+                                  color: AppColors.textSecondary,
                                 ),
                               ),
                             ),
-                            Expanded(child: Divider(color: Colors.grey[300])),
+                            Expanded(
+                                child: Divider(color: AppColors.buttonBorder)),
                           ],
                         ),
                         const SizedBox(height: 24),
@@ -247,25 +250,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         OutlinedButton(
                           onPressed: _handleGoogleSignIn,
                           style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            side: BorderSide(color: Colors.grey[300]!),
+                            side: BorderSide(color: AppColors.buttonBorder),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Image.asset(
                                 'assets/images/google_logo.png',
-                                height: 30,
+                                height: 24,
                               ),
-                              const SizedBox(width: 4),
+                              const SizedBox(width: 8),
                               Text(
                                 'Sign in with Google',
-                                style: TypographyStyles.h4(
-                                  color: Colors.black,
-                                ),
+                                style: TypographyStyles.h4Bold(),
                               ),
                             ],
                           ),
