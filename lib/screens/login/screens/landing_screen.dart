@@ -22,33 +22,53 @@ class _LandingScreenState extends State<LandingScreen>
   final PageController _pageController = PageController(viewportFraction: 0.9);
   Timer? _timer;
 
-  final List<String> _descriptions = [
-    'Just snap a quick photo of your meal and we\'ll do the rest',
-    'Set goals and monitor your daily calorie intake with ease',
-    'Get personalized recommendations based on your eating habits',
-  ];
-
-  final List<String> _images = [
-    'assets/images/photofood.png',
-    'assets/images/scanfood.png',
-    'assets/images/scanfood.png',
+  final List<Map<String, String>> _descriptions = [
+    {
+      'image': 'assets/gifs/animated-meal.gif',
+      'title': 'Effortless Meal Logging',
+      'description':
+          'Just snap a quick photo of your meal—no need for manual logging, we\'ll handle the details.'
+    },
+    {
+      'image': 'assets/gifs/animated-brain.gif',
+      'title': 'Smarter Tracking, Zero Effort',
+      'description':
+          'Get instant calorie and nutrition insights without the guesswork or tedious entry.'
+    },
+    {
+      'image': 'assets/gifs/animated-clock.gif',
+      'title': 'Track Anytime, Anywhere',
+      'description':
+          'At home, dining out, or on the go—know what\'s on your plate in seconds.'
+    },
+    {
+      'image': 'assets/gifs/animated-wow.gif',
+      'title': 'Enjoy Your Food, Stay on Track',
+      'description':
+          'No restrictive diets—just insights that help you make better choices while eating what you love.'
+    },
+    {
+      'image': 'assets/gifs/animated-lock.gif',
+      'title': 'Your Data, Your Privacy',
+      'description':
+          'We do NOT and will NEVER sell your information. Your privacy is our priority.'
+    },
   ];
 
   late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
 
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 3000),
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
+    // _fadeAnimation = Tween<double>(begin: 1.0, end: 1.0).animate(
+    //   CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    // );
 
     _animationController.forward();
     _startAutoSwipe();
@@ -62,7 +82,7 @@ class _LandingScreenState extends State<LandingScreen>
 
         _pageController.animateToPage(
           nextPage,
-          duration: const Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 1000),
           curve: Curves.easeInOut,
         );
       }
@@ -99,7 +119,7 @@ class _LandingScreenState extends State<LandingScreen>
                 textAlign: TextAlign.center,
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 32),
 
               // PageView with overlays
               LayoutBuilder(
@@ -108,22 +128,12 @@ class _LandingScreenState extends State<LandingScreen>
                   return Stack(
                     children: [
                       // Static base image
-                      Container(
-                        width: squareSize,
-                        height: squareSize,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.asset(
-                            'assets/images/photofood.png',
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
+                      Container(width: squareSize, height: squareSize - 48),
 
                       // Animated overlays
                       SizedBox(
-                        width: squareSize,
-                        height: squareSize,
+                        width: squareSize + 16,
+                        height: squareSize - 48,
                         child: PageView.builder(
                           controller: _pageController,
                           itemCount: _descriptions.length,
@@ -132,26 +142,31 @@ class _LandingScreenState extends State<LandingScreen>
                             _animationController.forward();
                           },
                           itemBuilder: (context, index) {
-                            return FadeTransition(
-                              opacity: _fadeAnimation,
-                              child: Container(
-                                width: squareSize,
-                                height: squareSize,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  color: Colors.black.withOpacity(0.05),
-                                ),
-                                child: Center(
-                                    // child: Icon(
-                                    //   index == 0
-                                    //       ? Icons.camera_alt
-                                    //       : index == 1
-                                    //           ? Icons.track_changes
-                                    //           : Icons.recommend,
-                                    //   size: 48,
-                                    //   color: Colors.white,
-                                    // ),
+                            return Container(
+                              width: squareSize + 16,
+                              height: squareSize - 48,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                // color: Colors.black.withOpacity(0.05),
+                              ),
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      _descriptions[index]['image'] ?? '',
+                                      fit: BoxFit.cover,
+                                      width: 160,
+                                      height: 160,
                                     ),
+                                    const SizedBox(height: 24),
+                                    Text(
+                                      _descriptions[index]['title'] ?? '',
+                                      style: TypographyStyles.h3(),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
                               ),
                             );
                           },
@@ -174,8 +189,9 @@ class _LandingScreenState extends State<LandingScreen>
                     builder: (context, child) {
                       return Text(
                         _descriptions[_pageController.hasClients
-                            ? (_pageController.page?.round() ?? 0)
-                            : 0],
+                                ? (_pageController.page?.round() ?? 0)
+                                : 0]['description'] ??
+                            '',
                         style: TypographyStyles.subtitle(
                           color: AppColors.textPrimary,
                         ),
