@@ -62,7 +62,7 @@ class _LandingScreenState extends State<LandingScreen>
     super.initState();
 
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 3000),
+      duration: const Duration(milliseconds: 4000),
       vsync: this,
     );
 
@@ -75,7 +75,7 @@ class _LandingScreenState extends State<LandingScreen>
   }
 
   void _startAutoSwipe() {
-    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 4), (timer) {
       if (_pageController.hasClients) {
         final currentPage = _pageController.page?.toInt() ?? 0;
         final nextPage = (currentPage + 1) % _descriptions.length;

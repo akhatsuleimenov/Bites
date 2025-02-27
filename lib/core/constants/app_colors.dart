@@ -39,4 +39,11 @@ class AppColors {
   // static const Color carbs = Color(0xFF4CD964);
   // static const Color fat = Color(0xFFFF3B30);
   // static const Color protein = Color(0xFF5856D6);
+
+  // Backgrounds for success messages
+  static const Color successLight = Color(0xFFDFF7D8);
+  // Positive actions like success states or confirmations
+  static const Color successDefault = Color(0xFF6CCB63);
+  // Text or icons indicating success
+  static const Color successDark = Color(0xFF2A6E26);
 }

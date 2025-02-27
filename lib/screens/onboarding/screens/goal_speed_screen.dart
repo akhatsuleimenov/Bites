@@ -335,7 +335,7 @@ class _GoalSpeedScreenState extends State<GoalSpeedScreen> {
                 color: AppColors.textSecondary,
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 16),
             _buildSpeedIndicators(),
             const SizedBox(height: 8),
             _buildSlider(),
