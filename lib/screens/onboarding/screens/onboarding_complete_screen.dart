@@ -131,14 +131,14 @@ class _OnboardingCompleteScreenState extends State<OnboardingCompleteScreen>
   Future<void> _startAnimation() async {
     await Future.delayed(const Duration(milliseconds: 500));
     await _progressController.forward();
-    // await FirebaseService().updateUserData(widget.userData['userId'], {
-    //   ...widget.userData,
-    // });
-    // if (mounted) {
-    //   Navigator.pushNamed(context, '/onboarding/comparison', arguments: {
-    //     ...widget.userData,
-    //   });
-    // }
+    await FirebaseService().updateUserData(widget.userData['userId'], {
+      ...widget.userData,
+    });
+    if (mounted) {
+      Navigator.pushNamed(context, '/onboarding/comparison', arguments: {
+        ...widget.userData,
+      });
+    }
   }
 
   @override
@@ -164,14 +164,7 @@ class _OnboardingCompleteScreenState extends State<OnboardingCompleteScreen>
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(6),
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.primary.withOpacity(0.7),
-                    AppColors.primary,
-                  ],
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                ),
+                color: AppColors.primary,
               ),
             ),
           ),
@@ -182,45 +175,88 @@ class _OnboardingCompleteScreenState extends State<OnboardingCompleteScreen>
 
   // Build the current info card with animation
   Widget _buildCurrentInfoCard() {
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 500),
-      transitionBuilder: (Widget child, Animation<double> animation) {
-        return SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(1.0, 0.0),
-            end: Offset.zero,
-          ).animate(animation),
-          child: FadeTransition(
-            opacity: animation,
-            child: child,
+    return Stack(
+      alignment: Alignment.center, // Center the stack contents
+      children: [
+        // Static gradient background container that's always present
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 16),
+          width: double.infinity, // Full width
+          height: 140, // Fixed height for the container
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                // Gradient colors that change based on progress
+                AppColors.primary,
+                AppColors.background,
+              ],
+              // Adjust stops based on progress to create moving effect
+              stops: [0.0, _progress],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: AppColors.inputBorder,
+              width: 1,
+            ),
           ),
-        );
-      },
-      child: Container(
-        key: ValueKey<int>(_currentStepIndex),
-        margin: const EdgeInsets.symmetric(vertical: 16),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppColors.primary.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              _stepMessages[_currentStepIndex]['stat'],
-              style: TypographyStyles.h1(),
-              textAlign: TextAlign.center,
+
+        // Animated text content that slides in
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 500),
+          transitionBuilder: (Widget child, Animation<double> animation) {
+            // For entering widgets, we want right to left (1.0 to 0.0)
+            // For exiting widgets, we also want right to left (0.0 to -1.0)
+            final Offset beginOffset =
+                animation.status == AnimationStatus.reverse
+                    ? const Offset(
+                        -1.0, 0.0) // When reversing (removing), start from left
+                    : const Offset(
+                        1.0, 0.0); // When forward (adding), start from right
+
+            final Offset endOffset = animation.status == AnimationStatus.reverse
+                ? const Offset(
+                    0.0, 0.0) // When reversing (removing), exit to right
+                : const Offset(
+                    0.0, 0.0); // When forward (adding), move to center
+
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: beginOffset,
+                end: endOffset,
+              ).animate(animation),
+              child: FadeTransition(
+                opacity: animation,
+                child: child,
+              ),
+            );
+          },
+          child: Container(
+            key: ValueKey<int>(_currentStepIndex),
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  _stepMessages[_currentStepIndex]['stat'],
+                  style: TypographyStyles.h1(),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  _stepMessages[_currentStepIndex]['description'],
+                  style: TypographyStyles.body(),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              _stepMessages[_currentStepIndex]['description'],
-              style: TypographyStyles.body(),
-              textAlign: TextAlign.center,
-            ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 
