@@ -29,7 +29,7 @@ class GeminiSerivce {
     try {
       print('Initializing Gemini model...');
       final model = GenerativeModel(
-        model: 'gemini-1.5-flash',
+        model: 'gemini-2.5-flash-preview-04-17',
         apiKey: apiKey,
         generationConfig: GenerationConfig(
           temperature: 1,
@@ -40,7 +40,12 @@ class GeminiSerivce {
           responseSchema: Schema(
             SchemaType.object,
             enumValues: [],
-            requiredProperties: ["mainItem", "healthScore", "ingredients"],
+            requiredProperties: [
+              "mainItem",
+              "healthScore",
+              "confidence",
+              "ingredients"
+            ],
             properties: {
               "mainItem": Schema(
                 SchemaType.object,
@@ -80,6 +85,9 @@ class GeminiSerivce {
                 },
               ),
               "healthScore": Schema(
+                SchemaType.number,
+              ),
+              "confidence": Schema(
                 SchemaType.number,
               ),
               "ingredients": Schema(
@@ -129,7 +137,12 @@ class GeminiSerivce {
             'You are an AI calories calculator, you will be given an image of food, and output what ingredients does it contain and its macros(calories, carbs, protein, fat). If the image does not look like food, simply return "Not food" string'),
       );
       print('Model initialized, preparing image data...');
-      final prompt = 'Describe how this product might be manufactured.';
+      final prompt = '''Step 1: List all visible food items in the image.
+                      Step 2: For each item, estimate the portion size in grams.
+                      Step 3: Match each item to a standard food category (e.g., USDA).
+                      Step 4: Provide calories, carbs, protein, and fat for each item.
+                      Step 5: Estimate your confidence in the output from 0-100%.
+                      If this image does not look like food, respond with the string: "Not food".''';
       final image = await fileToPart('image/jpeg', imagePath);
       print('Image data prepared, sending to Gemini...');
 

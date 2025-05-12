@@ -44,17 +44,20 @@ class MealLog {
 
 class FoodInfo {
   final double healthScore;
+  final double confidence;
   final Ingredient mainItem;
   final List<Ingredient> ingredients;
 
   FoodInfo({
     required this.healthScore,
+    required this.confidence,
     required this.mainItem,
     required this.ingredients,
   });
 
   Map<String, dynamic> toMap() => {
         'healthScore': healthScore,
+        'confidence': confidence,
         'mainItem': mainItem.toMap(),
         'ingredients': ingredients.map((i) => i.toMap()).toList(),
       };
@@ -62,6 +65,7 @@ class FoodInfo {
   factory FoodInfo.fromMap(Map<String, dynamic> map) {
     return FoodInfo(
       healthScore: map['healthScore'].toDouble(),
+      confidence: map['confidence'].toDouble(),
       mainItem: Ingredient.fromMap(map['mainItem']),
       ingredients: (map['ingredients'] as List)
           .map((i) => Ingredient.fromMap(i))
@@ -69,8 +73,30 @@ class FoodInfo {
     );
   }
 
+  static FoodInfo average(List<FoodInfo> sources) {
+    final avg = (num Function(FoodInfo f) getter) =>
+        sources.map(getter).reduce((a, b) => a + b) / sources.length;
+
+    return FoodInfo(
+      mainItem: Ingredient(
+        title: sources[0].mainItem.title,
+        grams: avg((f) => f.mainItem.grams),
+        nutritionData: NutritionData(
+          calories: avg((f) => f.mainItem.nutritionData.calories),
+          carbs: avg((f) => f.mainItem.nutritionData.carbs),
+          protein: avg((f) => f.mainItem.nutritionData.protein),
+          fats: avg((f) => f.mainItem.nutritionData.fats),
+        ),
+      ),
+      healthScore: avg((f) => f.healthScore),
+      confidence: avg((f) => f.confidence),
+      ingredients: sources[0].ingredients, // You could also merge these.
+    );
+  }
+
   factory FoodInfo.empty() => FoodInfo(
         healthScore: 0,
+        confidence: 0,
         mainItem: Ingredient.empty(),
         ingredients: [],
       );

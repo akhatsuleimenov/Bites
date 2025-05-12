@@ -300,6 +300,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
         ),
         ingredients: [], // Manual entries don't have ingredients
         healthScore: 0,
+        confidence: 0,
       );
 
       final mealLog = MealLog(

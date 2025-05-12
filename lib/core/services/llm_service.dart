@@ -23,20 +23,44 @@ class LLMService {
   /// Throws if both services fail
   Future<FoodInfo> analyzeFoodImage(String imagePath) async {
     try {
-      print('🤖 Attempting analysis with Gemini...');
-      return await _geminiService.analyzeImage(imagePath);
-    } catch (e, stackTrace) {
-      print('❌ Gemini analysis failed: $e');
-      print('Stack trace: $stackTrace');
+      print('🔄 Running analysis with both Gemini and OpenAI in parallel...');
 
-      print('🔄 Falling back to OpenAI...');
-      try {
-        return await _openaiService.analyzeImage(imagePath);
-      } catch (openaiError, openaiStackTrace) {
-        print('❌ OpenAI fallback failed: $openaiError');
-        print('Stack trace: $openaiStackTrace');
-        throw Exception('Sorry for the trouble. Please try again later.');
+      final results = await Future.wait([
+        _geminiService.analyzeImage(imagePath).catchError((e) {
+          print('⚠️ Gemini analysis failed: $e');
+          throw e; // Re-throw to handle null case properly
+        }),
+        _openaiService.analyzeImage(imagePath).catchError((e) {
+          print('⚠️ OpenAI analysis failed: $e');
+          throw e; // Re-throw to handle null case properly
+        }),
+      ], eagerError: false); // Don't fail fast if one fails
+
+      final geminiResult = results[0] as FoodInfo?;
+      final openaiResult = results[1] as FoodInfo?;
+
+      if (geminiResult == null && openaiResult == null) {
+        throw Exception('Both models failed. Please try again later.');
       }
+
+      if (geminiResult != null && geminiResult.mainItem.title == "Not Food") {
+        return geminiResult;
+      }
+
+      if (openaiResult != null && openaiResult.mainItem.title == "Not Food") {
+        return openaiResult;
+      }
+
+      if (geminiResult != null && openaiResult != null) {
+        print('✅ Both models succeeded, using AI to merge results...');
+        return await _openaiService.mergeFoodInfo(geminiResult, openaiResult);
+      }
+
+      return geminiResult ?? openaiResult!;
+    } catch (e, stackTrace) {
+      print('❌ Analysis failed: $e');
+      print('Stack trace: $stackTrace');
+      throw Exception('Sorry for the trouble. Please try again later.');
     }
   }
 }
