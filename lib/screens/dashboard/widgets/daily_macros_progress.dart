@@ -29,6 +29,7 @@ class DailyMacrosProgress extends StatelessWidget {
     final minimumHeight = (116.0 * 2) + 32; // 48px for text padding
 
     return BaseCard(
+      // backgroundColor: AppColors.background,
       padding: const EdgeInsets.all(8),
       child: Column(
         children: [

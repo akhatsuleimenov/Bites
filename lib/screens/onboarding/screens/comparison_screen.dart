@@ -427,7 +427,7 @@ class _ComparisonScreenState extends State<ComparisonScreen>
       'November',
       'December'
     ];
-    return "Jun 1, ${date.year}";
+    return "${months[date.month - 1]} ${date.day}, ${date.year}";
   }
 
   String _formatShortDate(DateTime date) {
@@ -445,7 +445,7 @@ class _ComparisonScreenState extends State<ComparisonScreen>
       'Nov',
       'Dec'
     ];
-    return "Feb 9, ${date.year}";
+    return "${months[date.month - 1]} ${date.day}, ${date.year}";
   }
 }
 

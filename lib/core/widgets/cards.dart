@@ -9,12 +9,14 @@ class BaseCard extends StatelessWidget {
   final Widget child;
   final EdgeInsets? padding;
   final VoidCallback? onTap;
+  final Color? backgroundColor;
 
   const BaseCard({
     super.key,
     required this.child,
     this.padding,
     this.onTap,
+    this.backgroundColor,
   });
 
   @override
@@ -24,15 +26,8 @@ class BaseCard extends StatelessWidget {
       child: Container(
         padding: padding ?? const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.cardBackground,
+          color: backgroundColor ?? AppColors.cardBackground,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-          ],
         ),
         child: child,
       ),

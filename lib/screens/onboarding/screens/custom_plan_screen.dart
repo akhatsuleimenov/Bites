@@ -192,7 +192,7 @@ class CustomPlanScreen extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TypographyStyles.body(
+                  style: TypographyStyles.bodyBold(
                     color: AppColors.textSecondary,
                   ),
                 ),

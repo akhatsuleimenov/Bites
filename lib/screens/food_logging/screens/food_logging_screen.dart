@@ -14,7 +14,6 @@ import 'package:camera/camera.dart';
 
 // Project imports:
 import 'package:bites/core/constants/app_colors.dart';
-import 'package:bites/core/constants/app_typography.dart';
 import 'package:bites/core/services/llm_service.dart';
 import 'package:bites/core/models/food_model.dart';
 import 'package:bites/core/services/firebase_service.dart';
@@ -143,7 +142,7 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen>
 
       // final results = FoodInfo(
       //   mainItem: Ingredient(
-      //     title: "Fettuccine Pasta",
+      //     title: "Not food",
       //     grams: 100,
       //     nutritionData: NutritionData(
       //       calories: 350,
@@ -163,17 +162,53 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen>
       //   healthScore: 65,
       // );
 
+      print('results: ${results.mainItem.title}');
+
       setState(() => _analysisComplete = true);
       if (!mounted) return;
 
-      Navigator.pushNamed(
-        context,
-        '/food-logging/results',
-        arguments: {
-          'imagePath': image.path,
-          'resultFoodInfo': results,
-        },
-      );
+      // Check if the image is not food
+      if (results.mainItem.title.toLowerCase() == "not food") {
+        // Show error message and don't navigate to results
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.error_outline, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'No food detected in this image. Please try taking a clearer photo of your meal.',
+                    style: TypographyStyles.bodyMedium(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.redAccent,
+            duration: const Duration(seconds: 4),
+            behavior: SnackBarBehavior.floating,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            action: SnackBarAction(
+              label: 'OK',
+              textColor: Colors.white,
+              onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              },
+            ),
+          ),
+        );
+      } else {
+        // Navigate to results as normal for food images
+        Navigator.pushNamed(
+          context,
+          '/food-logging/results',
+          arguments: {
+            'imagePath': image.path,
+            'resultFoodInfo': results,
+          },
+        );
+      }
     } catch (e) {
       print('❌ Analysis failed with error: $e');
       if (!mounted) return;
@@ -325,8 +360,7 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen>
                     const SizedBox(width: 8),
                     Text(
                       'Previous Meals',
-                      style: AppTypography.headlineSmall
-                          .copyWith(color: Colors.white),
+                      style: TypographyStyles.h3(color: Colors.white),
                     ),
                   ],
                 ),
@@ -374,9 +408,7 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen>
                                 children: [
                                   Text(
                                     meal.foodInfo.mainItem.title,
-                                    style: AppTypography.bodyLarge.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                    style: TypographyStyles.bodyMedium(),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -395,18 +427,14 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen>
                                         ),
                                         child: Text(
                                           '${meal.foodInfo.mainItem.nutritionData.calories.round()} cal',
-                                          style:
-                                              AppTypography.bodySmall.copyWith(
-                                            color: AppColors.primary,
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                          style: TypographyStyles.body(
+                                              color: AppColors.primary),
                                         ),
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
                                         _formatDateTime(meal.dateTime),
-                                        style:
-                                            AppTypography.bodyMedium.copyWith(
+                                        style: TypographyStyles.bodyMedium(
                                           color: Colors.grey[600],
                                         ),
                                       ),
@@ -432,9 +460,7 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen>
                       onPressed: () => Navigator.pop(context),
                       child: Text(
                         'Cancel',
-                        style: AppTypography.bodyMedium.copyWith(
-                          color: Colors.grey[600],
-                        ),
+                        style: TypographyStyles.body(color: Colors.grey[600]),
                       ),
                     ),
                   ],

@@ -50,43 +50,48 @@ class _AppScaffoldState extends State<AppScaffold> {
             ),
           ),
         ),
-        child: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: (index) => setState(() => _selectedIndex = index),
-          type: BottomNavigationBarType.fixed,
-          selectedLabelStyle: TypographyStyles.subtitle(),
-          unselectedLabelStyle: TypographyStyles.subtitle(),
-          selectedItemColor: AppColors.primary,
-          unselectedItemColor: AppColors.textPrimary,
-          showUnselectedLabels: true,
-          enableFeedback: false,
-          iconSize: 24,
-          selectedIconTheme: const IconThemeData(size: 24),
-          unselectedIconTheme: const IconThemeData(size: 24),
-          // padding: const EdgeInsets.only(top: 16),
-          items: const [
-            BottomNavigationBarItem(
-              icon: Padding(
-                padding: EdgeInsets.only(bottom: 4),
-                child: Icon(Icons.dashboard_rounded),
+        child: Theme(
+          data: Theme.of(context).copyWith(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+          ),
+          child: BottomNavigationBar(
+            currentIndex: _selectedIndex,
+            onTap: (index) => setState(() => _selectedIndex = index),
+            type: BottomNavigationBarType.fixed,
+            selectedLabelStyle: TypographyStyles.subtitle(),
+            unselectedLabelStyle: TypographyStyles.subtitle(),
+            selectedItemColor: AppColors.primary,
+            unselectedItemColor: AppColors.textPrimary,
+            showUnselectedLabels: true,
+            enableFeedback: false,
+            iconSize: 24,
+            selectedIconTheme: const IconThemeData(size: 24),
+            unselectedIconTheme: const IconThemeData(size: 24),
+            items: const [
+              BottomNavigationBarItem(
+                icon: Padding(
+                  padding: EdgeInsets.only(bottom: 4),
+                  child: Icon(Icons.dashboard_rounded),
+                ),
+                label: 'Dashboard',
               ),
-              label: 'Dashboard',
-            ),
-            BottomNavigationBarItem(
-              icon: Padding(
-                padding: EdgeInsets.only(bottom: 4),
-                child: Icon(Icons.analytics),
+              BottomNavigationBarItem(
+                icon: Padding(
+                  padding: EdgeInsets.only(bottom: 4),
+                  child: Icon(Icons.analytics),
+                ),
+                label: 'Analytics',
               ),
-              label: 'Analytics',
-            ),
-            BottomNavigationBarItem(
-              icon: Padding(
-                padding: EdgeInsets.only(bottom: 4),
-                child: Icon(Icons.person),
+              BottomNavigationBarItem(
+                icon: Padding(
+                  padding: EdgeInsets.only(bottom: 4),
+                  child: Icon(Icons.person),
+                ),
+                label: 'Profile',
               ),
-              label: 'Profile',
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
